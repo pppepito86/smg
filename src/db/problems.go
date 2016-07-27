@@ -1,0 +1,133 @@
+package db
+
+import (
+	"log"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+type Problem struct {
+	Id          int64
+	ProblemName string
+	Version     string
+	Description string
+	Visibility  string
+	Languages   string
+	AuthorId    int64
+	Author      string
+}
+
+func CreateProblem(p Problem) (Problem, error) {
+	db := getConnection()
+
+	stmt, err := db.Prepare("INSERT INTO problems(name, version, description, languages, visibility, author) VALUES(?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Print(err)
+		return p, err
+	}
+
+	res, err := stmt.Exec(p.ProblemName, p.Version, p.Description, p.Languages, p.Visibility, p.AuthorId)
+	if err != nil {
+		log.Print(err)
+		return p, err
+	}
+
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		log.Print(err)
+		return p, err
+	}
+
+	p.Id = lastId
+	return p, nil
+}
+
+func ListProblems() ([]Problem, error) {
+	db := getConnection()
+	rows, err := db.Query("select problems.id, problems.name, problems.version, problems.description, problems.languages, problems.visibility, problems.author, users.username from problems" +
+		" inner join users on problems.author = users.id")
+	if err != nil {
+		log.Print(err)
+		return []Problem{}, err
+	}
+	defer rows.Close()
+	problems := make([]Problem, 0)
+	for rows.Next() {
+		var p Problem
+		err := rows.Scan(&p.Id, &p.ProblemName, &p.Version, &p.Description, &p.Languages, &p.Visibility, &p.AuthorId, &p.Author)
+		if err != nil {
+			log.Print(err)
+			return []Problem{}, err
+		}
+		problems = append(problems, p)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []Problem{}, err
+	}
+	return problems, nil
+}
+
+func GetProblem(id int64) (Problem, error) {
+	db := getConnection()
+	rows, err := db.Query("select id, name, version, description, languages, visibility, author from problems where id=?", id)
+	if err != nil {
+		log.Print(err)
+		return Problem{}, nil
+	}
+	defer rows.Close()
+	p := Problem{}
+	for rows.Next() {
+		err := rows.Scan(&p.Id, &p.ProblemName, &p.Version, &p.Description, &p.Languages, &p.Visibility, &p.AuthorId)
+		if err != nil {
+			log.Print(err)
+			return Problem{}, nil
+		}
+	}
+	if err != nil {
+		log.Print(err)
+		return Problem{}, nil
+	}
+	return p, nil
+}
+
+/*
+func GetUser(username string) User {
+	fmt.Println("find user:", username)
+	db := getConnection()
+	rows, err := db.Query("select users.id, roleid, username, firstname, lastname, email, passwordhash, passwordsalt, isdisabled, rolename from users inner join roles on username= ? and isdisabled=? and users.roleid=roles.id", username, false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.Id, &user.RoleId, &user.UserName, &user.FirstName, &user.LastName, &user.Email, &user.PasswordHash, &user.PasswordSalt, &user.IsDisabled, &user.RoleName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("found user:", user)
+		return user
+	}
+	return User{}
+}
+
+func UpdateUserRole(userId, roleId int64) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("update users set roleid=? where id=?")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	_, err = stmt.Exec(roleId, userId)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	return nil
+}
+*/

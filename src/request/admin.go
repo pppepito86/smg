@@ -1,0 +1,144 @@
+package request
+
+import (
+	"db"
+	"net/http"
+	"strconv"
+	"text/template"
+)
+
+func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
+	path := r.URL.Path
+	if path == "/changeuserrole" && r.Method == "POST" {
+		changeUserRole(w, r)
+	} else if path == "/addgroup" && r.Method == "POST" {
+		addGroup(w, r, user)
+	} else if path == "/addproblem" && r.Method == "POST" {
+		addProblem(w, r, user)
+	} else if path == "/addassignment" && r.Method == "POST" {
+		addAssignment(w, r, user)
+	} else if path == "/users.html" {
+		usersAdminHtml(w, r)
+	} else if path == "/groups.html" {
+		groupsAdminHtml(w, r)
+	} else if path == "/addgroup.html" {
+		addAdminGroupHtml(w, r)
+	} else if path == "/problems.html" {
+		problemsAdminHtml(w, r)
+	} else if path == "/addproblem.html" {
+		addAdminProblemHtml(w, r)
+	} else if path == "/assignments.html" {
+		assignmentsAdminHtml(w, r)
+	} else if path == "/addassignment.html" {
+		addAdminAssignmentHtml(w, r)
+	}
+}
+
+func addGroup(w http.ResponseWriter, r *http.Request, user db.User) {
+	r.ParseForm()
+	name := r.Form["groupname"]
+	description := r.Form["description"]
+	if len(name) != 1 {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	g := db.Group{
+		GroupName:   name[0],
+		Description: description[0],
+		CreatorId:   user.Id,
+	}
+	g, _ = db.CreateGroup(g)
+	http.Redirect(w, r, "/groups.html", http.StatusFound)
+}
+
+func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
+	r.ParseForm()
+	name := r.Form["assignmentname"]
+	p1 := r.Form["problem1"]
+	p2 := r.Form["problem2"]
+	p3 := r.Form["problem3"]
+	groupId := r.Form["groupid"]
+	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
+	if len(name) != 1 {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	a := db.Assignment{
+		AssignmentName: name[0],
+		AuthorId:       user.Id,
+		GroupId:        gid,
+	}
+	a, _ = db.CreateAssignment(a)
+	if p1[0] != "" {
+		p1Id, _ := strconv.ParseInt(p1[0], 10, 64)
+		db.AddProblemToAssignment(a.Id, p1Id, 1)
+	}
+	if p2[0] != "" {
+		p2Id, _ := strconv.ParseInt(p2[0], 10, 64)
+		db.AddProblemToAssignment(a.Id, p2Id, 1)
+	}
+	if p3[0] != "" {
+		p3Id, _ := strconv.ParseInt(p3[0], 10, 64)
+		db.AddProblemToAssignment(a.Id, p3Id, 1)
+	}
+	http.Redirect(w, r, "/assignments.html", http.StatusFound)
+}
+
+func changeUserRole(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	user := r.Form["userid"]
+	role := r.Form["roleid"]
+	if len(user) != 1 || len(role) != 1 {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	userId, _ := strconv.ParseInt(user[0], 10, 64)
+	roleId, _ := strconv.ParseInt(role[0], 10, 64)
+	db.UpdateUserRole(userId, roleId)
+}
+
+func addAdminGroupHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/addgroup.html")
+	users, _ := db.ListUsers()
+	t.Execute(w, users)
+}
+
+func addAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/addproblem.html")
+	t.Execute(w, nil)
+}
+
+func addAdminAssignmentHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/addassignment.html")
+	t.Execute(w, nil)
+}
+
+func usersAdminHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/users.html")
+	users, _ := db.ListUsers()
+	t.Execute(w, users)
+}
+
+func assignmentsAdminHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/assignments.html")
+	assignments, _ := db.ListAssignments()
+	t.Execute(w, assignments)
+}
+
+func groupsAdminHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/groups.html")
+	t.Execute(w, db.ListGroups())
+}
+
+func problemsAdminHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/problems.html")
+	problems, _ := db.ListProblems()
+	t.Execute(w, problems)
+}
