@@ -143,7 +143,8 @@ func userProblemHtml(w http.ResponseWriter, r *http.Request) {
 func userGroupsHtml(w http.ResponseWriter, r *http.Request, user db.User) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../user/groups.html")
-	t.Execute(w, db.ListGroupsForUser(user.Id))
+	userGroups, _ := db.ListGroupsForUser(user.Id)
+	t.Execute(w, userGroups)
 }
 
 func joinGroupHtml(w http.ResponseWriter, r *http.Request) {

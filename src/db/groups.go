@@ -105,19 +105,19 @@ func CreateUserGroup(userId, groupId int64) (UserGroup, error) {
 
 	stmt, err := db.Prepare("INSERT INTO usergroups(userid, groupid) VALUES(?, ?)")
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return userGroup, err
 	}
 
 	res, err := stmt.Exec(userId, groupId)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return userGroup, err
 	}
 
 	lastId, err := res.LastInsertId()
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 		return userGroup, err
 	}
 
@@ -125,11 +125,12 @@ func CreateUserGroup(userId, groupId int64) (UserGroup, error) {
 	return userGroup, nil
 }
 
-func ListUserGroups() []UserGroup {
+func ListUserGroups() ([]UserGroup, error) {
 	db := getConnection()
 	rows, err := db.Query("select id, userid, groupid from usergroups")
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return []UserGroup{}, err
 	}
 	defer rows.Close()
 	userGroups := make([]UserGroup, 0)
@@ -137,23 +138,26 @@ func ListUserGroups() []UserGroup {
 		var userGroup UserGroup
 		err := rows.Scan(&userGroup.Id, &userGroup.UserId, &userGroup.GroupId)
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
+			return []UserGroup{}, err
 		}
 		userGroups = append(userGroups, userGroup)
 	}
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return []UserGroup{}, err
 	}
-	return userGroups
+	return userGroups, nil
 }
 
-func ListGroupsForUser(userId int64) []Group {
+func ListGroupsForUser(userId int64) ([]Group, error) {
 	db := getConnection()
 	rows, err := db.Query("select groups.id, groupname, description, creatorid from groups inner join usergroups on groups.id=usergroups.groupid and usergroups.userid=?", userId)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return []Group{}, err
 	}
 	defer rows.Close()
 	groups := make([]Group, 0)
@@ -161,15 +165,17 @@ func ListGroupsForUser(userId int64) []Group {
 		var group Group
 		err := rows.Scan(&group.Id, &group.GroupName, &group.Description, &group.CreatorId)
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
+			return []Group{}, err
 		}
 		groups = append(groups, group)
 	}
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return []Group{}, err
 	}
-	return groups
+	return groups, nil
 }
 
 /*
