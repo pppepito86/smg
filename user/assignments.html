@@ -85,19 +85,19 @@
 
             <ul id="menu" class="collapse">
   
-                <li class="panel">
+                <!--li class="panel">
                     <a href="index.html" >
                         <i class="icon-table"></i> Dashboard
                     </a>                   
-                </li>
+                </li-->
                 <li class="panel">
                     <a href="groups.html" >
-                        <i class="icon-table"></i>Groups
+                        <i class="icon-table"></i> Groups
                     </a>                   
                 </li>
                 <li class="panel">
                     <a href="assignments.html" >
-                        <i class="icon-table"></i>Assignments
+                        <i class="icon-table"></i> Assignments
                     </a>                   
                 </li>
             </ul>
@@ -135,17 +135,15 @@
                                 <table class="table table-striped table-bordered table-hover" id="dataTables-example">
                                     <thead>
                                         <tr>
-                                            <th>Id</th>
-                                            <th>Assignment name</th>
+                                            <th>Assignment</th>
                                             <th>Author</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {{range $index, $element := .}}
                                         <tr>
-                                            <td>{{$element.Id}}</td>
-                                            <td><a href="/competition.html?id={{$element.Id}}" >{{$element.AssignmentName}}</a></td>
-                                            <td class="center">{{$element.AuthorId}}</td>
+                                            <td><a href="/problems.html?id={{$element.Id}}" >{{$element.AssignmentName}}</a></td>
+                                            <td class="center">{{$element.Author}}</td>
                                         </tr>
                                         {{end}}
                                     </tbody>

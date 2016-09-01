@@ -4,6 +4,7 @@ import (
 	"db"
 	"net/http"
 	"strconv"
+	"strings"
 	"text/template"
 )
 
@@ -70,8 +71,11 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 	a, _ = db.CreateAssignment(a)
 	if p1[0] != "" {
-		p1Id, _ := strconv.ParseInt(p1[0], 10, 64)
-		db.AddProblemToAssignment(a.Id, p1Id, 1)
+		ppp := strings.Split(p1[0], ",")
+		for _, pp := range ppp {
+			p1Id, _ := strconv.ParseInt(pp, 10, 64)
+			db.AddProblemToAssignment(a.Id, p1Id, 1)
+		}
 	}
 	if p2[0] != "" {
 		p2Id, _ := strconv.ParseInt(p2[0], 10, 64)

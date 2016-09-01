@@ -85,11 +85,11 @@
 
             <ul id="menu" class="collapse">
   
-                <li class="panel">
+                <!--li class="panel">
                     <a href="competition.html?id={{.Id}}" >
                         <i class="icon-table"></i> Dashboard
                     </a>                   
-                </li>
+                </li-->
                 <li class="panel">
                     <a href="problems.html?id={{.Id}}" >
                         <i class="icon-list"></i> Problems
@@ -105,11 +105,11 @@
                         <i class="icon-code"></i> My Submissions
                     </a>                   
                 </li>
-                <li class="panel">
+                <!--li class="panel">
                     <a href="standings.html?id={{.Id}}" >
                         <i class="icon-table"></i> Standing
                     </a>                   
-                </li>
+                </li-->
             </ul>
 
         </div>
@@ -157,7 +157,15 @@
                                             <td>{{$element.Id}}</td>
                                             <td>{{$element.ProblemName}}</td>
                                             <td class="center">{{$element.Language}}</td>
-                                            <td class="center">{{$element.Verdict}}</td>
+                                            {{if eq $element.Verdict "Accepted"}}
+                                              <td class="center" style="background-color:#00ff00" >{{$element.Verdict}}</td>
+                                            {{else}}
+                                              {{if eq $element.Verdict "pending"}}
+                                                <td class="center" style="background-color:#ffffff" >{{$element.Verdict}}</td>
+                                              {{else}}
+                                                <td class="center" style="background-color:#ff0000" >{{$element.Verdict}}</td>
+                                              {{end}}
+                                              {{end}}
                                         </tr>
                                         {{end}}
                                     </tbody>

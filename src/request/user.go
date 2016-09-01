@@ -127,7 +127,29 @@ func userProblemsHtml(w http.ResponseWriter, r *http.Request, user db.User) {
 		return
 	}
 	aps, _ := db.ListAssignmentProblems(id)
-	response := Response{id, aps}
+	type data struct {
+		Problems []db.AssignmentProblem
+		Status   map[int64]string
+	}
+	d := data{
+		Problems: aps,
+		Status:   make(map[int64]string),
+	}
+	for _, ap := range aps {
+		submissions, _ := db.ListMySubmissionsForProblem(ap.Id)
+		if len(submissions) > 0 {
+			d.Status[ap.Id] = "#ff0000"
+			for _, s := range submissions {
+				if s.Verdict == "Accepted" {
+					d.Status[ap.Id] = "#00ff00"
+					break
+				}
+			}
+		} else {
+			d.Status[ap.Id] = "ffffff"
+		}
+	}
+	response := Response{id, d}
 	serveCompetitionHtml(w, r, db.User{}, "../user/problems.html", response)
 }
 

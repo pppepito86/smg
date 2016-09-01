@@ -96,6 +96,33 @@ func ListMySubmissions(userId, assignmentId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
+func ListMySubmissionsForProblem(apId int64) ([]Submission, error) {
+	db := getConnection()
+	rows, err := db.Query("select submissions.id, language, sourcefile, verdict from submissions"+
+		" where assignmentproblemid=?", apId)
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	defer rows.Close()
+	submissions := make([]Submission, 0)
+	for rows.Next() {
+		var s Submission
+		err := rows.Scan(&s.Id, &s.Language, &s.SourceFile, &s.Verdict)
+		if err != nil {
+			log.Print(err)
+			return []Submission{}, err
+		}
+		submissions = append(submissions, s)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	return submissions, nil
+}
+
 func UpdateVerdict(id int64, verdict string) error {
 	db := getConnection()
 
