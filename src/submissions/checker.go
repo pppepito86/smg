@@ -29,12 +29,12 @@ func testSubmission(s db.Submission) {
 	compiledFile, err := compile(s)
 	if err != nil {
 		fmt.Println("compilation error: " + err.Error())
-		db.UpdateVerdict(s.Id, "Compilation Failed")
+		db.UpdateVerdict(s.Id, "Compilation Failed", err.Error())
 		return
 	}
 
 	fmt.Println("compilation successful")
-	db.UpdateVerdict(s.Id, "Compiled")
+	db.UpdateVerdict(s.Id, "Compiled", "")
 
 	ap, _ := db.GetAssignmentProblem(s.ApId)
 	testsDir := filepath.Join("problems", strconv.FormatInt(ap.ProblemId, 10))
@@ -42,16 +42,16 @@ func testSubmission(s db.Submission) {
 	tests := len(files) / 2
 	correct := 0
 	for i := 1; i <= tests; i++ {
-		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i))
+		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i), "")
 		err := test(s, compiledFile, testsDir, i)
 		if err == nil {
 			correct++
 		}
 	}
 	if correct == tests && tests > 0 {
-		db.UpdateVerdict(s.Id, "Accepted")
+		db.UpdateVerdict(s.Id, "Accepted", "")
 	} else {
-		db.UpdateVerdict(s.Id, fmt.Sprintf("%d/%d", correct, tests))
+		db.UpdateVerdict(s.Id, fmt.Sprintf("%d/%d", correct, tests), "")
 	}
 }
 
@@ -70,8 +70,6 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) error {
 	}
 	defer in.Close()
 	io.Copy(inPipeTest, in)
-	//	inPipeTest.Write([]byte("5 7"))
-	//	inPipeTest.Write([]byte("\n"))
 	inPipeTest.Close()
 	cmd.Start()
 

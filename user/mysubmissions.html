@@ -15,16 +15,16 @@
         <![endif]-->
     <!-- GLOBAL STYLES -->
     <!-- GLOBAL STYLES -->
-    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.css" />
-    <link rel="stylesheet" href="assets/css/main.css" />
-    <link rel="stylesheet" href="assets/css/theme.css" />
-    <link rel="stylesheet" href="assets/css/MoneAdmin.css" />
-    <link rel="stylesheet" href="assets/plugins/Font-Awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/theme.css" />
+    <link rel="stylesheet" href="/assets/css/MoneAdmin.css" />
+    <link rel="stylesheet" href="/assets/plugins/Font-Awesome/css/font-awesome.css" />
     <!--END GLOBAL STYLES -->
 
     <!-- PAGE LEVEL STYLES -->
-    <link href="assets/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
-    <link rel="stylesheet" href="assets/plugins/social-buttons/social-buttons.css">
+    <link href="/assets/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/plugins/social-buttons/social-buttons.css">
     <!-- END PAGE LEVEL  STYLES -->
        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -51,7 +51,7 @@
                 <header class="navbar-header">
 
                     <a href="index.html" class="navbar-brand">
-                    <img src="assets/img/logo.png" alt="" /></a>
+                    <img src="/assets/img/logo.png" alt="" /></a>
                 </header>
                 <!-- END LOGO SECTION -->
                     <!--END ADMIN SETTINGS -->
@@ -66,7 +66,7 @@
        <div id="left">
             <div class="media user-media well-small">
                 <a class="user-link" href="#">
-                    <img class="media-object img-thumbnail user-img" alt="User Picture" src="assets/img/user.gif" />
+                    <img class="media-object img-thumbnail user-img" alt="User Picture" src="/assets/img/user.gif" />
                 </a>
                 <br />
                 <div class="media-body">
@@ -91,17 +91,17 @@
                     </a>                   
                 </li-->
                 <li class="panel">
-                    <a href="problems.html?id={{.Id}}" >
+                    <a href="/contest/{{.Id}}/problems" >
                         <i class="icon-list"></i> Problems
                     </a>                   
                 </li>
                 <li class="panel">
-                  <a href="submit.html?id={{.Id}}" >
+                  <a href="/contest/{{.Id}}/submit" >
                         <i class="icon-upload"></i> Submit Code
                     </a>                   
                 </li>
                 <li class="panel">
-                    <a href="mysubmissions.html?id={{.Id}}" >
+                    <a href="/contest/{{.Id}}/submissions" >
                         <i class="icon-code"></i> My Submissions
                     </a>                   
                 </li>
@@ -146,6 +146,7 @@
                                     <thead>
                                         <tr>
                                             <th>Id</th>
+                                            <th>Time</th>
                                             <th>Problem</th>
                                             <th>Language</th>
                                             <th>Verdict</th>
@@ -154,7 +155,8 @@
                                     <tbody>
                                         {{range $index, $element := .Data}}
                                         <tr>
-                                            <td>{{$element.Id}}</td>
+                                          <td><a href="/contest/{{$.Id}}/submission/{{$element.Id}}" >{{$element.Id}}</a></td>
+                                            <td>{{$element.Time}}</td>
                                             <td>{{$element.ProblemName}}</td>
                                             <td class="center">{{$element.Language}}</td>
                                             {{if eq $element.Verdict "Accepted"}}
@@ -195,13 +197,13 @@
     </div>
     <!--END FOOTER -->
      <!-- GLOBAL SCRIPTS -->
-    <script src="assets/plugins/jquery-2.0.3.min.js"></script>
-     <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <script src="/assets/plugins/jquery-2.0.3.min.js"></script>
+     <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     <!-- END GLOBAL SCRIPTS -->
         <!-- PAGE LEVEL SCRIPTS -->
-    <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
-    <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
+    <script src="/assets/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/assets/plugins/dataTables/dataTables.bootstrap.js"></script>
      <script>
          $(document).ready(function () {
              $('#dataTables-example').dataTable();

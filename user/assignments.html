@@ -136,6 +136,7 @@
                                     <thead>
                                         <tr>
                                             <th>Assignment</th>
+                                            <th>Group</th>
                                             <th>Author</th>
                                         </tr>
                                     </thead>
@@ -143,6 +144,7 @@
                                         {{range $index, $element := .}}
                                         <tr>
                                             <td><a href="/problems.html?id={{$element.Id}}" >{{$element.AssignmentName}}</a></td>
+                                            <td>{{$element.Group}}</td>
                                             <td class="center">{{$element.Author}}</td>
                                         </tr>
                                         {{end}}
