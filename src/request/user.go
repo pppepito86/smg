@@ -3,6 +3,7 @@ package request
 import (
 	"db"
 	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -156,7 +157,7 @@ func mySubmissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid 
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	mySubmission, _ := db.ListSubmission(id)
 	source, _ := ioutil.ReadFile(mySubmission.SourceFile)
-	mySubmission.Source = string(source)
+	mySubmission.Source = html.EscapeString(string(source))
 	response := Response{cid, mySubmission}
 	serveCompetitionHtml(w, r, user, "../user/mysubmission.html", response)
 }
