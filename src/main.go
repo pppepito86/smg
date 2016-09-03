@@ -31,8 +31,6 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	user := request.GetUser(*r)
-	fmt.Println("loggedin user: ", user)
-	//path := r.URL.Path
 	if user.RoleName == "admin" {
 		request.HandleAdmin(w, r, user)
 	} else if user.RoleName == "teacher" {

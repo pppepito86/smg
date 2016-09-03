@@ -92,7 +92,7 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) error {
 				return errors.New("WA")
 			}
 		}
-	case <-time.After(time.Second * 3):
+	case <-time.After(time.Second * 2):
 		{
 			cmd.Process.Kill()
 			return errors.New("TLE")

@@ -97,6 +97,34 @@ func ListAssignmentsForUser(user User) ([]Assignment, error) {
 	return assignments, nil
 }
 
+func ListUsersForAssignment(id int64) ([]User, error) {
+	db := getConnection()
+	rows, err := db.Query("select users.id, roleid, username, firstname, lastname, email from users"+
+		" inner join usergroups on usergroups.userid = users.id"+
+		" inner join assignments on assignments.groupid = usergroups.groupid and assignments.id=?", id)
+	if err != nil {
+		log.Print(err)
+		return []User{}, err
+	}
+	defer rows.Close()
+	users := make([]User, 0)
+	for rows.Next() {
+		var u User
+		err := rows.Scan(&u.Id, &u.RoleId, &u.UserName, &u.FirstName, &u.LastName, &u.Email)
+		if err != nil {
+			log.Print(err)
+			return []User{}, err
+		}
+		users = append(users, u)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []User{}, err
+	}
+	return users, nil
+}
+
 type AssignmentProblem struct {
 	Id           int64
 	AssignmentId int64

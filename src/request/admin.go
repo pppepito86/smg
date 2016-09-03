@@ -2,15 +2,51 @@ package request
 
 import (
 	"db"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"submissions"
 	"text/template"
+	"time"
 )
 
 func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 	path := r.URL.Path
-	if path == "/changeuserrole" && r.Method == "POST" {
+	if strings.HasPrefix(path, "/contest/") {
+		split := strings.Split(strings.TrimPrefix(path, "/contest/"), "/")
+		if len(split) < 2 {
+			assignmentsAdminHtml(w, r)
+			return
+		}
+		contestId, err := strconv.ParseInt(split[0], 10, 64)
+		if err != nil {
+			assignmentsAdminHtml(w, r)
+			return
+		}
+		page := split[1]
+		if page == "problems" {
+			adminProblemsHtml(w, r, user, contestId)
+		} else if page == "problem" {
+			adminProblemHtml(w, r, contestId, split[2:])
+		} else if page == "submit" {
+			submitAdminCodeHtml(w, r, contestId)
+		} else if page == "submissions" {
+			allSubmissionsHtml(w, r, user, contestId)
+		} else if page == "submission" {
+			submissionHtml(w, r, user, contestId, split[2:])
+		} else if page == "contestants" {
+			contestantsAdminHtml(w, r, contestId)
+		} else if page == "submitcode" {
+			submitCode(w, r, user)
+		} else {
+			fmt.Println("error", page)
+		}
+	} else if path == "/changeuserrole" && r.Method == "POST" {
 		changeUserRole(w, r)
 	} else if path == "/addgroup" && r.Method == "POST" {
 		addGroup(w, r, user)
@@ -32,6 +68,8 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		assignmentsAdminHtml(w, r)
 	} else if path == "/addassignment.html" {
 		addAdminAssignmentHtml(w, r)
+	} else {
+		assignmentsAdminHtml(w, r)
 	}
 }
 
@@ -127,6 +165,14 @@ func usersAdminHtml(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, users)
 }
 
+func contestantsAdminHtml(w http.ResponseWriter, r *http.Request, id int64) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/contest/contestants.html")
+	users, _ := db.ListUsersForAssignment(id)
+	response := Response{id, users}
+	t.Execute(w, response)
+}
+
 func assignmentsAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../admin/assignments.html")
@@ -145,4 +191,97 @@ func problemsAdminHtml(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../admin/problems.html")
 	problems, _ := db.ListProblems()
 	t.Execute(w, problems)
+}
+
+func allSubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
+	submissions, _ := db.ListSubmissionsForAssignment(cid)
+	response := Response{cid, submissions}
+	serveCompetitionHtml(w, r, user, "../admin/contest/submissions.html", response)
+}
+
+func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64, args []string) {
+	id, _ := strconv.ParseInt(args[0], 10, 64)
+	mySubmission, _ := db.ListSubmission(id)
+	source, _ := ioutil.ReadFile(mySubmission.SourceFile)
+	mySubmission.Source = string(source)
+	response := Response{cid, mySubmission}
+	serveCompetitionHtml(w, r, user, "../admin/contest/submission.html", response)
+}
+
+func adminProblemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
+	idStr := r.URL.Query().Get("id")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+	if cid == 0 {
+		cid = id
+	}
+	aps, _ := db.ListAssignmentProblems(cid)
+	type data struct {
+		Problems []db.AssignmentProblem
+		Status   map[int64]string
+	}
+	d := data{
+		Problems: aps,
+		Status:   make(map[int64]string),
+	}
+	for _, ap := range aps {
+		submissions, _ := db.ListMySubmissionsForProblem(ap.Id)
+		if len(submissions) > 0 {
+			d.Status[ap.Id] = "#ff0000"
+			for _, s := range submissions {
+				if s.Verdict == "Accepted" {
+					d.Status[ap.Id] = "#00ff00"
+					break
+				}
+			}
+		} else {
+			d.Status[ap.Id] = "ffffff"
+		}
+	}
+	response := Response{cid, d}
+	serveCompetitionHtml(w, r, db.User{}, "../admin/contest/problems.html", response)
+}
+
+func adminProblemHtml(w http.ResponseWriter, r *http.Request, cid int64, args []string) {
+	apId, _ := strconv.ParseInt(args[0], 10, 64)
+	ap, _ := db.GetAssignmentProblem(apId)
+	problem, _ := db.GetProblem(ap.ProblemId)
+	response := Response{cid, problem}
+	serveCompetitionHtml(w, r, db.User{}, "../admin/contest/problem.html", response)
+}
+
+func submitAdminCodeHtml(w http.ResponseWriter, r *http.Request, cid int64) {
+	aps, _ := db.ListAssignmentProblems(cid)
+	response := Response{cid, aps}
+	serveCompetitionHtml(w, r, db.User{}, "../admin/contest/submitcode.html", response)
+}
+
+func submitAdminCode(w http.ResponseWriter, r *http.Request, user db.User) {
+	r.ParseForm()
+	file, header, _ := r.FormFile("file")
+	language := r.Form["language"]
+	apIdStr := r.Form["apid"]
+	apId, _ := strconv.ParseInt(apIdStr[0], 10, 64)
+
+	t := time.Now().UTC()
+
+	fp := filepath.Join("workdir", "users", strconv.FormatInt(user.Id, 10), strconv.FormatInt(t.UnixNano(), 16), header.Filename)
+	os.MkdirAll(filepath.Dir(fp), 0755)
+	out, _ := os.Create(fp)
+	defer out.Close()
+	_, _ = io.Copy(out, file)
+
+	s := db.Submission{
+		Id:         -1,
+		ApId:       apId,
+		UserId:     user.Id,
+		Language:   language[0],
+		SourceFile: fp,
+		Verdict:    "pending",
+	}
+
+	s, _ = db.AddSubmission(s)
+	submissions.Push(s)
+	ap, _ := db.GetAssignmentProblem(apId)
+	cId := ap.AssignmentId
+	http.Redirect(w, r, "/contest/"+strconv.FormatInt(cId, 10)+"/submissions", http.StatusFound)
 }
