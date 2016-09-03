@@ -191,7 +191,7 @@ func userProblemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid 
 				}
 			}
 		} else {
-			d.Status[ap.Id] = "ffffff"
+			d.Status[ap.Id] = "#ffffff"
 		}
 	}
 	response := Response{cid, d}
