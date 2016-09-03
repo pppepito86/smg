@@ -99,7 +99,7 @@ func ListAssignmentsForUser(user User) ([]Assignment, error) {
 
 func ListUsersForAssignment(id int64) ([]User, error) {
 	db := getConnection()
-	rows, err := db.Query("select users.id, roleid, username, firstname, lastname, email from users"+
+	rows, err := db.Query("select users.id, users.roleid, username, firstname, lastname, email from users"+
 		" inner join usergroups on usergroups.userid = users.id"+
 		" inner join assignments on assignments.groupid = usergroups.groupid and assignments.id=?", id)
 	if err != nil {
