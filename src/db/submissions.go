@@ -7,17 +7,18 @@ import (
 )
 
 type Submission struct {
-	Id          int64
-	ApId        int64
-	UserId      int64
-	Language    string
-	SourceFile  string
-	Time        string
-	Verdict     string
-	Reason      string
-	ProblemName string
-	Source      string
-	User        string
+	Id                int64
+	ApId              int64
+	UserId            int64
+	Language          string
+	SourceFile        string
+	Time              string
+	Verdict           string
+	Reason            string
+	ProblemName       string
+	Source            string
+	User              string
+	SubmissionDetails []SubmissionDetail
 }
 
 func AddSubmission(s Submission) (Submission, error) {
@@ -197,4 +198,69 @@ func UpdateVerdict(id int64, verdict, reason string) error {
 	}
 
 	return nil
+}
+
+type SubmissionDetail struct {
+	Id           int64
+	SubmissionId int64
+	Step         string
+	Verdict      string
+	Reason       string
+}
+
+func AddSubmissionDetails(sid int64, step, verdict, reason string) (SubmissionDetail, error) {
+	db := getConnection()
+	sd := SubmissionDetail{
+		SubmissionId: sid,
+		Step:         step,
+		Verdict:      verdict,
+		Reason:       reason,
+	}
+
+	stmt, err := db.Prepare("INSERT INTO submissiondetails(submissionid, step, status, reason) VALUES(?, ?, ?, ?)")
+	if err != nil {
+		log.Print(err)
+		return sd, err
+	}
+
+	res, err := stmt.Exec(sd.SubmissionId, sd.Step, sd.Verdict, sd.Reason)
+	if err != nil {
+		log.Print(err)
+		return sd, err
+	}
+
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		log.Print(err)
+		return sd, err
+	}
+
+	sd.Id = lastId
+	return sd, nil
+}
+
+func ListSubmissionDetails(submissionid int64) ([]SubmissionDetail, error) {
+	db := getConnection()
+	rows, err := db.Query("select id, submissionid, step, status, reason from submissiondetails where submissionid = ? order by id asc", submissionid)
+	sds := make([]SubmissionDetail, 0)
+	if err != nil {
+		log.Print(err)
+		return sds, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var sd SubmissionDetail
+		err := rows.Scan(&sd.Id, &sd.SubmissionId, &sd.Step, &sd.Verdict, &sd.Reason)
+		if err != nil {
+			log.Print(err)
+			return sds, err
+		}
+		sds = append(sds, sd)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return sds, err
+	}
+	return sds, nil
 }

@@ -43,10 +43,11 @@ func testSubmission(s db.Submission) {
 	correct := 0
 	for i := 1; i <= tests; i++ {
 		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i), "")
-		err := test(s, compiledFile, testsDir, i)
-		if err == nil {
+		status, reason, _ := test(s, compiledFile, testsDir, i)
+		if status == "ok" {
 			correct++
 		}
+		db.AddSubmissionDetails(s.Id, "Test #"+strconv.Itoa(i), status, reason)
 	}
 	if correct == tests && tests > 0 {
 		db.UpdateVerdict(s.Id, "Accepted", "")
@@ -55,13 +56,14 @@ func testSubmission(s db.Submission) {
 	}
 }
 
-func test(s db.Submission, compiledFile, testsDir string, testCase int) error {
+func test(s db.Submission, compiledFile, testsDir string, testCase int) (string, string, error) {
 	cmd := exec.Command("./test")
+	//step := "Test #" + strconv.Itoa(testCase)
 	if s.Language == "java" {
-		//cmd = exec.Command("java", filepath.Base(compiledFile))
-		pwd, _ := os.Getwd()
-		dir := filepath.Join(pwd, filepath.Dir(compiledFile))
-		cmd = exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "128M", "pppepito86/judgebox", "java", filepath.Base(compiledFile))
+		cmd = exec.Command("java", filepath.Base(compiledFile))
+		//pwd, _ := os.Getwd()
+		//dir := filepath.Join(pwd, filepath.Dir(compiledFile))
+		//cmd = exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "128M", "pppepito86/judgebox", "java", filepath.Base(compiledFile))
 	}
 	cmd.Dir = filepath.Dir(compiledFile)
 	inPipeTest, _ := cmd.StdinPipe()
@@ -70,7 +72,7 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) error {
 	fmt.Println("testsDir", testsDir)
 	in, err := os.Open(filepath.Join(testsDir, fmt.Sprintf("input%d", testCase)))
 	if err != nil {
-		return err
+		return "system error", "cannot read input", err
 	}
 	go func() {
 		defer in.Close()
@@ -79,34 +81,42 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) error {
 	}()
 
 	cmd.Start()
-	ch := make(chan []byte, 1)
+	chError := make(chan error, 2)
+	chOutput := make(chan []byte, 2)
 
 	go func() {
 		out, _ := ioutil.ReadAll(outPipeTest)
-		er, _ := ioutil.ReadAll(errPipeTest)
+		errOut, _ := ioutil.ReadAll(errPipeTest)
 		err = cmd.Wait()
 		if err != nil {
 			fmt.Println("*****Error", err.Error())
-			fmt.Println("e", string(er))
+			fmt.Println("e", string(errOut))
 		}
-		ch <- out
+		chError <- err
+		chOutput <- out
+		chOutput <- errOut
 	}()
 	select {
-	case res := <-ch:
+	case err = <-chError:
 		{
+			res := <-chOutput
+			errOut := <-chOutput
 			fmt.Println("***" + string(res) + "***")
+			if err != nil {
+				return "runtime error", err.Error() + " - " + string(errOut), nil
+			}
 			realOut, _ := ioutil.ReadFile(filepath.Join(testsDir, fmt.Sprintf("output%d", testCase)))
 			fmt.Println("***" + string(realOut) + "***")
 			if bytes.Equal(res, realOut) {
-				return nil
+				return "ok", "", nil
 			} else {
-				return errors.New("WA")
+				return "wrong answer", "", nil
 			}
 		}
 	case <-time.After(time.Second * 5):
 		{
 			cmd.Process.Kill()
-			return errors.New("TLE")
+			return "time limit exceeded", "", nil
 		}
 	}
 }

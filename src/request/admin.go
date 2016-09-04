@@ -205,6 +205,8 @@ func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	mySubmission, _ := db.ListSubmission(id)
 	source, _ := ioutil.ReadFile(mySubmission.SourceFile)
 	mySubmission.Source = html.EscapeString(string(source))
+	details, _ := db.ListSubmissionDetails(id)
+	mySubmission.SubmissionDetails = details
 	response := Response{cid, mySubmission}
 	serveCompetitionHtml(w, r, user, "../admin/contest/submission.html", response)
 }
