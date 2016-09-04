@@ -58,26 +58,37 @@ func testSubmission(s db.Submission) {
 func test(s db.Submission, compiledFile, testsDir string, testCase int) error {
 	cmd := exec.Command("./test")
 	if s.Language == "java" {
-		cmd = exec.Command("java", filepath.Base(compiledFile))
+		//cmd = exec.Command("java", filepath.Base(compiledFile))
+		pwd, _ := os.Getwd()
+		dir := filepath.Join(pwd, filepath.Dir(compiledFile))
+		cmd = exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "128M", "pppepito86/judgebox", "java", filepath.Base(compiledFile))
 	}
 	cmd.Dir = filepath.Dir(compiledFile)
 	inPipeTest, _ := cmd.StdinPipe()
 	outPipeTest, _ := cmd.StdoutPipe()
+	errPipeTest, _ := cmd.StderrPipe()
 	fmt.Println("testsDir", testsDir)
 	in, err := os.Open(filepath.Join(testsDir, fmt.Sprintf("input%d", testCase)))
 	if err != nil {
 		return err
 	}
-	defer in.Close()
-	io.Copy(inPipeTest, in)
-	inPipeTest.Close()
-	cmd.Start()
+	go func() {
+		defer in.Close()
+		io.Copy(inPipeTest, in)
+		inPipeTest.Close()
+	}()
 
+	cmd.Start()
 	ch := make(chan []byte, 1)
 
 	go func() {
 		out, _ := ioutil.ReadAll(outPipeTest)
-		cmd.Wait()
+		er, _ := ioutil.ReadAll(errPipeTest)
+		err = cmd.Wait()
+		if err != nil {
+			fmt.Println("*****Error", err.Error())
+			fmt.Println("e", string(er))
+		}
 		ch <- out
 	}()
 	select {
@@ -92,7 +103,7 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) error {
 				return errors.New("WA")
 			}
 		}
-	case <-time.After(time.Second * 2):
+	case <-time.After(time.Second * 5):
 		{
 			cmd.Process.Kill()
 			return errors.New("TLE")

@@ -52,6 +52,7 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	os.MkdirAll(filepath.Join("problems", strconv.FormatInt(p.Id, 10)), 0755)
 	test = strings.Replace(test, "\r", "", -1)
 	if len(test) > 0 {
+		fmt.Println("using text field")
 		tests := strings.Split(test, "###")
 		for i, t := range tests {
 			if len(t) > 0 && t[0] == 13 {
@@ -77,16 +78,28 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 			ioutil.WriteFile(fileout, []byte(testout), 0755)
 		}
 	} else {
+		fmt.Println("using file")
 		fp := filepath.Join("problems", strconv.FormatInt(p.Id, 10), header.Filename)
-		os.MkdirAll(filepath.Dir(fp), 0755)
+		fmt.Println("file is", file)
+		//os.MkdirAll(filepath.Dir(fp), 0755)
 		out, _ := os.Create(fp)
 		defer out.Close()
-		_, _ = io.Copy(out, file)
+		_, err := io.Copy(out, file)
+		if err != nil {
+			fmt.Println("error copying", err)
+		}
 
-		_ = exec.Command("chmod", "777", fp).Run()
+		err = exec.Command("chmod", "777", fp).Run()
+		if err != nil {
+			fmt.Println("error chmod", err)
+		}
 
 		unzip := exec.Command("unzip", fp, "-d", filepath.Dir(fp))
-		_ = unzip.Run()
+		err = unzip.Run()
+		if err != nil {
+			fmt.Println("error unzip", err)
+		}
+
 	}
 
 	http.Redirect(w, r, "/problems.html", http.StatusFound)

@@ -156,6 +156,9 @@ func mySubmissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid 
 	}
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	mySubmission, _ := db.ListSubmission(id)
+	if mySubmission.UserId != user.Id {
+		return
+	}
 	source, _ := ioutil.ReadFile(mySubmission.SourceFile)
 	mySubmission.Source = html.EscapeString(string(source))
 	response := Response{cid, mySubmission}
