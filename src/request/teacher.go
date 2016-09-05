@@ -22,7 +22,7 @@ func HandleTeacher(w http.ResponseWriter, r *http.Request, user db.User) {
 		if path == "/addproblem.html" {
 			addProblemHtml(w, r)
 		} else {
-			problemsHtml(w, r)
+			//problemsHtml(w, r)
 		}
 	}
 }
@@ -109,11 +109,4 @@ func addProblemHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../teacher/addproblem.html")
 	t.Execute(w, nil)
-}
-
-func problemsHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../teacher/problems.html")
-	problems, _ := db.ListProblems()
-	t.Execute(w, problems)
 }

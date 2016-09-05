@@ -43,11 +43,11 @@ func testSubmission(s db.Submission) {
 	correct := 0
 	for i := 1; i <= tests; i++ {
 		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i), "")
-		status, reason, _ := test(s, compiledFile, testsDir, i)
+		status, reason, time, _ := test(s, compiledFile, testsDir, i)
 		if status == "ok" {
 			correct++
 		}
-		db.AddSubmissionDetails(s.Id, "Test #"+strconv.Itoa(i), status, reason)
+		db.AddSubmissionDetails(s.Id, "Test #"+strconv.Itoa(i), status, reason, time)
 	}
 	if correct == tests && tests > 0 {
 		db.UpdateVerdict(s.Id, "Accepted", "")
@@ -56,7 +56,7 @@ func testSubmission(s db.Submission) {
 	}
 }
 
-func test(s db.Submission, compiledFile, testsDir string, testCase int) (string, string, error) {
+func test(s db.Submission, compiledFile, testsDir string, testCase int) (string, string, int64, error) {
 	cmd := exec.Command("./test")
 	//step := "Test #" + strconv.Itoa(testCase)
 	if s.Language == "java" {
@@ -72,7 +72,7 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 	fmt.Println("testsDir", testsDir)
 	in, err := os.Open(filepath.Join(testsDir, fmt.Sprintf("input%d", testCase)))
 	if err != nil {
-		return "system error", "cannot read input", err
+		return "system error", "cannot read input", 0, err
 	}
 	go func() {
 		defer in.Close()
@@ -81,13 +81,16 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 	}()
 
 	cmd.Start()
-	chError := make(chan error, 2)
+	startTime := time.Now()
+	chError := make(chan error, 1)
 	chOutput := make(chan []byte, 2)
+	chTime := make(chan int64, 1)
 
 	go func() {
 		out, _ := ioutil.ReadAll(outPipeTest)
 		errOut, _ := ioutil.ReadAll(errPipeTest)
 		err = cmd.Wait()
+		chTime <- time.Since(startTime).Nanoseconds() / 1e6
 		if err != nil {
 			fmt.Println("*****Error", err.Error())
 			fmt.Println("e", string(errOut))
@@ -100,23 +103,29 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 	case err = <-chError:
 		{
 			res := <-chOutput
+			durationTime := <-chTime
 			errOut := <-chOutput
-			fmt.Println("***" + string(res) + "***")
+			if len(res) < 1000 {
+				fmt.Println("***" + string(res) + "***")
+			}
 			if err != nil {
-				return "runtime error", err.Error() + " - " + string(errOut), nil
+				return "runtime error", err.Error() + " - " + string(errOut), durationTime, nil
 			}
 			realOut, _ := ioutil.ReadFile(filepath.Join(testsDir, fmt.Sprintf("output%d", testCase)))
-			fmt.Println("***" + string(realOut) + "***")
+			if len(res) < 1000 {
+				fmt.Println("***" + string(realOut) + "***")
+			}
 			if bytes.Equal(res, realOut) {
-				return "ok", "", nil
+				return "ok", "", durationTime, nil
 			} else {
-				return "wrong answer", "", nil
+				return "wrong answer", "", durationTime, nil
 			}
 		}
 	case <-time.After(time.Second * 5):
 		{
 			cmd.Process.Kill()
-			return "time limit exceeded", "", nil
+			durationTime := time.Since(startTime).Nanoseconds() / 1e6
+			return "time limit exceeded", "", durationTime, nil
 		}
 	}
 }

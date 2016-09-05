@@ -31,7 +31,7 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		}
 		page := split[1]
 		if page == "problems" {
-			adminProblemsHtml(w, r, user, contestId)
+			problemsHtml(w, r, user, contestId)
 		} else if page == "problem" {
 			adminProblemHtml(w, r, contestId, split[2:])
 		} else if page == "submit" {
@@ -43,7 +43,7 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		} else if page == "contestants" {
 			contestantsAdminHtml(w, r, contestId)
 		} else if page == "submitcode" {
-			submitCode(w, r, user)
+			submitCode(w, r, user, contestId)
 		} else {
 			fmt.Println("error", page)
 		}
@@ -209,39 +209,6 @@ func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	mySubmission.SubmissionDetails = details
 	response := Response{cid, mySubmission}
 	serveCompetitionHtml(w, r, user, "../admin/contest/submission.html", response)
-}
-
-func adminProblemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
-	idStr := r.URL.Query().Get("id")
-	id, _ := strconv.ParseInt(idStr, 10, 64)
-	if cid == 0 {
-		cid = id
-	}
-	aps, _ := db.ListAssignmentProblems(cid)
-	type data struct {
-		Problems []db.AssignmentProblem
-		Status   map[int64]string
-	}
-	d := data{
-		Problems: aps,
-		Status:   make(map[int64]string),
-	}
-	for _, ap := range aps {
-		submissions, _ := db.ListMySubmissionsForProblem(ap.Id)
-		if len(submissions) > 0 {
-			d.Status[ap.Id] = "#ff0000"
-			for _, s := range submissions {
-				if s.Verdict == "Accepted" {
-					d.Status[ap.Id] = "#00ff00"
-					break
-				}
-			}
-		} else {
-			d.Status[ap.Id] = "ffffff"
-		}
-	}
-	response := Response{cid, d}
-	serveCompetitionHtml(w, r, db.User{}, "../admin/contest/problems.html", response)
 }
 
 func adminProblemHtml(w http.ResponseWriter, r *http.Request, cid int64, args []string) {

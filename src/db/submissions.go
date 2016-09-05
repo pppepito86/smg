@@ -155,10 +155,10 @@ func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
-func ListMySubmissionsForProblem(apId int64) ([]Submission, error) {
+func ListMySubmissionsForProblem(userId, apId int64) ([]Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, language, sourcefile, verdict from submissions"+
-		" where assignmentproblemid=?", apId)
+		" where userid=? and assignmentproblemid=?", userId, apId)
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -206,24 +206,26 @@ type SubmissionDetail struct {
 	Step         string
 	Verdict      string
 	Reason       string
+	Time         int64
 }
 
-func AddSubmissionDetails(sid int64, step, verdict, reason string) (SubmissionDetail, error) {
+func AddSubmissionDetails(sid int64, step, verdict, reason string, time int64) (SubmissionDetail, error) {
 	db := getConnection()
 	sd := SubmissionDetail{
 		SubmissionId: sid,
 		Step:         step,
 		Verdict:      verdict,
 		Reason:       reason,
+		Time:         time,
 	}
 
-	stmt, err := db.Prepare("INSERT INTO submissiondetails(submissionid, step, status, reason) VALUES(?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO submissiondetails(submissionid, step, status, reason, time) VALUES(?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return sd, err
 	}
 
-	res, err := stmt.Exec(sd.SubmissionId, sd.Step, sd.Verdict, sd.Reason)
+	res, err := stmt.Exec(sd.SubmissionId, sd.Step, sd.Verdict, sd.Reason, sd.Time)
 	if err != nil {
 		log.Print(err)
 		return sd, err
@@ -241,7 +243,7 @@ func AddSubmissionDetails(sid int64, step, verdict, reason string) (SubmissionDe
 
 func ListSubmissionDetails(submissionid int64) ([]SubmissionDetail, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, submissionid, step, status, reason from submissiondetails where submissionid = ? order by id asc", submissionid)
+	rows, err := db.Query("select id, submissionid, step, status, reason, time from submissiondetails where submissionid = ? order by id asc", submissionid)
 	sds := make([]SubmissionDetail, 0)
 	if err != nil {
 		log.Print(err)
@@ -250,7 +252,7 @@ func ListSubmissionDetails(submissionid int64) ([]SubmissionDetail, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var sd SubmissionDetail
-		err := rows.Scan(&sd.Id, &sd.SubmissionId, &sd.Step, &sd.Verdict, &sd.Reason)
+		err := rows.Scan(&sd.Id, &sd.SubmissionId, &sd.Step, &sd.Verdict, &sd.Reason, &sd.Time)
 		if err != nil {
 			log.Print(err)
 			return sds, err
