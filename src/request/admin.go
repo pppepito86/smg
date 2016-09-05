@@ -3,17 +3,10 @@ package request
 import (
 	"db"
 	"fmt"
-	"html"
-	"io"
-	"io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
-	"submissions"
 	"text/template"
-	"time"
 )
 
 func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
@@ -33,9 +26,11 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		if page == "problems" {
 			problemsHtml(w, r, user, contestId)
 		} else if page == "problem" {
-			adminProblemHtml(w, r, contestId, split[2:])
+			problemHtml(w, r, contestId, split[2:])
 		} else if page == "submit" {
-			submitAdminCodeHtml(w, r, contestId)
+			submitCodeHtml(w, r, user, contestId)
+		} else if page == "mysubmissions" {
+			mySubmissionsHtml(w, r, user, contestId)
 		} else if page == "submissions" {
 			allSubmissionsHtml(w, r, user, contestId)
 		} else if page == "submission" {
@@ -197,61 +192,5 @@ func problemsAdminHtml(w http.ResponseWriter, r *http.Request) {
 func allSubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	submissions, _ := db.ListSubmissionsForAssignment(cid)
 	response := Response{cid, submissions}
-	serveCompetitionHtml(w, r, user, "../admin/contest/submissions.html", response)
-}
-
-func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64, args []string) {
-	id, _ := strconv.ParseInt(args[0], 10, 64)
-	mySubmission, _ := db.ListSubmission(id)
-	source, _ := ioutil.ReadFile(mySubmission.SourceFile)
-	mySubmission.Source = html.EscapeString(string(source))
-	details, _ := db.ListSubmissionDetails(id)
-	mySubmission.SubmissionDetails = details
-	response := Response{cid, mySubmission}
-	serveCompetitionHtml(w, r, user, "../admin/contest/submission.html", response)
-}
-
-func adminProblemHtml(w http.ResponseWriter, r *http.Request, cid int64, args []string) {
-	apId, _ := strconv.ParseInt(args[0], 10, 64)
-	ap, _ := db.GetAssignmentProblem(apId)
-	problem, _ := db.GetProblem(ap.ProblemId)
-	response := Response{cid, problem}
-	serveCompetitionHtml(w, r, db.User{}, "../admin/contest/problem.html", response)
-}
-
-func submitAdminCodeHtml(w http.ResponseWriter, r *http.Request, cid int64) {
-	aps, _ := db.ListAssignmentProblems(cid)
-	response := Response{cid, aps}
-	serveCompetitionHtml(w, r, db.User{}, "../admin/contest/submitcode.html", response)
-}
-
-func submitAdminCode(w http.ResponseWriter, r *http.Request, user db.User) {
-	r.ParseForm()
-	file, header, _ := r.FormFile("file")
-	language := r.Form["language"]
-	apIdStr := r.Form["apid"]
-	apId, _ := strconv.ParseInt(apIdStr[0], 10, 64)
-
-	t := time.Now().UTC()
-
-	fp := filepath.Join("workdir", "users", strconv.FormatInt(user.Id, 10), strconv.FormatInt(t.UnixNano(), 16), header.Filename)
-	os.MkdirAll(filepath.Dir(fp), 0755)
-	out, _ := os.Create(fp)
-	defer out.Close()
-	_, _ = io.Copy(out, file)
-
-	s := db.Submission{
-		Id:         -1,
-		ApId:       apId,
-		UserId:     user.Id,
-		Language:   language[0],
-		SourceFile: fp,
-		Verdict:    "pending",
-	}
-
-	s, _ = db.AddSubmission(s)
-	submissions.Push(s)
-	ap, _ := db.GetAssignmentProblem(apId)
-	cId := ap.AssignmentId
-	http.Redirect(w, r, "/contest/"+strconv.FormatInt(cId, 10)+"/submissions", http.StatusFound)
+	serveContestHtml(w, r, user, "submissions.html", response)
 }

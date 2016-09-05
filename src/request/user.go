@@ -3,8 +3,6 @@ package request
 import (
 	"db"
 	"fmt"
-	"html"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -29,13 +27,13 @@ func HandleUser(w http.ResponseWriter, r *http.Request, user db.User) {
 		if page == "problems" {
 			problemsHtml(w, r, user, contestId)
 		} else if page == "problem" {
-			userProblemHtml(w, r, contestId, split[2:])
+			problemHtml(w, r, contestId, split[2:])
 		} else if page == "submit" {
-			submitCodeHtml(w, r, contestId)
+			submitCodeHtml(w, r, user, contestId)
 		} else if page == "submissions" {
 			mySubmissionsHtml(w, r, user, contestId)
 		} else if page == "submission" {
-			mySubmissionHtml(w, r, user, contestId, split[2:])
+			submissionHtml(w, r, user, contestId, split[2:])
 		} else if page == "submitcode" {
 			submitCode(w, r, user, contestId)
 		} else {
@@ -77,45 +75,6 @@ func competitionHtml(w http.ResponseWriter, r *http.Request) {
 	response := Response{Id: id}
 	t, _ := template.ParseFiles("../user/competition.html")
 	t.Execute(w, response)
-}
-
-func submitCodeHtml(w http.ResponseWriter, r *http.Request, cid int64) {
-	aps, _ := db.ListAssignmentProblems(cid)
-	response := Response{cid, aps}
-	serveContestHtml(w, r, db.User{}, "../user/submitcode.html", response)
-}
-
-func serveCompetitionHtml(w http.ResponseWriter, r *http.Request, user db.User, html string, response Response) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles(html)
-	t.Execute(w, response)
-}
-
-func mySubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
-	mySubmissions, _ := db.ListMySubmissions(user.Id, cid)
-	response := Response{cid, mySubmissions}
-	serveCompetitionHtml(w, r, user, "../user/mysubmissions.html", response)
-}
-
-func mySubmissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64, args []string) {
-	fmt.Println("***", args[0])
-	id, _ := strconv.ParseInt(args[0], 10, 64)
-	mySubmission, _ := db.ListSubmission(id)
-	if mySubmission.UserId != user.Id {
-		return
-	}
-	source, _ := ioutil.ReadFile(mySubmission.SourceFile)
-	mySubmission.Source = html.EscapeString(string(source))
-	response := Response{cid, mySubmission}
-	serveCompetitionHtml(w, r, user, "../user/mysubmission.html", response)
-}
-
-func userProblemHtml(w http.ResponseWriter, r *http.Request, cid int64, args []string) {
-	apId, _ := strconv.ParseInt(args[0], 10, 64)
-	ap, _ := db.GetAssignmentProblem(apId)
-	problem, _ := db.GetProblem(ap.ProblemId)
-	response := Response{cid, problem}
-	serveCompetitionHtml(w, r, db.User{}, "../user/problem.html", response)
 }
 
 func userGroupsHtml(w http.ResponseWriter, r *http.Request, user db.User) {

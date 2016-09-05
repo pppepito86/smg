@@ -2,8 +2,9 @@ package request
 
 import (
 	"db"
-	"fmt"
+	"html"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -49,6 +50,39 @@ func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int6
 	serveContestHtml(w, r, user, "problems.html", response)
 }
 
+func mySubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
+	if !isUserAssignedToContest(user, cid) {
+		return
+	}
+	mySubmissions, _ := db.ListMySubmissions(user.Id, cid)
+	response := Response{cid, mySubmissions}
+	serveContestHtml(w, r, user, "submissions.html", response)
+}
+
+func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64, args []string) {
+	id, _ := strconv.ParseInt(args[0], 10, 64)
+	submission, _ := db.ListSubmission(id)
+	if user.RoleName != "admin" && submission.UserId != user.Id {
+		return
+	}
+
+	source, _ := ioutil.ReadFile(submission.SourceFile)
+	submission.Source = html.EscapeString(string(source))
+	details, _ := db.ListSubmissionDetails(id)
+	submission.SubmissionDetails = details
+	response := Response{cid, submission}
+	serveContestHtml(w, r, user, "submission.html", response)
+}
+
+func submitCodeHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
+	if !isUserAssignedToContest(user, cid) {
+		return
+	}
+	aps, _ := db.ListAssignmentProblems(cid)
+	response := Response{cid, aps}
+	serveContestHtml(w, r, db.User{}, "submitcode.html", response)
+}
+
 func serveContestHtml(w http.ResponseWriter, r *http.Request, user db.User, html string, response Response) {
 	w.Header().Set("Content-Type", "text/html")
 	if user.RoleName == "admin" {
@@ -60,12 +94,12 @@ func serveContestHtml(w http.ResponseWriter, r *http.Request, user db.User, html
 	t.Execute(w, response)
 }
 
-func isUserAssignedToContest(user db.User, id int64) bool {
-	if user.RoleName == "admin" {
-		return true
-	}
-	ok, _ := db.IsUserAssignedToCompetition(user.Id, id)
-	return ok
+func problemHtml(w http.ResponseWriter, r *http.Request, cid int64, args []string) {
+	apId, _ := strconv.ParseInt(args[0], 10, 64)
+	ap, _ := db.GetAssignmentProblem(apId)
+	problem, _ := db.GetProblem(ap.ProblemId)
+	response := Response{cid, problem}
+	serveContestHtml(w, r, db.User{}, "problem.html", response)
 }
 
 func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
@@ -78,7 +112,6 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 	apIdStr := r.Form["apid"]
 	apId, _ := strconv.ParseInt(apIdStr[0], 10, 64)
 	ap, _ := db.GetAssignmentProblem(apId)
-	fmt.Println("cid", cid, "apid", apId, "apcid", ap.AssignmentId)
 	if ap.AssignmentId != cid {
 		return
 	}
@@ -103,4 +136,12 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 	s, _ = db.AddSubmission(s)
 	submissions.Push(s)
 	http.Redirect(w, r, "/contest/"+strconv.FormatInt(cid, 10)+"/submission/"+strconv.FormatInt(s.Id, 10), http.StatusFound)
+}
+
+func isUserAssignedToContest(user db.User, id int64) bool {
+	if user.RoleName == "admin" {
+		return true
+	}
+	ok, _ := db.IsUserAssignedToCompetition(user.Id, id)
+	return ok
 }
