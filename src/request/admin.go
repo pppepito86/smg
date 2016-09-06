@@ -37,6 +37,8 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 			submissionHtml(w, r, user, contestId, split[2:])
 		} else if page == "contestants" {
 			contestantsAdminHtml(w, r, contestId)
+		} else if page == "standings" {
+			standingsHtml(w, r, user, contestId)
 		} else if page == "submitcode" {
 			submitCode(w, r, user, contestId)
 		} else {

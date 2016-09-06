@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"submissions"
 	"text/template"
 	"time"
@@ -81,6 +82,62 @@ func submitCodeHtml(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	aps, _ := db.ListAssignmentProblems(cid)
 	response := Response{cid, aps}
 	serveContestHtml(w, r, db.User{}, "submitcode.html", response)
+}
+
+func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
+	if user.RoleName != "admin" {
+		return
+	}
+
+	problems, _ := db.ListAssignmentProblems(cid)
+	users, _ := db.ListUsersForAssignment(cid)
+	submissions, _ := db.ListSubmissionsForAssignment(cid)
+	type UserInfo struct {
+		UserName string
+		Points   []int
+	}
+	type Result struct {
+		Problems []string
+		Info     []UserInfo
+	}
+	result := Result{}
+	problemsMap := make(map[int64]int)
+	for idx, problem := range problems {
+		problemsMap[problem.Id] = idx
+		result.Problems = append(result.Problems, problem.ProblemName)
+	}
+	usersMap := make(map[int64]int)
+	info := []UserInfo{}
+	for idx, user := range users {
+		usersMap[user.Id] = idx
+		userInfo := UserInfo{user.UserName, make([]int, len(problems)+1)}
+		info = append(info, userInfo)
+	}
+	for _, submission := range submissions {
+		points := 0
+		if submission.Verdict == "Accepted" {
+			points = 100
+		}
+		split := strings.Split(submission.Verdict, "/")
+		if len(split) == 2 {
+			p, _ := strconv.Atoi(split[0])
+			q, _ := strconv.Atoi(split[1])
+			points = p * 100 / q
+		}
+		uId, err := usersMap[submission.UserId]
+		if !err {
+			continue
+		}
+		pId := problemsMap[submission.ApId]
+		if info[uId].Points[pId] < points {
+			diff := points - info[uId].Points[pId]
+			info[uId].Points[pId] = points
+			info[uId].Points[len(problems)] += diff
+		}
+	}
+	result.Info = info
+	response := Response{cid, result}
+	serveContestHtml(w, r, user, "standings.html", response)
 }
 
 func serveContestHtml(w http.ResponseWriter, r *http.Request, user db.User, html string, response Response) {
