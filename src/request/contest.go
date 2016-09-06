@@ -124,12 +124,12 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 			q, _ := strconv.Atoi(split[1])
 			points = p * 100 / q
 		}
-		uId, err := usersMap[submission.UserId]
-		if !err {
+		uId, ok := usersMap[submission.UserId]
+		if !ok {
 			continue
 		}
 		pId := problemsMap[submission.ApId]
-		if info[uId].Points[pId] < points {
+		if points > info[uId].Points[pId] {
 			diff := points - info[uId].Points[pId]
 			info[uId].Points[pId] = points
 			info[uId].Points[len(problems)] += diff
