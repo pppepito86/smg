@@ -13,6 +13,7 @@ type Assignment struct {
 	GroupId        int64
 	Author         string
 	Group          string
+	Problems       string
 }
 
 func CreateAssignment(a Assignment) (Assignment, error) {
@@ -37,6 +38,27 @@ func CreateAssignment(a Assignment) (Assignment, error) {
 	}
 
 	a.Id = lastId
+	return a, nil
+}
+
+func ListAssignment(aid int64) (Assignment, error) {
+	db := getConnection()
+	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname from assignments"+
+		" inner join users on assignments.id=? and assignments.author = users.id"+
+		" inner join groups on assignments.groupid = groups.id", aid)
+	a := Assignment{}
+	if err != nil {
+		log.Print(err)
+		return a, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group)
+		if err != nil {
+			log.Print(err)
+			return a, err
+		}
+	}
 	return a, nil
 }
 
@@ -95,6 +117,24 @@ func ListAssignmentsForUser(user User) ([]Assignment, error) {
 		return []Assignment{}, err
 	}
 	return assignments, nil
+}
+
+func UpdateAssignment(a Assignment) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("update assignments set name=?,groupid=? where id=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(a.AssignmentName, a.GroupId, a.Id)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
 }
 
 func ListUsersForAssignment(id int64) ([]User, error) {
@@ -162,7 +202,7 @@ func AddProblemToAssignment(aId, pId, number int64) (AssignmentProblem, error) {
 func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 	db := getConnection()
 	rows, err := db.Query("select assignmentproblems.id, assignmentid, problemid, problems.name from assignmentproblems"+
-		" inner join problems on assignmentproblems.assignmentid=? and assignmentproblems.problemid=problems.id", assignmentid)
+		" inner join problems on assignmentproblems.assignmentid=? and assignmentproblems.problemid=problems.id order by problemid", assignmentid)
 	if err != nil {
 		log.Print(err)
 		return []AssignmentProblem{}, err
@@ -203,6 +243,42 @@ func GetAssignmentProblem(apId int64) (AssignmentProblem, error) {
 		}
 	}
 	return ap, nil
+}
+
+func UpdateAssignmentProblem(apId, problemId int64) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("update assignmentproblems set problemid=? where id=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(problemId, apId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
+}
+
+func DeleteAssignmentProblem(apId int64) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("delete from assignmentproblems where id=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(apId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
 }
 
 func IsUserAssignedToCompetition(userId, cId int64) (bool, error) {

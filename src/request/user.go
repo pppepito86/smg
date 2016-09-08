@@ -27,7 +27,7 @@ func HandleUser(w http.ResponseWriter, r *http.Request, user db.User) {
 		if page == "problems" {
 			problemsHtml(w, r, user, contestId)
 		} else if page == "problem" {
-			problemHtml(w, r, contestId, split[2:])
+			problemHtml(w, r, user, contestId, split[2:])
 		} else if page == "submit" {
 			submitCodeHtml(w, r, user, contestId)
 		} else if page == "submissions" {

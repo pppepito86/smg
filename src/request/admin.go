@@ -26,7 +26,7 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		if page == "problems" {
 			problemsHtml(w, r, user, contestId)
 		} else if page == "problem" {
-			problemHtml(w, r, contestId, split[2:])
+			problemHtml(w, r, user, contestId, split[2:])
 		} else if page == "submit" {
 			submitCodeHtml(w, r, user, contestId)
 		} else if page == "mysubmissions" {
@@ -41,6 +41,10 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 			standingsHtml(w, r, user, contestId)
 		} else if page == "submitcode" {
 			submitCode(w, r, user, contestId)
+		} else if page == "edit" {
+			editHtml(w, r, user, contestId)
+		} else if page == "editassignment" {
+			editAssignment(w, r, user, contestId)
 		} else {
 			fmt.Println("error", page)
 		}
@@ -122,6 +126,38 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 		db.AddProblemToAssignment(a.Id, p3Id, 1)
 	}
 	http.Redirect(w, r, "/assignments.html", http.StatusFound)
+}
+
+func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
+	r.ParseForm()
+	name := r.Form["assignmentname"]
+	p1 := r.Form["problem1"]
+	groupId := r.Form["groupid"]
+	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
+	if len(name) != 1 {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	a, _ := db.ListAssignment(cid)
+	a.AssignmentName = name[0]
+	a.GroupId = gid
+	db.UpdateAssignment(a)
+	aps, _ := db.ListAssignmentProblems(cid)
+	if p1[0] != "" {
+		ppp := strings.Split(p1[0], ",")
+		for i, pp := range ppp {
+			p1Id, _ := strconv.ParseInt(pp, 10, 64)
+			if i < len(aps) {
+				db.UpdateAssignmentProblem(aps[i].Id, p1Id)
+			} else {
+				db.AddProblemToAssignment(cid, p1Id, 1)
+			}
+		}
+		for _, ap := range aps[len(ppp):len(aps)] {
+			db.DeleteAssignmentProblem(ap.Id)
+		}
+	}
+	http.Redirect(w, r, "/contest/"+strconv.FormatInt(cid, 10)+"/problems", http.StatusFound)
 }
 
 func changeUserRole(w http.ResponseWriter, r *http.Request) {

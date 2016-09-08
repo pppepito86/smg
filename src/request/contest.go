@@ -75,13 +75,30 @@ func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	serveContestHtml(w, r, user, "submission.html", response)
 }
 
+func editHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
+	if user.RoleName != "admin" {
+		return
+	}
+
+	assignment, _ := db.ListAssignment(cid)
+	aps, _ := db.ListAssignmentProblems(cid)
+	problems := ""
+	for _, ap := range aps {
+		problems += "," + strconv.FormatInt(ap.ProblemId, 10)
+	}
+	problems = problems[1:len(problems)]
+	assignment.Problems = problems
+	response := Response{cid, assignment}
+	serveContestHtml(w, r, user, "edit.html", response)
+}
+
 func submitCodeHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
 		return
 	}
 	aps, _ := db.ListAssignmentProblems(cid)
 	response := Response{cid, aps}
-	serveContestHtml(w, r, db.User{}, "submitcode.html", response)
+	serveContestHtml(w, r, user, "submitcode.html", response)
 }
 
 func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
@@ -151,12 +168,12 @@ func serveContestHtml(w http.ResponseWriter, r *http.Request, user db.User, html
 	t.Execute(w, response)
 }
 
-func problemHtml(w http.ResponseWriter, r *http.Request, cid int64, args []string) {
+func problemHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64, args []string) {
 	apId, _ := strconv.ParseInt(args[0], 10, 64)
 	ap, _ := db.GetAssignmentProblem(apId)
 	problem, _ := db.GetProblem(ap.ProblemId)
 	response := Response{cid, problem}
-	serveContestHtml(w, r, db.User{}, "problem.html", response)
+	serveContestHtml(w, r, user, "problem.html", response)
 }
 
 func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
