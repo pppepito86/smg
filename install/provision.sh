@@ -47,10 +47,16 @@ apt-get install oracle-java8-installer -y
 
 #remove docker memory swap warning
 #WARNING: Your kernel does not support swap limit capabilities, memory limited without swap.
-echo "GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"" >> /etc/default/grub
-exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
-reboot
+sed -i -e 's/GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/' /etc/default/grub
+#echo "GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"" >> /etc/default/grub
+sh -c exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
 
-#start server
-sh -c "cd /app/judge/src && go run main.go" &
+#create start service
+echo -e '#!/bin/bash\ncd /app/judge/src\nexport GOPATH=/app/judge\ngo run main.go > /app/stdout.log 2>/app/stderr.log &' > /etc/init.d/judge
+chmod 700 /etc/init.d/judge
+update-rc.d judge defaults
+update-rc.d judge enable
+
+#restart
+sudo reboot
 
