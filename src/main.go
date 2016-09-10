@@ -18,15 +18,8 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("../assets/"))))
 
 	http.HandleFunc("/", handler)
-	/*
-		http.HandleFunc("/admin.html", adminHtml)
-		http.HandleFunc("/users.html", usersHtml)
-		http.HandleFunc("/addgroup.html", addGroupHtml)
-		http.HandleFunc("/joingroup.html", joinGroupHtml)
-		http.HandleFunc("/groups.html", groupsHtml)
-		http.HandleFunc("/addgroup", addGroup)
-	*/
-	log.Fatal(http.ListenAndServe(":8888", nil))
+
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
