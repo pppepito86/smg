@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 #add go&java repo
 add-apt-repository ppa:ubuntu-lxc/lxd-stable -y
@@ -32,7 +31,7 @@ echo "mysql-server-5.6 mysql-server/root_password_again password password" | deb
 apt-get install mysql-server-5.6 -y
 
 #import database smg
-mysql -u root -ppassword smg < smg.sql
+mysql -u root -ppassword < /vagrant/smg.sql
 
 #install docker
 wget -qO- https://get.docker.com/ | sh
@@ -45,3 +44,13 @@ apt-get install unzip -y
 echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
 echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections
 apt-get install oracle-java8-installer -y
+
+#remove docker memory swap warning
+#WARNING: Your kernel does not support swap limit capabilities, memory limited without swap.
+echo "GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"" >> /etc/default/grub
+exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
+reboot
+
+#start server
+sh -c "cd /app/judge/src && go run main.go" &
+

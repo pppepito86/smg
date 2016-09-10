@@ -15,6 +15,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP DATABASE IF EXISTS `smg`;
+CREATE DATABASE `smg`;
+USE `smg`
+
 --
 -- Table structure for table `assignmentproblems`
 --
@@ -124,6 +128,26 @@ LOCK TABLES `roles` WRITE;
 INSERT INTO `roles` VALUES (1,'admin','admin role'),(2,'teacher','teacher role'),(3,'user','user role');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `submissiondetails`
+--
+
+DROP TABLE IF EXISTS `submissiondetails`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `submissiondetails` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `submissionid` int(11) NOT NULL,
+  `step` varchar(50) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `reason` varchar(1000) NOT NULL,
+  `time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `submissionid` (`submissionid`),
+  CONSTRAINT `submissiondetails_ibfk_1` FOREIGN KEY (`submissionid`) REFERENCES `submissions` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `submissions`
