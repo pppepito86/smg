@@ -60,10 +60,10 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 	cmd := exec.Command("./test")
 	//step := "Test #" + strconv.Itoa(testCase)
 	if s.Language == "java" {
-		cmd = exec.Command("java", filepath.Base(compiledFile))
-		//pwd, _ := os.Getwd()
-		//dir := filepath.Join(pwd, filepath.Dir(compiledFile))
-		//cmd = exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "128M", "pppepito86/judgebox", "java", filepath.Base(compiledFile))
+		//cmd = exec.Command("java", filepath.Base(compiledFile))
+		pwd, _ := os.Getwd()
+		dir := filepath.Join(pwd, filepath.Dir(compiledFile))
+		cmd = exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "128M", "pppepito86/judgebox", "java", filepath.Base(compiledFile))
 	}
 	cmd.Dir = filepath.Dir(compiledFile)
 	inPipeTest, _ := cmd.StdinPipe()
