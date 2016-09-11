@@ -5,7 +5,6 @@ import (
 	"db"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -57,63 +56,50 @@ func testSubmission(s db.Submission) {
 }
 
 func test(s db.Submission, compiledFile, testsDir string, testCase int) (string, string, int64, error) {
-	cmd := exec.Command("./test")
-	//step := "Test #" + strconv.Itoa(testCase)
+	cmdArg := "./test"
+	pwd, _ := os.Getwd()
+	dir := filepath.Join(pwd, filepath.Dir(compiledFile))
 	if s.Language == "java" {
-		//cmd = exec.Command("java", filepath.Base(compiledFile))
-		pwd, _ := os.Getwd()
-		dir := filepath.Join(pwd, filepath.Dir(compiledFile))
-		cmd = exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "128M", "pppepito86/judgebox", "java", filepath.Base(compiledFile))
+		cmdArg = "java " + filepath.Base(compiledFile)
 	}
+	testStr := strconv.Itoa(testCase)
+	cmdArg = "cat input" + testStr + "|" + cmdArg + ">output" + testStr + " 2>error" + testStr
+	cmd := exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "2048M", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
 	cmd.Dir = filepath.Dir(compiledFile)
-	inPipeTest, _ := cmd.StdinPipe()
-	outPipeTest, _ := cmd.StdoutPipe()
-	errPipeTest, _ := cmd.StderrPipe()
-	fmt.Println("testsDir", testsDir)
-	in, err := os.Open(filepath.Join(testsDir, fmt.Sprintf("input%d", testCase)))
+	err := exec.Command("cp",
+		filepath.Join(testsDir, fmt.Sprintf("input%d", testCase)),
+		filepath.Join(filepath.Dir(compiledFile), fmt.Sprintf("input%d", testCase))).
+		Run()
 	if err != nil {
 		return "system error", "cannot read input", 0, err
 	}
-	go func() {
-		defer in.Close()
-		io.Copy(inPipeTest, in)
-		inPipeTest.Close()
-	}()
 
 	cmd.Start()
 	startTime := time.Now()
 	chError := make(chan error, 1)
-	chOutput := make(chan []byte, 2)
 	chTime := make(chan int64, 1)
 
 	go func() {
-		out, _ := ioutil.ReadAll(outPipeTest)
-		errOut, _ := ioutil.ReadAll(errPipeTest)
 		err = cmd.Wait()
 		chTime <- time.Since(startTime).Nanoseconds() / 1e6
 		if err != nil {
 			fmt.Println("*****Error", err.Error())
-			fmt.Println("e", string(errOut))
 		}
 		chError <- err
-		chOutput <- out
-		chOutput <- errOut
 	}()
+
 	select {
 	case err = <-chError:
 		{
-			res := <-chOutput
 			durationTime := <-chTime
-			errOut := <-chOutput
-			if len(res) < 1000 {
-				fmt.Println("***" + string(res) + "***")
-			}
 			if err != nil {
-				return "runtime error", err.Error() + " - " + string(errOut), durationTime, nil
+				realErr, _ := ioutil.ReadFile(filepath.Join(filepath.Dir(compiledFile), fmt.Sprintf("error%d", testCase)))
+				return "runtime error", err.Error() + " - " + string(realErr), durationTime, nil
 			}
+			res, _ := ioutil.ReadFile(filepath.Join(filepath.Dir(compiledFile), fmt.Sprintf("output%d", testCase)))
 			realOut, _ := ioutil.ReadFile(filepath.Join(testsDir, fmt.Sprintf("output%d", testCase)))
 			if len(res) < 1000 {
-				fmt.Println("***" + string(realOut) + "***")
+				//	fmt.Println("***" + string(realOut) + "***")
 			}
 			if bytes.Equal(res, realOut) {
 				return "ok", "", durationTime, nil

@@ -24,13 +24,13 @@ type Submission struct {
 func AddSubmission(s Submission) (Submission, error) {
 	db := getConnection()
 
-	stmt, err := db.Prepare("INSERT INTO submissions(assignmentproblemid, userid, language, sourcefile, verdict) VALUES(?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO submissions(assignmentproblemid, userid, language, sourcefile, verdict, reason) VALUES(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return s, err
 	}
 
-	res, err := stmt.Exec(s.ApId, s.UserId, s.Language, s.SourceFile, s.Verdict)
+	res, err := stmt.Exec(s.ApId, s.UserId, s.Language, s.SourceFile, s.Verdict, s.Reason)
 	if err != nil {
 		log.Print(err)
 		return s, err
