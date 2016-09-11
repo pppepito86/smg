@@ -236,5 +236,10 @@ func isUserAssignedToContest(user db.User, id int64) bool {
 		return true
 	}
 	ok, _ := db.IsUserAssignedToCompetition(user.Id, id)
-	return ok
+	if !ok {
+		return false
+	}
+	a, _ := db.ListAssignment(id)
+	time := time.Now()
+	return time.After(a.StartTime) && time.Before(a.EndTime)
 }
