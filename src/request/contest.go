@@ -70,6 +70,25 @@ func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	source, _ := ioutil.ReadFile(submission.SourceFile)
 	submission.Source = html.EscapeString(string(source))
 	details, _ := db.ListSubmissionDetails(id)
+	for i := range details {
+		d := &details[i]
+		if strings.HasPrefix(d.Step, "Test #") {
+			testIndex := d.Step[6:len(d.Step)]
+			dir := filepath.Dir(submission.SourceFile)
+			input, _ := ioutil.ReadFile(filepath.Join(dir, "input"+testIndex))
+			output, _ := ioutil.ReadFile(filepath.Join(dir, "output"+testIndex))
+			d.Input = string(input)
+			d.Output = string(output)
+			if len(d.Input) > 1000 {
+				d.Input = "input too long"
+			}
+			d.Input = strings.Replace(d.Input, "\n", "<br>", -1)
+			if len(d.Output) > 1000 {
+				d.Output = "output too long"
+			}
+			d.Output = strings.Replace(d.Output, "\n", "<br>", -1)
+		}
+	}
 	submission.SubmissionDetails = details
 	response := Response{cid, submission}
 	serveContestHtml(w, r, user, "submission.html", response)

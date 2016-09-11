@@ -207,6 +207,8 @@ type SubmissionDetail struct {
 	Verdict      string
 	Reason       string
 	Time         int64
+	Input        string
+	Output       string
 }
 
 func AddSubmissionDetails(sid int64, step, verdict, reason string, time int64) (SubmissionDetail, error) {
