@@ -136,6 +136,8 @@
                                     <thead>
                                         <tr>
                                             <th>Assignment</th>
+                                            <th>Start time</th>
+                                            <th>End time</th>
                                             <th>Group</th>
                                             <th>Author</th>
                                         </tr>
@@ -144,6 +146,8 @@
                                         {{range $index, $element := .}}
                                         <tr>
                                           <td><a href="/contest/{{$element.Id}}/problems" >{{$element.AssignmentName}}</a></td>
+                                            <td class="center">{{$element.StartTime.Local.Format "02/01/2006 03:04"}}</td>
+                                            <td class="center">{{$element.EndTime.Local.Format "02/01/2006 03:04"}}</td>
                                             <td>{{$element.Group}}</td>
                                             <td class="center">{{$element.Author}}</td>
                                         </tr>

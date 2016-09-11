@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 )
 
 func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
@@ -106,10 +107,29 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	sd := strings.Split(r.Form["startdate"][0], "/")
+	st := strings.Split(r.Form["starttime"][0], ":")
+	ed := strings.Split(r.Form["enddate"][0], "/")
+	et := strings.Split(r.Form["endtime"][0], ":")
+	y1, _ := strconv.Atoi(sd[2])
+	M1, _ := strconv.Atoi(sd[1])
+	d1, _ := strconv.Atoi(sd[0])
+	h1, _ := strconv.Atoi(st[0])
+	m1, _ := strconv.Atoi(st[1])
+	y2, _ := strconv.Atoi(ed[2])
+	M2, _ := strconv.Atoi(ed[1])
+	d2, _ := strconv.Atoi(ed[0])
+	h2, _ := strconv.Atoi(et[0])
+	m2, _ := strconv.Atoi(et[1])
+	location, _ := time.LoadLocation("Europe/Sofia")
+	startTime := time.Date(y1, time.Month(M1), d1, h1, m1, 0, 0, location)
+	endTime := time.Date(y2, time.Month(M2), d2, h2, m2, 0, 0, location)
 	a := db.Assignment{
 		AssignmentName: name[0],
 		AuthorId:       user.Id,
 		GroupId:        gid,
+		StartTime:      startTime,
+		EndTime:        endTime,
 	}
 	a, _ = db.CreateAssignment(a)
 	if p1[0] != "" {
@@ -140,8 +160,27 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	sd := strings.Split(r.Form["startdate"][0], "/")
+	st := strings.Split(r.Form["starttime"][0], ":")
+	ed := strings.Split(r.Form["enddate"][0], "/")
+	et := strings.Split(r.Form["endtime"][0], ":")
+	y1, _ := strconv.Atoi(sd[2])
+	M1, _ := strconv.Atoi(sd[1])
+	d1, _ := strconv.Atoi(sd[0])
+	h1, _ := strconv.Atoi(st[0])
+	m1, _ := strconv.Atoi(st[1])
+	y2, _ := strconv.Atoi(ed[2])
+	M2, _ := strconv.Atoi(ed[1])
+	d2, _ := strconv.Atoi(ed[0])
+	h2, _ := strconv.Atoi(et[0])
+	m2, _ := strconv.Atoi(et[1])
+	location, _ := time.LoadLocation("Europe/Sofia")
+	startTime := time.Date(y1, time.Month(M1), d1, h1, m1, 0, 0, location)
+	endTime := time.Date(y2, time.Month(M2), d2, h2, m2, 0, 0, location)
 	a, _ := db.ListAssignment(cid)
 	a.AssignmentName = name[0]
+	a.StartTime = startTime
+	a.EndTime = endTime
 	a.GroupId = gid
 	db.UpdateAssignment(a)
 	aps, _ := db.ListAssignmentProblems(cid)
