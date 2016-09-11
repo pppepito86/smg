@@ -64,6 +64,14 @@ func authenticate(w http.ResponseWriter, r http.Request, username string, passwo
 	return true
 }
 
+func logout(w http.ResponseWriter, r *http.Request) {
+	cookie := getSessionIdCookie(*r)
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
+	session.RemoveAttribute(cookie.Value)
+	http.Redirect(w, r, "/login.html", http.StatusFound)
+}
+
 func RandomString() string {
 	size := 32
 	rb := make([]byte, size)

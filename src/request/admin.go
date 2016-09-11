@@ -70,6 +70,8 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		assignmentsAdminHtml(w, r)
 	} else if path == "/addassignment.html" {
 		addAdminAssignmentHtml(w, r)
+	} else if path == "/logout" {
+		logout(w, r)
 	} else {
 		assignmentsAdminHtml(w, r)
 	}
