@@ -46,14 +46,14 @@ func FindGroupByName(name string) (Group, error) {
 	db := getConnection()
 	rows, err := db.Query("select id, groupname, description, creatorid from groups where groupname=?", name)
 	if err != nil {
-		log.Fatal(err)
+		return Group{}, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var group Group
 		err := rows.Scan(&group.Id, &group.GroupName, &group.Description, &group.CreatorId)
 		if err != nil {
-			log.Fatal(err)
+			return Group{}, err
 		}
 		return group, nil
 	}
@@ -64,22 +64,22 @@ func ListGroups() []Group {
 	db := getConnection()
 	rows, err := db.Query("select groups.id, groups.groupname, groups.description, groups.creatorid, users.username from groups" +
 		" inner join users on groups.creatorid = users.id")
+	groups := make([]Group, 0)
 	if err != nil {
-		log.Fatal(err)
+		return groups
 	}
 	defer rows.Close()
-	groups := make([]Group, 0)
 	for rows.Next() {
 		var group Group
 		err := rows.Scan(&group.Id, &group.GroupName, &group.Description, &group.CreatorId, &group.Creator)
 		if err != nil {
-			log.Fatal(err)
+			return groups
 		}
 		groups = append(groups, group)
 	}
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		return groups
 	}
 	return groups
 }

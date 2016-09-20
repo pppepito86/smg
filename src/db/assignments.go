@@ -234,7 +234,7 @@ func GetAssignmentProblem(apId int64) (AssignmentProblem, error) {
 	rows, err := db.Query("select id, assignmentid, problemid from assignmentproblems"+
 		" where id = ?", apId)
 	if err != nil {
-		log.Fatal(err)
+		return AssignmentProblem{}, nil
 	}
 	defer rows.Close()
 	ap := AssignmentProblem{}
