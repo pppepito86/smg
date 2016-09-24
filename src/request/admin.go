@@ -65,6 +65,8 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		addAdminGroupHtml(w, r)
 	} else if path == "/problems.html" {
 		problemsAdminHtml(w, r)
+	} else if path == "/problem.html" {
+		problemAdminHtml(w, r)
 	} else if path == "/addproblem.html" {
 		addAdminProblemHtml(w, r)
 	} else if path == "/assignments.html" {
@@ -266,6 +268,14 @@ func problemsAdminHtml(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../admin/problems.html")
 	problems, _ := db.ListProblems()
 	t.Execute(w, problems)
+}
+
+func problemAdminHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/problem.html")
+	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
+	problem, _ := db.GetProblem(id)
+	t.Execute(w, problem)
 }
 
 func allSubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
