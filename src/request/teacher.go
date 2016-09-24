@@ -105,6 +105,26 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	http.Redirect(w, r, "/problems.html", http.StatusFound)
 }
 
+func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
+	r.ParseForm()
+	r.FormFile("file")
+	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
+	name := r.Form["problemname"]
+	version := r.Form["version"]
+	description := r.Form["text"]
+	p := db.Problem{
+		Id:          id,
+		ProblemName: name[0],
+		Version:     version[0],
+		Description: description[0],
+		Visibility:  "",
+		Languages:   "java",
+		AuthorId:    user.Id,
+	}
+	db.UpdateProblem(p)
+	http.Redirect(w, r, "/problems.html", http.StatusFound)
+}
+
 func addProblemHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../teacher/addproblem.html")

@@ -55,6 +55,8 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		addGroup(w, r, user)
 	} else if path == "/addproblem" && r.Method == "POST" {
 		addProblem(w, r, user)
+	} else if path == "/editproblem" && r.Method == "POST" {
+		editProblem(w, r, user)
 	} else if path == "/addassignment" && r.Method == "POST" {
 		addAssignment(w, r, user)
 	} else if path == "/users.html" {
@@ -69,6 +71,8 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		problemAdminHtml(w, r)
 	} else if path == "/addproblem.html" {
 		addAdminProblemHtml(w, r)
+	} else if path == "/editproblem.html" {
+		editAdminProblemHtml(w, r)
 	} else if path == "/assignments.html" {
 		assignmentsAdminHtml(w, r)
 	} else if path == "/addassignment.html" {
@@ -227,6 +231,14 @@ func addAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../admin/addproblem.html")
 	t.Execute(w, nil)
+}
+
+func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/editproblem.html")
+	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
+	problem, _ := db.GetProblem(id)
+	t.Execute(w, problem)
 }
 
 func addAdminAssignmentHtml(w http.ResponseWriter, r *http.Request) {

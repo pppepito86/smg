@@ -92,6 +92,24 @@ func GetProblem(id int64) (Problem, error) {
 	return p, nil
 }
 
+func UpdateProblem(p Problem) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("update problems set name=?, version=?, description=? where id=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(p.ProblemName, p.Version, p.Description, p.Id)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
+}
+
 /*
 func GetUser(username string) User {
 	fmt.Println("find user:", username)
