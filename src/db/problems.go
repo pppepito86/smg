@@ -15,6 +15,7 @@ type Problem struct {
 	Languages   string
 	AuthorId    int64
 	Author      string
+	Tests       string
 }
 
 func CreateProblem(p Problem) (Problem, error) {

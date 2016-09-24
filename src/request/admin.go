@@ -3,7 +3,9 @@ package request
 import (
 	"db"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
@@ -238,6 +240,21 @@ func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../admin/editproblem.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
+	dir := filepath.Join("problems", strconv.FormatInt(id, 10))
+	tests := ""
+	for i := 1; ; i++ {
+		input, err := ioutil.ReadFile(filepath.Join(dir, "input"+strconv.Itoa(i)))
+		if err != nil {
+			break
+		}
+		output, _ := ioutil.ReadFile(filepath.Join(dir, "output"+strconv.Itoa(i)))
+		tests += string(input)
+		tests += "#\n"
+		tests += string(output)
+		tests += "###\n"
+	}
+	tests = tests[0 : len(tests)-4]
+	problem.Tests = tests
 	t.Execute(w, problem)
 }
 

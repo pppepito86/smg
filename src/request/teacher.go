@@ -112,6 +112,7 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	name := r.Form["problemname"]
 	version := r.Form["version"]
 	description := r.Form["text"]
+	test := r.Form["test"][0]
 	p := db.Problem{
 		Id:          id,
 		ProblemName: name[0],
@@ -122,6 +123,38 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 		AuthorId:    user.Id,
 	}
 	db.UpdateProblem(p)
+
+	dir := filepath.Join("problems", strconv.FormatInt(id, 10))
+	exec.Command("rm", "-rf", dir).Run()
+	os.MkdirAll(dir, 0755)
+	test = strings.Replace(test, "\r", "", -1)
+	if len(test) > 0 {
+		fmt.Println("using text field")
+		tests := strings.Split(test, "###")
+		for i, t := range tests {
+			if len(t) > 0 && t[0] == 13 {
+				t = t[1:]
+			}
+			if len(t) > 0 && t[0] == 10 {
+				t = t[1:]
+			}
+
+			testio := strings.Split(t, "#")
+			testin := testio[0]
+			testout := testio[1]
+			if len(testout) > 0 && testout[0] == 13 {
+				testout = testout[1:]
+			}
+			if len(testout) > 0 && testout[0] == 10 {
+				testout = testout[1:]
+			}
+
+			filein := filepath.Join(dir, fmt.Sprintf("input%d", i+1))
+			fileout := filepath.Join(dir, fmt.Sprintf("output%d", i+1))
+			ioutil.WriteFile(filein, []byte(testin), 0755)
+			ioutil.WriteFile(fileout, []byte(testout), 0755)
+		}
+	}
 	http.Redirect(w, r, "/problems.html", http.StatusFound)
 }
 
