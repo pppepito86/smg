@@ -159,8 +159,8 @@
                                         <tr>
                                             <td>{{$element.Id}}</td>
                                           <td><a href="/contest/{{$element.Id}}/submissions" >{{$element.AssignmentName}}</a></td>
-                                            <td class="center">{{$element.StartTime.Local.Format "02/01/2006 15:04"}}</td>
-                                            <td class="center">{{$element.EndTime.Local.Format "02/01/2006 15:04"}}</td>
+                                            <td class="center">{{$element.StartTime.Format "02/01/2006 15:04"}}</td>
+                                            <td class="center">{{$element.EndTime.Format "02/01/2006 15:04"}}</td>
                                             <td class="center">{{$element.Author}}</td>
                                             <td class="center">{{$element.Group}}</td>
                                         </tr>
