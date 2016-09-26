@@ -143,6 +143,7 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 	if p1[0] != "" {
 		ppp := strings.Split(p1[0], ",")
 		for _, pp := range ppp {
+			pp = strings.TrimSpace(pp)
 			p1Id, _ := strconv.ParseInt(pp, 10, 64)
 			db.AddProblemToAssignment(a.Id, p1Id, 1)
 		}
@@ -195,6 +196,7 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	if p1[0] != "" {
 		ppp := strings.Split(p1[0], ",")
 		for i, pp := range ppp {
+			pp = strings.TrimSpace(pp)
 			p1Id, _ := strconv.ParseInt(pp, 10, 64)
 			if i < len(aps) {
 				db.UpdateAssignmentProblem(aps[i].Id, p1Id)
@@ -202,8 +204,10 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 				db.AddProblemToAssignment(cid, p1Id, 1)
 			}
 		}
-		for _, ap := range aps[len(ppp):len(aps)] {
-			db.DeleteAssignmentProblem(ap.Id)
+		if len(ppp) < len(aps) {
+			for _, ap := range aps[len(ppp):len(aps)] {
+				db.DeleteAssignmentProblem(ap.Id)
+			}
 		}
 	}
 	http.Redirect(w, r, "/contest/"+strconv.FormatInt(cid, 10)+"/problems", http.StatusFound)
