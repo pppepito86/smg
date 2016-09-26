@@ -48,6 +48,8 @@ func HandleUser(w http.ResponseWriter, r *http.Request, user db.User) {
 		joinGroupHtml(w, r)
 	} else if path == "/joingroup" {
 		joinGroup(w, r, user)
+	} else if path == "/logout" {
+		logout(w, r)
 	} else {
 		assignmentsUserHtml(w, r, user)
 	}
