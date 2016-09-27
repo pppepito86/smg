@@ -10,7 +10,7 @@ var db *sql.DB
 
 func OpenConnection() error {
 	var err error
-	db, err = sql.Open("mysql", "root:password@tcp(127.0.0.1:3306)/smg")
+	db, err = sql.Open("mysql", "root:password@tcp(127.0.0.1:3306)/smg?parseTime=true")
 	return err
 }
 
