@@ -81,6 +81,19 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		addAdminAssignmentHtml(w, r)
 	} else if path == "/logout" {
 		logout(w, r)
+	} else if strings.HasPrefix(path, "/msg/") {
+		if path == "/msg/send" { 
+			r.ParseForm()
+			to := r.Form["to"]
+			msg := r.Form["msg"]
+			fmt.Fprintf(w, "to: %v <br> msg: %v", to, msg);
+		} else if path == "/msg/getNumNew" {
+		
+		} else if path == "/msg/getNew" {
+		
+		} else if path == "/msg/see" {
+		
+		}
 	} else {
 		assignmentsAdminHtml(w, r)
 	}
