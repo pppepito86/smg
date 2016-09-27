@@ -84,11 +84,17 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 	} else if strings.HasPrefix(path, "/msg/") {
 		if path == "/msg/send" { 
 			r.ParseForm()
-			to := r.Form["to"]
-			msg := r.Form["msg"]
-			fmt.Fprintf(w, "to: %v <br> msg: %v", to, msg);
+			to := r.Form["to"] [0]
+			msg := r.Form["msg"] [0]
+			from := user.UserName
+			fmt.Fprintf(w, "from: %v \n to: %v \n msg: %v", from, to, msg);
+			
+			db.NewMessage(from, to, msg)
+			
 		} else if path == "/msg/getNumNew" {
-		
+			unread, _ := db.GetNumUnread(user.UserName)
+			fmt.Fprintf(w, "%v", unread);		
+	
 		} else if path == "/msg/getNew" {
 		
 		} else if path == "/msg/see" {

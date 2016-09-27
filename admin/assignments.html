@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="assets/css/theme.css" />
     <link rel="stylesheet" href="assets/css/MoneAdmin.css" />
     <link rel="stylesheet" href="assets/plugins/Font-Awesome/css/font-awesome.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>    
     <!--END GLOBAL STYLES -->
 
     <!-- PAGE LEVEL STYLES -->
@@ -218,7 +219,27 @@
     <script src="assets/plugins/jquery-2.0.3.min.js"></script>
      <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-    <!-- END GLOBAL SCRIPTS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+<!-- END GLOBAL SCRIPTS -->
+
+    <script>
+	numNewMsg = -1;
+        setInterval(function() {
+		$.get( "/msg/getNumNew", function( data ) {
+  			if (data != numNewMsg) {
+  				
+				if (numNewMsg < data) 
+					toastr.info('You have ' + data + ' new messages!');
+				
+				 numNewMsg = data
+
+			}
+		})
+	}, 30000);
+	
+    </script>
+
         <!-- PAGE LEVEL SCRIPTS -->
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
