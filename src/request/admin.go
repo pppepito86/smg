@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"submissions"
 	"text/template"
 	"time"
 )
@@ -69,6 +70,8 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		addAdminGroupHtml(w, r)
 	} else if path == "/problems.html" {
 		problemsAdminHtml(w, r)
+	} else if path == "/rejudge" {
+		rejudge(w, r)
 	} else if path == "/problem.html" {
 		problemAdminHtml(w, r)
 	} else if path == "/addproblem.html" {
@@ -315,4 +318,14 @@ func allSubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, ci
 	submissions, _ := db.ListSubmissionsForAssignment(cid)
 	response := Response{cid, submissions}
 	serveContestHtml(w, r, user, "submissions.html", response)
+}
+
+func rejudge(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
+	ss, _ := db.ListProblemSubmissions(id)
+	for _, s := range ss {
+		submissions.Push(s)
+	}
+
+	http.Redirect(w, r, "/problems", http.StatusFound)
 }

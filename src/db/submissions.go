@@ -182,6 +182,34 @@ func ListMySubmissionsForProblem(userId, apId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
+func ListProblemSubmissions(pId int64) ([]Submission, error) {
+	db := getConnection()
+	rows, err := db.Query("select submissions.id, submissions.userid, language, sourcefile, time, verdict, reason, problems.name from submissions"+
+		" inner join assignmentproblems on assignmentproblems.id=submissions.assignmentproblemid"+
+		"	and assignmentproblems.problemid=?", pId)
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	submissions := make([]Submission, 0)
+	defer rows.Close()
+	for rows.Next() {
+		var s Submission
+		err := rows.Scan(&s.Id, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason, &s.ProblemName)
+		if err != nil {
+			log.Print(err)
+			return []Submission{}, err
+		}
+		submissions = append(submissions, s)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	return submissions, nil
+}
+
 func UpdateVerdict(id int64, verdict, reason string) error {
 	db := getConnection()
 
@@ -241,6 +269,24 @@ func AddSubmissionDetails(sid int64, step, verdict, reason string, time int64) (
 
 	sd.Id = lastId
 	return sd, nil
+}
+
+func DeleteSubmissionDetails(sId int64) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("delete from submissiondetails where id=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(sId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
 }
 
 func ListSubmissionDetails(submissionid int64) ([]SubmissionDetail, error) {

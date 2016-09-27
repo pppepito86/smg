@@ -25,6 +25,7 @@ func Checker() {
 
 func testSubmission(s db.Submission) {
 	fmt.Println("Testing: " + s.SourceFile)
+	db.DeleteSubmissionDetails(s.Id)
 	compiledFile, err := compile(s)
 	if err != nil {
 		fmt.Println("compilation error: " + err.Error())
