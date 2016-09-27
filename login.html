@@ -55,15 +55,15 @@
             </form>
         </div>
         <div id="signup" class="tab-pane">
-            <form action="/register" method="POST" class="form-signin" id="signin_form" novalidate="novalidate" >
+            <form action="/register" method="POST" class="form-signin" id="signin_form" >
                 <p class="text-muted text-center btn-block btn btn-primary btn-rect" >Please Fill Details To Register</p>
-                 <input type="text" placeholder="First Name" class="form-control" id="firstname" name="firstname" />
-                 <input type="text" placeholder="Second Name" class="form-control" id="secondname" name="secondname" />
-                 <input type="text" placeholder="Last Name" class="form-control" id="lastname" name="lastname" />
-                <input type="text" placeholder="Username" class="form-control" id="username" name="username" />
-                <input type="email" placeholder="Your E-mail" class="form-control" id="email" name="email" />
-                <input type="password" placeholder="Password" class="form-control" id="password" name="password" />
-                <input type="password" placeholder="Re type password" class="form-control" id="passwordagain" name="passwordagain" />
+                 <input type="text" required placeholder="First Name" class="form-control" id="firstname" name="firstname" />
+                 <input type="text" required placeholder="Second Name" class="form-control" id="secondname" name="secondname" />
+                 <input type="text" required placeholder="Last Name" class="form-control" id="lastname" name="lastname" />
+                <input type="text" required placeholder="Username" class="form-control" id="username" name="username" />
+                <input type="email" required placeholder="Your E-mail" class="form-control" id="email" name="email" />
+                <input type="password" required placeholder="Password" class="form-control" id="password" name="password" />
+                <input type="password" required placeholder="Re type password" class="form-control" id="passwordagain" name="passwordagain" />
                 <button class="btn text-muted text-center btn-success" type="submit" >Register</button>
             </form>
         </div>
