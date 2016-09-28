@@ -201,7 +201,7 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 	}
 
 	// set max upload size to 1 MB
-	r.Body = http.MaxBytesReader(w, r.Body, 1*1024*1024)
+	r.Body = http.MaxBytesReader(w, r.Body, 50*1024)
 
 	r.ParseForm()
 	file, header, _ := r.FormFile("file")
