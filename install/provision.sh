@@ -52,7 +52,48 @@ sed -i -e 's/GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory sw
 sh -c exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
 
 #create start service
-echo -e '#!/bin/bash\ncd /app/judge/src\nexport GOPATH=/app/judge\ngo run main.go > /app/stdout.log 2>/app/stderr.log &' > /etc/init.d/judge
+cat <<EOF > /etc/init.d/judge
+#!/bin/bash
+
+do_start() {
+  cd /app/judge/src
+  export GOPATH=/app/judge
+  go run main.go > /app/stdout.log 2>/app/stderr.log &
+}
+
+do_stop() {
+  killall -15 main
+}
+
+do_status() {
+  if [[ $(ps aux|grep main| wc -l) -ne 1 ]]; then
+    echo started
+  else
+    echo stopped
+  fi
+}
+
+case "$1" in
+  start)
+    do_start
+    ;;
+  stop)
+    do_stop
+    ;;
+  restart)
+    do_stop
+    do_start
+    ;;
+  status)
+    do_status
+    ;;
+  *)
+    echo "Usage: $0 start|stop|restart" >&2
+    exit 1
+    ;;
+esac
+EOF
+
 chmod 700 /etc/init.d/judge
 update-rc.d judge defaults
 update-rc.d judge enable
