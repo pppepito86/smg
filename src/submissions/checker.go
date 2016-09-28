@@ -106,7 +106,7 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 				return "ok", "", durationTime, nil
 			} else {
 				if strings.TrimSpace(string(res)) == strings.TrimSpace(string(realOut)) {
-					return "presentatin error", "", durationTime, nil
+					return "presentation error", "", durationTime, nil
 				}
 				return "wrong answer", "", durationTime, nil
 			}

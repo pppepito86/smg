@@ -24,6 +24,7 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	user := request.GetUser(*r)
+	fmt.Println(r.URL, user.Id, r.RemoteAddr)
 	if user.RoleName == "admin" {
 		request.HandleAdmin(w, r, user)
 	} else if user.RoleName == "teacher" {
