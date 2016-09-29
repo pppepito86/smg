@@ -239,7 +239,7 @@ func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../admin/editproblem.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
-	dir := filepath.Join("problems", strconv.FormatInt(id, 10))
+	dir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
 	tests := ""
 	for i := 1; ; i++ {
 		input, err := ioutil.ReadFile(filepath.Join(dir, "input"+strconv.Itoa(i)))

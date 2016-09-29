@@ -51,7 +51,7 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 	p, _ = db.CreateProblem(p)
 
-	os.MkdirAll(filepath.Join("problems", strconv.FormatInt(p.Id, 10)), 0755)
+	os.MkdirAll(filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10)), 0755)
 	test = strings.Replace(test, "\r", "", -1)
 	if len(test) > 0 {
 		fmt.Println("using text field")
@@ -74,14 +74,14 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 				testout = testout[1:]
 			}
 
-			filein := filepath.Join("problems", strconv.FormatInt(p.Id, 10), fmt.Sprintf("input%d", i+1))
-			fileout := filepath.Join("problems", strconv.FormatInt(p.Id, 10), fmt.Sprintf("output%d", i+1))
+			filein := filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10), fmt.Sprintf("input%d", i+1))
+			fileout := filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10), fmt.Sprintf("output%d", i+1))
 			ioutil.WriteFile(filein, []byte(testin), 0755)
 			ioutil.WriteFile(fileout, []byte(testout), 0755)
 		}
 	} else {
 		fmt.Println("using file")
-		fp := filepath.Join("problems", strconv.FormatInt(p.Id, 10), header.Filename)
+		fp := filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10), header.Filename)
 		fmt.Println("file is", file)
 		//os.MkdirAll(filepath.Dir(fp), 0755)
 		out, _ := os.Create(fp)
@@ -128,7 +128,7 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 	db.UpdateProblem(p)
 
-	dir := filepath.Join("problems", strconv.FormatInt(id, 10))
+	dir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
 	exec.Command("rm", "-rf", dir).Run()
 	os.MkdirAll(dir, 0755)
 	test = strings.Replace(test, "\r", "", -1)
