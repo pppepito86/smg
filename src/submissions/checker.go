@@ -30,7 +30,7 @@ func testSubmission(s db.Submission) {
 	ap, _ := db.GetAssignmentProblem(s.ApId)
 
 	testsDir := filepath.Join("workdir", "problems", strconv.FormatInt(ap.ProblemId, 10))
-	files, err := ioutil.ReadDir(testsDir)
+	files, _ := ioutil.ReadDir(testsDir)
 	tests := len(files) / 2
 	correct := 0
 
