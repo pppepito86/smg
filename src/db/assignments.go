@@ -186,19 +186,25 @@ type AssignmentProblem struct {
 	ProblemId    int64
 	Number       int64
 	ProblemName  string
+	Points       int
 }
 
-func AddProblemToAssignment(aId, pId, number int64) (AssignmentProblem, error) {
+func AddProblemToAssignment(aId, pId, number int64, points int) (AssignmentProblem, error) {
 	db := getConnection()
 
-	ap := AssignmentProblem{-1, aId, pId, number, ""}
-	stmt, err := db.Prepare("INSERT INTO assignmentproblems(assignmentid, problemid) VALUES(?, ?)")
+	ap := AssignmentProblem{
+		Id:           -1,
+		AssignmentId: aId,
+		ProblemId:    pId,
+		Number:       number,
+	}
+	stmt, err := db.Prepare("INSERT INTO assignmentproblems(assignmentid, problemid, points) VALUES(?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return ap, err
 	}
 
-	res, err := stmt.Exec(aId, pId)
+	res, err := stmt.Exec(aId, pId, points)
 	if err != nil {
 		log.Print(err)
 		return ap, err
@@ -216,7 +222,7 @@ func AddProblemToAssignment(aId, pId, number int64) (AssignmentProblem, error) {
 
 func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 	db := getConnection()
-	rows, err := db.Query("select assignmentproblems.id, assignmentid, problemid, problems.name from assignmentproblems"+
+	rows, err := db.Query("select assignmentproblems.id, assignmentid, problemid, assignmentproblems.points, problems.name from assignmentproblems"+
 		" inner join problems on assignmentproblems.assignmentid=? and assignmentproblems.problemid=problems.id order by problemid", assignmentid)
 	if err != nil {
 		log.Print(err)
@@ -226,7 +232,7 @@ func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 	assignmentProblems := make([]AssignmentProblem, 0)
 	for rows.Next() {
 		var ap AssignmentProblem
-		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId, &ap.ProblemName)
+		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId, &ap.Points, &ap.ProblemName)
 		if err != nil {
 			log.Print(err)
 			return []AssignmentProblem{}, err
@@ -243,7 +249,7 @@ func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 
 func GetAssignmentProblem(apId int64) (AssignmentProblem, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, assignmentid, problemid from assignmentproblems"+
+	rows, err := db.Query("select id, assignmentid, problemid, points from assignmentproblems"+
 		" where id = ?", apId)
 	if err != nil {
 		return AssignmentProblem{}, nil
@@ -251,7 +257,7 @@ func GetAssignmentProblem(apId int64) (AssignmentProblem, error) {
 	defer rows.Close()
 	ap := AssignmentProblem{}
 	for rows.Next() {
-		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId)
+		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId, &ap.Points)
 		if err != nil {
 			log.Print(err)
 			return AssignmentProblem{}, nil
@@ -260,16 +266,16 @@ func GetAssignmentProblem(apId int64) (AssignmentProblem, error) {
 	return ap, nil
 }
 
-func UpdateAssignmentProblem(apId, problemId int64) error {
+func UpdateAssignmentProblem(apId, problemId int64, points int) error {
 	db := getConnection()
 
-	stmt, err := db.Prepare("update assignmentproblems set problemid=? where id=?")
+	stmt, err := db.Prepare("update assignmentproblems set problemid=?, points=? where id=?")
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 
-	_, err = stmt.Exec(problemId, apId)
+	_, err = stmt.Exec(problemId, points, apId)
 	if err != nil {
 		log.Print(err)
 		return err

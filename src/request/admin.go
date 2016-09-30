@@ -110,8 +110,6 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 	r.ParseForm()
 	name := r.Form["assignmentname"]
 	p1 := r.Form["problem1"]
-	p2 := r.Form["problem2"]
-	p3 := r.Form["problem3"]
 	groupId := r.Form["groupid"]
 	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
 	if len(name) != 1 {
@@ -145,19 +143,12 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 	a, _ = db.CreateAssignment(a)
 	if p1[0] != "" {
 		ppp := strings.Split(p1[0], ",")
-		for _, pp := range ppp {
+		for i, pp := range ppp {
 			pp = strings.TrimSpace(pp)
 			p1Id, _ := strconv.ParseInt(pp, 10, 64)
-			db.AddProblemToAssignment(a.Id, p1Id, 1)
+			problem, _ := db.GetProblem(p1Id)
+			db.AddProblemToAssignment(a.Id, p1Id, int64(i+1), problem.Points)
 		}
-	}
-	if p2[0] != "" {
-		p2Id, _ := strconv.ParseInt(p2[0], 10, 64)
-		db.AddProblemToAssignment(a.Id, p2Id, 1)
-	}
-	if p3[0] != "" {
-		p3Id, _ := strconv.ParseInt(p3[0], 10, 64)
-		db.AddProblemToAssignment(a.Id, p3Id, 1)
 	}
 	http.Redirect(w, r, "/assignments.html", http.StatusFound)
 }
@@ -201,10 +192,11 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 		for i, pp := range ppp {
 			pp = strings.TrimSpace(pp)
 			p1Id, _ := strconv.ParseInt(pp, 10, 64)
+			problem, _ := db.GetProblem(p1Id)
 			if i < len(aps) {
-				db.UpdateAssignmentProblem(aps[i].Id, p1Id)
+				db.UpdateAssignmentProblem(aps[i].Id, p1Id, problem.Points)
 			} else {
-				db.AddProblemToAssignment(cid, p1Id, 1)
+				db.AddProblemToAssignment(cid, p1Id, int64(i+1), problem.Points)
 			}
 		}
 		if len(ppp) < len(aps) {

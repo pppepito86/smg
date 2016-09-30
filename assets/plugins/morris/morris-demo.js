@@ -1,5 +1,5 @@
 $(function() {
-
+/*
     Morris.Area({
         element: 'morris-area-chart',
         data: [{
@@ -113,10 +113,13 @@ $(function() {
         hideHover: 'auto',
         resize: true
     });
+*/
 
+ $.get("/pointsperweek", function(data1, status){
     Morris.Line({
         element: 'morris-line-chart',
-        data: [{
+        data: data1,
+        /*[{
             y: '2006',
             a: 100,
             b: 90
@@ -144,12 +147,12 @@ $(function() {
             y: '2012',
             a: 100,
             b: 90
-        }],
-        xkey: 'y',
-        ykeys: ['a', 'b'],
-        labels: ['Series A', 'Series B'],
-        hideHover: 'auto',
-        resize: true
+        }],*/
+        xkey: 'Week',
+        ykeys: ['Points'],
+        labels: ['Points'],
+        //hideHover: 'auto',
+       // resize: true
     });
-
+});
 });

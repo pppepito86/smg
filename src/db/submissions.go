@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -12,13 +13,14 @@ type Submission struct {
 	UserId            int64
 	Language          string
 	SourceFile        string
-	Time              string
+	Time              time.Time
 	Verdict           string
 	Reason            string
 	ProblemName       string
 	Source            string
 	User              string
 	SubmissionDetails []SubmissionDetail
+	Points            int
 }
 
 func AddSubmission(s Submission) (Submission, error) {
@@ -126,6 +128,32 @@ func ListMySubmissions(userId, assignmentId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
+func ListMyAllSubmissions(userId int64) ([]Submission, error) {
+	db := getConnection()
+	rows, err := db.Query("select submissions.id, time, assignmentproblemid, points from submissions where userid=?", userId)
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	defer rows.Close()
+	submissions := make([]Submission, 0)
+	for rows.Next() {
+		var s Submission
+		err := rows.Scan(&s.Id, &s.Time, &s.ApId, &s.Points)
+		if err != nil {
+			log.Print(err)
+			return []Submission{}, err
+		}
+		submissions = append(submissions, s)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	return submissions, nil
+}
+
 func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, assignmentproblemid, language, sourcefile, time, verdict, problems.name, users.id, users.username from submissions"+
@@ -210,16 +238,16 @@ func ListProblemSubmissions(pId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
-func UpdateVerdict(id int64, verdict, reason string) error {
+func UpdateVerdict(id int64, verdict, reason string, correct, total, points int) error {
 	db := getConnection()
 
-	stmt, err := db.Prepare("update submissions set verdict=?, reason=? where id=?")
+	stmt, err := db.Prepare("update submissions set verdict=?, reason=?, correct=?, total=?, points=? where id=?")
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 
-	_, err = stmt.Exec(verdict, reason, id)
+	_, err = stmt.Exec(verdict, reason, correct, total, points, id)
 	if err != nil {
 		log.Print(err)
 		return err

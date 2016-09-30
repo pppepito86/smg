@@ -35,6 +35,7 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	description := r.Form["text"]
 	test := r.Form["test"][0]
 	visibility := r.Form["visibility"]
+	points, _ := strconv.Atoi(r.Form["points"][0])
 	if len(name) != 1 || len(visibility) != 1 {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -46,6 +47,7 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 		Visibility:  visibility[0],
 		Languages:   "java",
 		AuthorId:    user.Id,
+		Points:      points,
 	}
 	p, _ = db.CreateProblem(p)
 
@@ -113,6 +115,7 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	version := r.Form["version"]
 	description := r.Form["text"]
 	test := r.Form["test"][0]
+	points, _ := strconv.Atoi(r.Form["points"][0])
 	p := db.Problem{
 		Id:          id,
 		ProblemName: name[0],
@@ -121,6 +124,7 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 		Visibility:  "",
 		Languages:   "java",
 		AuthorId:    user.Id,
+		Points:      points,
 	}
 	db.UpdateProblem(p)
 

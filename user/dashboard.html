@@ -25,7 +25,6 @@
     <!-- PAGE LEVEL STYLES -->
     <link href="assets/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/plugins/social-buttons/social-buttons.css">
-    <link rel="stylesheet" href="assets/css/bootstrap-fileupload.min.css" />
     <!-- END PAGE LEVEL  STYLES -->
        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -78,6 +77,7 @@
                 </ul>
 
 
+                    <!--END ADMIN SETTINGS -->
             </nav>
 
         </div>
@@ -107,24 +107,15 @@
             </div>
 
             <ul id="menu" class="collapse">
-                <li class="panel">
+  
+                <!--li class="panel">
                     <a href="index.html" >
                         <i class="icon-table"></i> Dashboard
                     </a>                   
-                </li>
-                <li class="panel">
-                    <a href="users.html" >
-                        <i class="icon-table"></i> Users
-                    </a>                   
-                </li>
+                </li-->
                 <li class="panel">
                     <a href="groups.html" >
                         <i class="icon-table"></i> Groups
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="problems.html" >
-                        <i class="icon-table"></i> Problems
                     </a>                   
                 </li>
                 <li class="panel">
@@ -132,7 +123,6 @@
                         <i class="icon-table"></i> Assignments
                     </a>                   
                 </li>
-
             </ul>
 
         </div>
@@ -145,142 +135,77 @@
             <div class="inner">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2> Add Problem</h2>
-
-
-
+                        <h2> Assignments </h2>
                     </div>
                 </div>
-
                 <hr />
-
-
+                
+                
                 <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                          Problem 
-                        </div>
-                        <div class="panel-body">
-                          <div class="row">
-                            <div class="col-lg-12">
-                              <div id="div-1" class="accordion-body collapse in body">
-                                <form action="/addproblem" enctype="multipart/form-data" method="POST" role="form" >
-
-                <div class="form-group" >
-                    <label>Problem name</label>
-                    <input type="text" name="problemname" id="problemname" placeholder="Problem name" class="form-control" />
-                </div>
-
-                <div class="form-group" >
-                    <label >Version</label>
-                    <input type="text" name="version" id="version" placeholder="Version" class="form-control" />
-                </div >
-     
-                <div class="form-group" >
-                    <label >Text</label>
-                    <textarea id="text" name="text" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >
-<h3>Problem a+b</h3>
-    <p> 
-      Дадени са две цели числа <b><i>a</i></b> и <b><i>b</i></b>. Намерете техния сбор.
-    <p>
-      <b>Вход</b><br>
-      Първият ред съдържа две цели числа - <b><i>a</i></b>, <b><i>b</i></b> <b>(0 < <i>a</i>, <i>b</i> < 100)</b>
-    <p>
-      <b>Изход</b><br>
-      Отпечатайте сбора на двете числа - <b><i>a</i> + <i>b</i></b>
-    <p>
-      <b>Пример</b><br>
-    <table border="1">
-      <tr><td>Вход</td></tr>
-      <tr><td><pre>10 15</pre></td></tr>
-      <tr><td>Изход</td></tr>
-      <tr><td><pre>25</pre></td></tr>
-    </table>
-  </textarea >
-                </div >
-<div class="form-group" >
-                        <label class="control-label">Test Cases</label>
-                            <div class="fileupload fileupload-new" data-provides="fileupload"><input type="hidden" value="" name="">
-                                <div class="input-group">
-
-                                    <span class="btn btn-file btn-info">
-                                        <span class="fileupload-new">Select file</span>
-                                        <span class="fileupload-exists">Change</span>
-                                        <input type="file" name="file">
-                                    </span> 
-                                    <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a>
-                                    
-                                    <div class="col-lg-12">
-                                        <i class="icon-file fileupload-exists"></i>
-                                        <span class="fileupload-preview"></span>
-                                    </div>
-                        </div>
-                    </div>
-                    <textarea id="test" name="test" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" placeholder="10 15
-#
-25
-###
-19 4
-#
-23
-" ></textarea >
-                        </div>
-
-                <div class="form-group" >
-                    <label>Points</label>
-                    <input type="text" value="100" name="points" id="points" class="form-control" />
-                </div>
-
-                <div class="form-group" >
-                    <label >Allowed Languages</label>
-
-											<div class="checkbox" >
-                        <label >
-                          <input type="checkbox" value="">C++
-                        </label>
-                    <input type="text" name="cpp" id="cpp" placeholder="C++ Time Limit" class="form-control" />
-                    <input type="text" name="cpp" id="cpp" placeholder="C++ Memory Limit" class="form-control" />
-                      </div >
-
-											<div class="checkbox" >
-                        <label >
-                          <input type="checkbox" value="">Java
-                        </label>
-                    <input type="text" name="java" id="java" placeholder="Java Time Limit" class="form-control" />
-                    <input type="text" name="java" id="java" placeholder="Java Memory Limit" class="form-control" />
-                      </div >
-
-                </div >
-     
-                <div class="form-group" >
-                    <label >Visibility</label>
-
-                    <select id="visibility" name="visibility" class="form-control" >
-                      <option value="private" >Private</option>
-                      <option value="public" >Public</option>
-                    </select>
-                </div >
-
-
-                <div class="form-group">
-                    <div class="col-lg-4">
-                    </div>
-                    <div class="col-lg-8">
-                        <input type="submit" class="btn btn-default btn-lg" />
-                    </div>
-                </div>
-
-                                </form>
-                              </div>
+                  <div class="col-lg-7">
+                      <div class="panel panel-default">
+                            <div class="panel-heading">
+                                    Line Chart 
                             </div>
-                          </div>
+                      <div class="panel-body">
+                        <div id="morris-line-chart"></div>
+                      </div>
+                      </div>
+                  </div>
+                  
+<div class="col-lg-5">
+                         
+                       <div class="panel panel-danger">
+                            <div class="panel-heading">
+                                <i class="icon-bell"></i> Notifications Alerts Panel
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="list-group">
+                                    <a href="#" class="list-group-item">
+                                        <i class=" icon-comment"></i> New Comment
+                                    <span class="pull-right text-muted small"><em> 4 minutes ago</em>
+                                    </span>
+                                    </a>
+                                    <a href="#" class="list-group-item">
+                                        <i class="icon-twitter"></i> 3 New Followers
+                                    <span class="pull-right text-muted small"><em> 12 minutes ago</em>
+                                    </span>
+                                    </a>
+                                    <a href="#" class="list-group-item">
+                                        <i class="icon-envelope"></i> Message Sent
+                                    <span class="pull-right text-muted small"><em> 27 minutes ago</em>
+                                    </span>
+                                    </a>
+                                    <a href="#" class="list-group-item">
+                                        <i class="icon-tasks"></i> New Task
+                                    <span class="pull-right text-muted small"><em>43 minutes ago</em>
+                                    </span>
+                                    </a>
+                                    <a href="#" class="list-group-item">
+                                        <i class="icon-upload"></i> Server Rebooted
+                                    <span class="pull-right text-muted small"><em>11:32 AM</em>
+                                    </span>
+                                    </a>
+                                    <a href="#" class="list-group-item">
+                                        <i class="icon-warning-sign"></i> Server Crashed!
+                                    <span class="pull-right text-muted small"><em>11:13 AM</em>
+                                    </span>
+                                    </a>
+                                   
+                                    <a href="#" class="list-group-item">
+                                        <i class="icon-ok"></i> New Order Placed
+                                    <span class="pull-right text-muted small"><em>9:49 AM</em>
+                                    </span>
+                                    </a>
+                                </div>
+
+                            </div>
 
                         </div>
-                    </div>
                 </div>
             </div>
-                  </div>
+        </div>
 
 
 
@@ -295,7 +220,7 @@
 
    <!-- FOOTER -->
     <div id="footer">
-        <p>&copy;  pppepito86 &nbsp;2016 &nbsp;</p>
+        <p>&copy;  binarytheme &nbsp;2014 &nbsp;</p>
     </div>
     <!--END FOOTER -->
      <!-- GLOBAL SCRIPTS -->
@@ -306,12 +231,17 @@
         <!-- PAGE LEVEL SCRIPTS -->
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
-    <script src="assets/plugins/jasny/js/bootstrap-fileupload.js"></script>
      <script>
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
          });
-    </script>
+       </script>
+          
+		<script src="assets/plugins/morris/raphael-2.1.0.min.js"></script>
+    <script src="assets/plugins/morris/morris.js"></script>
+    <script src="assets/plugins/morris/morris-demo.js"></script>
+
+
      <!-- END PAGE LEVEL SCRIPTS -->
 </body>
      <!-- END BODY -->

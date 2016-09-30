@@ -16,18 +16,19 @@ type Problem struct {
 	AuthorId    int64
 	Author      string
 	Tests       string
+	Points      int
 }
 
 func CreateProblem(p Problem) (Problem, error) {
 	db := getConnection()
 
-	stmt, err := db.Prepare("INSERT INTO problems(name, version, description, languages, visibility, author) VALUES(?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO problems(name, version, description, languages, visibility, author, points) VALUES(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return p, err
 	}
 
-	res, err := stmt.Exec(p.ProblemName, p.Version, p.Description, p.Languages, p.Visibility, p.AuthorId)
+	res, err := stmt.Exec(p.ProblemName, p.Version, p.Description, p.Languages, p.Visibility, p.AuthorId, p.Points)
 	if err != nil {
 		log.Print(err)
 		return p, err
@@ -45,7 +46,7 @@ func CreateProblem(p Problem) (Problem, error) {
 
 func ListProblems() ([]Problem, error) {
 	db := getConnection()
-	rows, err := db.Query("select problems.id, problems.name, problems.version, problems.description, problems.languages, problems.visibility, problems.author, users.username from problems" +
+	rows, err := db.Query("select problems.id, problems.name, problems.version, problems.points, problems.description, problems.languages, problems.visibility, problems.author, users.username from problems" +
 		" inner join users on problems.author = users.id")
 	if err != nil {
 		log.Print(err)
@@ -55,7 +56,7 @@ func ListProblems() ([]Problem, error) {
 	problems := make([]Problem, 0)
 	for rows.Next() {
 		var p Problem
-		err := rows.Scan(&p.Id, &p.ProblemName, &p.Version, &p.Description, &p.Languages, &p.Visibility, &p.AuthorId, &p.Author)
+		err := rows.Scan(&p.Id, &p.ProblemName, &p.Version, &p.Points, &p.Description, &p.Languages, &p.Visibility, &p.AuthorId, &p.Author)
 		if err != nil {
 			log.Print(err)
 			return []Problem{}, err
@@ -72,7 +73,7 @@ func ListProblems() ([]Problem, error) {
 
 func GetProblem(id int64) (Problem, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, name, version, description, languages, visibility, author from problems where id=?", id)
+	rows, err := db.Query("select id, name, version, points, description, languages, visibility, author from problems where id=?", id)
 	if err != nil {
 		log.Print(err)
 		return Problem{}, nil
@@ -80,7 +81,7 @@ func GetProblem(id int64) (Problem, error) {
 	defer rows.Close()
 	p := Problem{}
 	for rows.Next() {
-		err := rows.Scan(&p.Id, &p.ProblemName, &p.Version, &p.Description, &p.Languages, &p.Visibility, &p.AuthorId)
+		err := rows.Scan(&p.Id, &p.ProblemName, &p.Version, &p.Points, &p.Description, &p.Languages, &p.Visibility, &p.AuthorId)
 		if err != nil {
 			log.Print(err)
 			return Problem{}, nil
@@ -96,13 +97,13 @@ func GetProblem(id int64) (Problem, error) {
 func UpdateProblem(p Problem) error {
 	db := getConnection()
 
-	stmt, err := db.Prepare("update problems set name=?, version=?, description=? where id=?")
+	stmt, err := db.Prepare("update problems set name=?, version=?, description=?, points=? where id=?")
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 
-	_, err = stmt.Exec(p.ProblemName, p.Version, p.Description, p.Id)
+	_, err = stmt.Exec(p.ProblemName, p.Version, p.Description, p.Points, p.Id)
 	if err != nil {
 		log.Print(err)
 		return err
