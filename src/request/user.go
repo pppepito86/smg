@@ -4,7 +4,6 @@ import (
 	"db"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -128,7 +127,7 @@ func pointPerWeek(w http.ResponseWriter, r *http.Request, user db.User) {
 	subIdx := 0
 	for subIdx < len(subs) {
 		currWeekResponse := Response1{
-			currWeek.String()[:10], rand.Intn(100),
+			currWeek.String()[:10], 0,
 		}
 
 		for subIdx < len(subs) && subs[subIdx].Time.After(currWeek) && subs[subIdx].Time.Before(nextWeek) {
@@ -142,6 +141,7 @@ func pointPerWeek(w http.ResponseWriter, r *http.Request, user db.User) {
 
 			subIdx++
 		}
+		currWeekResponse.Points = totalPoints
 		Response = append(Response, currWeekResponse)
 		// add totalPoints for current week
 		currWeek = nextWeek
