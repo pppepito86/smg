@@ -67,8 +67,9 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 	}
 	testStr := strconv.Itoa(testCase)
 	cmdArg = "cat input" + testStr + "|" + cmdArg + ">output" + testStr + " 2>error" + testStr
-	cmd := exec.Command("docker", "run", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "64M", "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
+	cmd := exec.Command("docker", "run", "--cidfile", "cid", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "64M", "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
 	cmd.Dir = filepath.Dir(compiledFile)
+	exec.Command("rm", filepath.Join(cmd.Dir, "cid")).Run()
 	err := exec.Command("cp",
 		filepath.Join(testsDir, fmt.Sprintf("input%d", testCase)),
 		filepath.Join(filepath.Dir(compiledFile), fmt.Sprintf("input%d", testCase))).
@@ -113,9 +114,11 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 				return "wrong answer", "", durationTime, nil
 			}
 		}
-	case <-time.After(time.Second * 5):
+	case <-time.After(time.Second * 3):
 		{
 			cmd.Process.Kill()
+			cid, _ := ioutil.ReadFile(filepath.Join(cmd.Dir, "cid"))
+			exec.Command("docker", "kill", string(cid)).Run()
 			durationTime := time.Since(startTime).Nanoseconds() / 1e6
 			return "time limit exceeded", "", durationTime, nil
 		}
