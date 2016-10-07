@@ -198,13 +198,13 @@ func AddProblemToAssignment(aId, pId, number int64, points int) (AssignmentProbl
 		ProblemId:    pId,
 		Number:       number,
 	}
-	stmt, err := db.Prepare("INSERT INTO assignmentproblems(assignmentid, problemid, points) VALUES(?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO assignmentproblems(assignmentid, problemid, number, points) VALUES(?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return ap, err
 	}
 
-	res, err := stmt.Exec(aId, pId, points)
+	res, err := stmt.Exec(aId, pId, number, points)
 	if err != nil {
 		log.Print(err)
 		return ap, err
@@ -222,7 +222,7 @@ func AddProblemToAssignment(aId, pId, number int64, points int) (AssignmentProbl
 
 func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 	db := getConnection()
-	rows, err := db.Query("select assignmentproblems.id, assignmentid, problemid, assignmentproblems.points, problems.name from assignmentproblems"+
+	rows, err := db.Query("select assignmentproblems.id, assignmentid, problemid, assignmentproblems.number, assignmentproblems.points, problems.name from assignmentproblems"+
 		" inner join problems on assignmentproblems.assignmentid=? and assignmentproblems.problemid=problems.id order by problemid", assignmentid)
 	if err != nil {
 		log.Print(err)
@@ -232,7 +232,7 @@ func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 	assignmentProblems := make([]AssignmentProblem, 0)
 	for rows.Next() {
 		var ap AssignmentProblem
-		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId, &ap.Points, &ap.ProblemName)
+		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId, &ap.Number, &ap.Points, &ap.ProblemName)
 		if err != nil {
 			log.Print(err)
 			return []AssignmentProblem{}, err

@@ -161,6 +161,7 @@
                                 <table class="table table-striped table-bordered table-hover" id="dataTables-example">
                                     <thead>
                                         <tr>
+                                            <th>Id</th>
                                             <th>Problem</th>
                                         </tr>
                                     </thead>
@@ -168,6 +169,7 @@
                                         {{range $index, $element := .Data.Problems}}
                                         <tr>
 
+                                          <td>{{$element.Number}}</td>
                                           <td style="background-color:{{index $.Data.Status $element.Id}}">
                                             
                                             <a href="/contest/{{$.Id}}/problem/{{$element.Id}}">{{$element.ProblemName}}</a></td>
