@@ -83,7 +83,6 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 		fmt.Println("using file")
 		fp := filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10), header.Filename)
 		fmt.Println("file is", file)
-		//os.MkdirAll(filepath.Dir(fp), 0755)
 		out, _ := os.Create(fp)
 		defer out.Close()
 		_, err := io.Copy(out, file)
@@ -102,6 +101,9 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 			fmt.Println("error unzip", err)
 		}
 
+		replaceR := exec.Command("sed", "-i", "'s/\r$//'", "*put*")
+		replaceR.Dir = filepath.Dir(fp)
+		replaceR.Run()
 	}
 
 	http.Redirect(w, r, "/problems.html", http.StatusFound)
@@ -109,7 +111,7 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 
 func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	r.ParseForm()
-	r.FormFile("file")
+	file, header, _ := r.FormFile("file")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	name := r.Form["problemname"]
 	version := r.Form["version"]
@@ -158,7 +160,33 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 			ioutil.WriteFile(filein, []byte(testin), 0755)
 			ioutil.WriteFile(fileout, []byte(testout), 0755)
 		}
+	} else {
+		fmt.Println("using file")
+		fp := filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10), header.Filename)
+		fmt.Println("file is", file)
+		out, _ := os.Create(fp)
+		defer out.Close()
+		_, err := io.Copy(out, file)
+		if err != nil {
+			fmt.Println("error copying", err)
+		}
+
+		err = exec.Command("chmod", "777", fp).Run()
+		if err != nil {
+			fmt.Println("error chmod", err)
+		}
+
+		unzip := exec.Command("unzip", fp, "-d", filepath.Dir(fp))
+		err = unzip.Run()
+		if err != nil {
+			fmt.Println("error unzip", err)
+		}
+
+		replaceR := exec.Command("sed", "-i", "'s/\r$//'", "*put*")
+		replaceR.Dir = filepath.Dir(fp)
+		replaceR.Run()
 	}
+
 	http.Redirect(w, r, "/problems.html", http.StatusFound)
 }
 
