@@ -101,7 +101,7 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 			fmt.Println("error unzip", err)
 		}
 
-		replaceR := exec.Command("sed", "-i", "'s/\r$//'", "*put*")
+		replaceR := exec.Command("sed", "-i", "'s/\r$//g'", "*put*")
 		replaceR.Dir = filepath.Dir(fp)
 		replaceR.Run()
 	}
