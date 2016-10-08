@@ -19,6 +19,8 @@ type Submission struct {
 	ProblemName       string
 	Source            string
 	User              string
+	FirstName         string
+	LastName          string
 	SubmissionDetails []SubmissionDetail
 	Points            int
 }
@@ -156,7 +158,7 @@ func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 
 func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select submissions.id, assignmentproblemid, language, sourcefile, time, verdict, problems.name, users.id, users.username from submissions"+
+	rows, err := db.Query("select submissions.id, assignmentproblemid, language, sourcefile, time, verdict, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+
 		" inner join assignmentproblems on assignmentproblems.id=submissions.assignmentproblemid and assignmentproblems.assignmentid = ?"+
 		"	inner join problems on problems.id=assignmentproblems.problemid"+
 		"	inner join users on users.id=submissions.userid", assignmentId)
@@ -168,7 +170,7 @@ func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	submissions := make([]Submission, 0)
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.ApId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.ProblemName, &s.UserId, &s.User)
+		err := rows.Scan(&s.Id, &s.ApId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.ProblemName, &s.UserId, &s.User, &s.FirstName, &s.LastName)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err

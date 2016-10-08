@@ -163,6 +163,7 @@
                                         <tr>
                                             <th>Id</th>
                                             <th>User</th>
+                                            <th>Names</th>
                                             <th>Time</th>
                                             <th>Problem</th>
                                             <th>Language</th>
@@ -174,6 +175,7 @@
                                         <tr>
                                           <td><a href="/contest/{{$.Id}}/submission/{{$element.Id}}" >{{$element.Id}}</a></td>
                                             <td>{{$element.User}}</td>
+                                            <td>{{$element.FirstName}} {{$element.LastName}}</td>
                                             <td>{{$element.Time}}</td>
                                             <td>{{$element.ProblemName}}</td>
                                             <td class="center">{{$element.Language}}</td>
