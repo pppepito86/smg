@@ -129,8 +129,10 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 	users, _ := db.ListUsersForAssignment(cid)
 	submissions, _ := db.ListSubmissionsForAssignment(cid)
 	type UserInfo struct {
-		UserName string
-		Points   []int
+		UserName  string
+		FirstName string
+		LastName  string
+		Points    []int
 	}
 	type Result struct {
 		Problems []string
@@ -146,7 +148,7 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 	info := []UserInfo{}
 	for idx, user := range users {
 		usersMap[user.Id] = idx
-		userInfo := UserInfo{user.UserName, make([]int, len(problems)+1)}
+		userInfo := UserInfo{user.UserName, user.FirstName, user.LastName, make([]int, len(problems)+1)}
 		info = append(info, userInfo)
 	}
 	for _, submission := range submissions {
@@ -164,11 +166,11 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 		if !ok {
 			continue
 		}
-		pId := problemsMap[submission.ApId]
+		pId := problemsMap[submission.ApId] + 1
 		if points > info[uId].Points[pId] {
 			diff := points - info[uId].Points[pId]
 			info[uId].Points[pId] = points
-			info[uId].Points[len(problems)] += diff
+			info[uId].Points[0] += diff
 		}
 	}
 	result.Info = info
