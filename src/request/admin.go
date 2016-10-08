@@ -240,19 +240,22 @@ func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 	dir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
+	files, _ := ioutil.ReadDir(dir)
 	tests := ""
-	for i := 1; ; i++ {
-		input, err := ioutil.ReadFile(filepath.Join(dir, "input"+strconv.Itoa(i)))
-		if err != nil {
-			break
+	if len(files)%2 == 0 {
+		for i := 1; ; i++ {
+			input, err := ioutil.ReadFile(filepath.Join(dir, "input"+strconv.Itoa(i)))
+			if err != nil {
+				break
+			}
+			output, _ := ioutil.ReadFile(filepath.Join(dir, "output"+strconv.Itoa(i)))
+			tests += string(input)
+			tests += "#\n"
+			tests += string(output)
+			tests += "###\n"
 		}
-		output, _ := ioutil.ReadFile(filepath.Join(dir, "output"+strconv.Itoa(i)))
-		tests += string(input)
-		tests += "#\n"
-		tests += string(output)
-		tests += "###\n"
+		tests = tests[0 : len(tests)-4]
 	}
-	tests = tests[0 : len(tests)-4]
 	problem.Tests = tests
 	t.Execute(w, problem)
 }

@@ -111,7 +111,7 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 
 func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	r.ParseForm()
-	file, header, _ := r.FormFile("file")
+	file, header, fileErr := r.FormFile("file")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	name := r.Form["problemname"]
 	version := r.Form["version"]
@@ -160,7 +160,7 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 			ioutil.WriteFile(filein, []byte(testin), 0755)
 			ioutil.WriteFile(fileout, []byte(testout), 0755)
 		}
-	} else {
+	} else if fileErr == nil {
 		fmt.Println("using file")
 		fp := filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10), header.Filename)
 		fmt.Println("file is", file)
