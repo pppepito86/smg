@@ -152,16 +152,7 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 		info = append(info, userInfo)
 	}
 	for _, submission := range submissions {
-		points := 0
-		if submission.Verdict == "Accepted" {
-			points = 100
-		}
-		split := strings.Split(submission.Verdict, "/")
-		if len(split) == 2 {
-			p, _ := strconv.Atoi(split[0])
-			q, _ := strconv.Atoi(split[1])
-			points = p * 100 / q
-		}
+		points := submission.Points
 		uId, ok := usersMap[submission.UserId]
 		if !ok {
 			continue
