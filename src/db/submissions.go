@@ -30,7 +30,7 @@ type Submission struct {
 func AddSubmission(s Submission) (Submission, error) {
 	db := getConnection()
 
-	stmt, err := db.Prepare("INSERT INTO submissions(assignmentproblemid, assignmentid, problemid, userid, language, sourcefile, verdict, reason) VALUES(?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO submissions(assignmentproblemid, assignmentid, problemid, userid, language, sourcefile, verdict, reason) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return s, err
