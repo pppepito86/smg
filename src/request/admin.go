@@ -254,7 +254,9 @@ func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 			tests += string(output)
 			tests += "###\n"
 		}
-		tests = tests[0 : len(tests)-4]
+		if len(tests) > 4 {
+			tests = tests[0 : len(tests)-4]
+		}
 	}
 	problem.Tests = tests
 	t.Execute(w, problem)
