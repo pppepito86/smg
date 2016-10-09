@@ -158,7 +158,7 @@ func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 
 func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select submissions.id, language, sourcefile, time, verdict, submissions.points, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+
+	rows, err := db.Query("select submissions.id, submissions.problemid, language, sourcefile, time, verdict, submissions.points, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+
 		"	inner join problems on problems.id=submissions.problemid and submissions.assignmentid=?"+
 		"	inner join users on users.id=submissions.userid", assignmentId)
 	if err != nil {
@@ -169,7 +169,7 @@ func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	submissions := make([]Submission, 0)
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Points, &s.ProblemName, &s.UserId, &s.User, &s.FirstName, &s.LastName)
+		err := rows.Scan(&s.Id, &s.ProblemId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Points, &s.ProblemName, &s.UserId, &s.User, &s.FirstName, &s.LastName)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err
