@@ -161,6 +161,8 @@ DROP TABLE IF EXISTS `submissions`;
 CREATE TABLE `submissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `assignmentproblemid` int(11) NOT NULL,
+  `assignmentid` int(11) NOT NULL,
+  `problemid` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
   `language` varchar(50) NOT NULL,
   `sourcefile` varchar(100) NOT NULL,
@@ -174,7 +176,9 @@ CREATE TABLE `submissions` (
   KEY `assignmentproblemid` (`assignmentproblemid`),
   KEY `userid` (`userid`),
   CONSTRAINT `submissions_ibfk_1` FOREIGN KEY (`assignmentproblemid`) REFERENCES `assignmentproblems` (`id`),
-  CONSTRAINT `submissions_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
+  CONSTRAINT `submissions_ibfk_2` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`),
+  CONSTRAINT `submissions_ibfk_3` FOREIGN KEY (`problemid`) REFERENCES `problems` (`id`),
+  CONSTRAINT `submissions_ibfk_4` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=214 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
