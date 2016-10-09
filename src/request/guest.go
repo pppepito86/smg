@@ -79,26 +79,3 @@ func RandomString() string {
 	rs := base64.URLEncoding.EncodeToString(rb)
 	return rs
 }
-
-func register(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		return
-	}
-
-	r.ParseForm()
-	user := db.User{
-		-1,
-		3,
-		r.Form["username"][0],
-		r.Form["firstname"][0],
-		r.Form["lastname"][0],
-		r.Form["email"][0],
-		r.Form["password"][0],
-		r.Form["password"][0],
-		false,
-		"",
-	}
-	user, _ = db.CreateUser(user)
-
-	http.Redirect(w, r, "/index.html", http.StatusFound)
-}
