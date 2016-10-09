@@ -213,8 +213,10 @@ func ListMySubmissionsForProblem(userId, aId, pId int64) ([]Submission, error) {
 
 func ListProblemSubmissions(pId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, userid, language, sourcefile, time, verdict, reason from submissions"+
-		"	where problemid=?", pId)
+	rows, err := db.Query("select submissions.id, submissions.problemid, submissions.userid, submissions.language, submissions.sourcefile, submissions.time, submissions.verdict, submissions.reason, assignmentproblems.points from submissions"+
+		" inner join assignmentproblems"+
+		" where assignmentproblems.problemid=submissions.problemid and assignmentproblems.assignmentid=submissions.assignmentid"+
+		" and submissions.problemid=?", pId)
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -223,7 +225,7 @@ func ListProblemSubmissions(pId int64) ([]Submission, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason)
+		err := rows.Scan(&s.Id, &s.ProblemId, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason, &s.ProblemPoints)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err
