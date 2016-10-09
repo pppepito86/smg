@@ -34,7 +34,7 @@ func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int6
 		Status:   make(map[int64]string),
 	}
 	for _, ap := range aps {
-		submissions, _ := db.ListMySubmissionsForProblem(user.Id, ap.Id)
+		submissions, _ := db.ListMySubmissionsForProblem(user.Id, ap.AssignmentId, ap.ProblemId)
 		if len(submissions) > 0 {
 			d.Status[ap.Id] = "#ff0000"
 			for _, s := range submissions {

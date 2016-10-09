@@ -54,7 +54,7 @@ func AddSubmission(s Submission) (Submission, error) {
 
 func ListSubmissions() ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, assignmentproblemid, userid, language, sourcefile, time, verdict from submissions order by id desc")
+	rows, err := db.Query("select id, assignmentproblemid, assignmentid, problemid, userid, language, sourcefile, time, verdict from submissions order by id desc")
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -63,7 +63,7 @@ func ListSubmissions() ([]Submission, error) {
 	submissions := make([]Submission, 0)
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.ApId, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict)
+		err := rows.Scan(&s.Id, &s.ApId, &s.AssignmentId, &s.ProblemId, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err
@@ -81,8 +81,7 @@ func ListSubmissions() ([]Submission, error) {
 func ListSubmission(submissionId int64) (Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, submissions.userid, language, sourcefile, time, verdict, reason, problems.name from submissions"+
-		" inner join assignmentproblems on submissions.id=? and assignmentproblems.id=submissions.assignmentproblemid"+
-		"	inner join problems on problems.id=assignmentproblems.problemid", submissionId)
+		"	inner join problems on problems.id=submissions.problemid and submissions.id=?", submissionId)
 	s := Submission{}
 	if err != nil {
 		log.Print(err)
@@ -107,8 +106,7 @@ func ListSubmission(submissionId int64) (Submission, error) {
 func ListMySubmissions(userId, assignmentId int64) ([]Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, language, sourcefile, time, verdict, problems.name from submissions"+
-		" inner join assignmentproblems on assignmentproblems.id=submissions.assignmentproblemid and assignmentproblems.assignmentid = ? and submissions.userid = ?"+
-		"	inner join problems on problems.id=assignmentproblems.problemid", assignmentId, userId)
+		"	inner join problems on problems.id=submissions.problemid and submissions.assignmentid=? and submissions.userid=?", assignmentId, userId)
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -134,7 +132,7 @@ func ListMySubmissions(userId, assignmentId int64) ([]Submission, error) {
 
 func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select submissions.id, time, assignmentproblemid, points from submissions where userid=?", userId)
+	rows, err := db.Query("select id, time, assignmentproblemid, points from submissions where userid=?", userId)
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -161,8 +159,7 @@ func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, assignmentproblemid, language, sourcefile, time, verdict, submissions.points, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+
-		" inner join assignmentproblems on assignmentproblems.id=submissions.assignmentproblemid and assignmentproblems.assignmentid = ?"+
-		"	inner join problems on problems.id=assignmentproblems.problemid"+
+		"	inner join problems on problems.id=submissions.problemid and submissions.assignmentid=?"+
 		"	inner join users on users.id=submissions.userid", assignmentId)
 	if err != nil {
 		log.Print(err)
@@ -187,10 +184,10 @@ func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
-func ListMySubmissionsForProblem(userId, apId int64) ([]Submission, error) {
+func ListMySubmissionsForProblem(userId, aId, pId int64) ([]Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, language, sourcefile, verdict from submissions"+
-		" where userid=? and assignmentproblemid=?", userId, apId)
+		" where userid=? and assignmentid=? and problemid=?", userId, aId, pId)
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -216,9 +213,8 @@ func ListMySubmissionsForProblem(userId, apId int64) ([]Submission, error) {
 
 func ListProblemSubmissions(pId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select submissions.id, submissions.assignmentproblemid, submissions.userid, language, sourcefile, time, verdict, reason from submissions"+
-		" inner join assignmentproblems on assignmentproblems.id=submissions.assignmentproblemid"+
-		"	and assignmentproblems.problemid=?", pId)
+	rows, err := db.Query("select id, assignmentproblemid, userid, language, sourcefile, time, verdict, reason from submissions"+
+		"	where problemid=?", pId)
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
