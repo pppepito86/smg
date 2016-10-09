@@ -141,7 +141,7 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 	result := Result{}
 	problemsMap := make(map[int64]int)
 	for idx, problem := range problems {
-		problemsMap[problem.Id] = idx
+		problemsMap[problem.ProblemId] = idx
 		result.Problems = append(result.Problems, problem.ProblemName)
 	}
 	usersMap := make(map[int64]int)
@@ -157,7 +157,7 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 		if !ok {
 			continue
 		}
-		pId := problemsMap[submission.ApId] + 1
+		pId := problemsMap[submission.ProblemId] + 1
 		if points > info[uId].Points[pId] {
 			diff := points - info[uId].Points[pId]
 			info[uId].Points[pId] = points
