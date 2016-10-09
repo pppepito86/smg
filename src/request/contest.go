@@ -215,14 +215,14 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 	_, _ = io.Copy(out, file)
 
 	s := db.Submission{
-		Id:           -1,
-		ApId:         apId,
-		AssignmentId: ap.AssignmentId,
-		ProblemId:    ap.ProblemId,
-		UserId:       user.Id,
-		Language:     language[0],
-		SourceFile:   fp,
-		Verdict:      "pending",
+		Id:            -1,
+		AssignmentId:  ap.AssignmentId,
+		ProblemId:     ap.ProblemId,
+		UserId:        user.Id,
+		Language:      language[0],
+		SourceFile:    fp,
+		Verdict:       "pending",
+		ProblemPoints: ap.Points,
 	}
 
 	s, _ = db.AddSubmission(s)

@@ -131,13 +131,13 @@ func pointPerWeek(w http.ResponseWriter, r *http.Request, user db.User) {
 		}
 
 		for subIdx < len(subs) && subs[subIdx].Time.After(currWeek) && subs[subIdx].Time.Before(nextWeek) {
-			lastPts, _ := problemPoints[subs[subIdx].ApId]
+			lastPts, _ := problemPoints[subs[subIdx].ProblemId]
 			currPts := subs[subIdx].Points
 			if currPts > lastPts {
 				totalPoints += currPts - lastPts
 			}
 
-			problemPoints[subs[subIdx].ApId] = currPts
+			problemPoints[subs[subIdx].ProblemId] = currPts
 
 			subIdx++
 		}

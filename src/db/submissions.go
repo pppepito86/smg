@@ -9,7 +9,6 @@ import (
 
 type Submission struct {
 	Id                int64
-	ApId              int64
 	AssignmentId      int64
 	ProblemId         int64
 	UserId            int64
@@ -25,18 +24,19 @@ type Submission struct {
 	LastName          string
 	SubmissionDetails []SubmissionDetail
 	Points            int
+	ProblemPoints     int
 }
 
 func AddSubmission(s Submission) (Submission, error) {
 	db := getConnection()
 
-	stmt, err := db.Prepare("INSERT INTO submissions(assignmentproblemid, assignmentid, problemid, userid, language, sourcefile, verdict, reason) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO submissions(assignmentid, problemid, userid, language, sourcefile, verdict, reason) VALUES(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return s, err
 	}
 
-	res, err := stmt.Exec(s.ApId, s.AssignmentId, s.ProblemId, s.UserId, s.Language, s.SourceFile, s.Verdict, s.Reason)
+	res, err := stmt.Exec(s.AssignmentId, s.ProblemId, s.UserId, s.Language, s.SourceFile, s.Verdict, s.Reason)
 	if err != nil {
 		log.Print(err)
 		return s, err
@@ -54,7 +54,7 @@ func AddSubmission(s Submission) (Submission, error) {
 
 func ListSubmissions() ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, assignmentproblemid, assignmentid, problemid, userid, language, sourcefile, time, verdict from submissions order by id desc")
+	rows, err := db.Query("select id, assignmentid, problemid, userid, language, sourcefile, time, verdict from submissions order by id desc")
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -63,7 +63,7 @@ func ListSubmissions() ([]Submission, error) {
 	submissions := make([]Submission, 0)
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.ApId, &s.AssignmentId, &s.ProblemId, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict)
+		err := rows.Scan(&s.Id, &s.AssignmentId, &s.ProblemId, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err
@@ -132,7 +132,7 @@ func ListMySubmissions(userId, assignmentId int64) ([]Submission, error) {
 
 func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, time, assignmentproblemid, points from submissions where userid=?", userId)
+	rows, err := db.Query("select id, time, assignmentid, problemid, points from submissions where userid=?", userId)
 	if err != nil {
 		log.Print(err)
 		return []Submission{}, err
@@ -141,7 +141,7 @@ func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 	submissions := make([]Submission, 0)
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.Time, &s.ApId, &s.Points)
+		err := rows.Scan(&s.Id, &s.Time, &s.AssignmentId, &s.ProblemId, &s.Points)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err
@@ -158,7 +158,7 @@ func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 
 func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select submissions.id, assignmentproblemid, language, sourcefile, time, verdict, submissions.points, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+
+	rows, err := db.Query("select submissions.id, language, sourcefile, time, verdict, submissions.points, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+
 		"	inner join problems on problems.id=submissions.problemid and submissions.assignmentid=?"+
 		"	inner join users on users.id=submissions.userid", assignmentId)
 	if err != nil {
@@ -169,7 +169,7 @@ func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	submissions := make([]Submission, 0)
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.ApId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Points, &s.ProblemName, &s.UserId, &s.User, &s.FirstName, &s.LastName)
+		err := rows.Scan(&s.Id, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Points, &s.ProblemName, &s.UserId, &s.User, &s.FirstName, &s.LastName)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err
@@ -213,7 +213,7 @@ func ListMySubmissionsForProblem(userId, aId, pId int64) ([]Submission, error) {
 
 func ListProblemSubmissions(pId int64) ([]Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, assignmentproblemid, userid, language, sourcefile, time, verdict, reason from submissions"+
+	rows, err := db.Query("select id, userid, language, sourcefile, time, verdict, reason from submissions"+
 		"	where problemid=?", pId)
 	if err != nil {
 		log.Print(err)
@@ -223,7 +223,7 @@ func ListProblemSubmissions(pId int64) ([]Submission, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var s Submission
-		err := rows.Scan(&s.Id, &s.ApId, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason)
+		err := rows.Scan(&s.Id, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason)
 		if err != nil {
 			log.Print(err)
 			return []Submission{}, err

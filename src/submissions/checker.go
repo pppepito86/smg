@@ -27,7 +27,6 @@ func testSubmission(s db.Submission) {
 	fmt.Println("Testing: " + s.SourceFile)
 	db.DeleteSubmissionDetails(s.Id)
 	compiledFile, err := compile(s)
-	ap, _ := db.GetAssignmentProblem(s.ApId)
 
 	testsDir := filepath.Join("workdir", "problems", strconv.FormatInt(s.ProblemId, 10))
 	files, _ := ioutil.ReadDir(testsDir)
@@ -44,7 +43,7 @@ func testSubmission(s db.Submission) {
 	db.UpdateVerdict(s.Id, "Compiled", "", 0, tests, 0)
 
 	for i := 1; i <= tests; i++ {
-		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i), "", correct, tests, correct*ap.Points/tests)
+		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i), "", correct, tests, correct*s.ProblemPoints/tests)
 		status, reason, time, _ := test(s, compiledFile, testsDir, i)
 		if status == "ok" {
 			correct++
@@ -52,9 +51,9 @@ func testSubmission(s db.Submission) {
 		db.AddSubmissionDetails(s.Id, "Test #"+strconv.Itoa(i), status, reason, time)
 	}
 	if correct == tests && tests > 0 {
-		db.UpdateVerdict(s.Id, "Accepted", "", correct, tests, ap.Points)
+		db.UpdateVerdict(s.Id, "Accepted", "", correct, tests, s.ProblemPoints)
 	} else {
-		db.UpdateVerdict(s.Id, fmt.Sprintf("%d/%d", correct, tests), "", correct, tests, correct*ap.Points/tests)
+		db.UpdateVerdict(s.Id, fmt.Sprintf("%d/%d", correct, tests), "", correct, tests, correct*s.ProblemPoints/tests)
 	}
 }
 
