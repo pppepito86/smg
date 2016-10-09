@@ -35,7 +35,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	if postLogin(w, r) {
 		http.Redirect(w, r, "/users.html", http.StatusFound)
 	} else {
-		http.Redirect(w, r, "/login.html", http.StatusFound)
+		http.Redirect(w, r, "/error.html?error=Login Failed", http.StatusFound)
 	}
 }
 
