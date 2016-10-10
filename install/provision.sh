@@ -66,7 +66,7 @@ do_stop() {
 }
 
 do_status() {
-  if [[ $(ps aux|grep main| wc -l) -ne 1 ]]; then
+  if [[ \$(ps aux|grep main| wc -l) -ne 1 ]]; then
     echo started
   else
     echo stopped
@@ -88,7 +88,7 @@ case "\$1" in
     do_status
     ;;
   *)
-    echo "Usage: $0 start|stop|restart" >&2
+    echo "Usage: \$0 start|stop|restart" >&2
     exit 1
     ;;
 esac
