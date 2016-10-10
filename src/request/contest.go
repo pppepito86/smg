@@ -105,7 +105,9 @@ func editHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	for _, ap := range aps {
 		problems += "," + strconv.FormatInt(ap.ProblemId, 10)
 	}
-	problems = problems[1:len(problems)]
+	if len(problems) > 1 {
+		problems = problems[1:len(problems)]
+	}
 	assignment.Problems = problems
 	response := Response{cid, assignment}
 	serveContestHtml(w, r, user, "edit.html", response)
