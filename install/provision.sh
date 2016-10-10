@@ -31,7 +31,7 @@ echo "mysql-server-5.6 mysql-server/root_password_again password password" | deb
 apt-get install mysql-server-5.6 -y
 
 #import database smg
-mysql -u root -ppassword < /vagrant/smg.sql
+mysql -u root -ppassword < /app/judge/install/smg.sql
 
 #install docker
 wget -qO- https://get.docker.com/ | sh
