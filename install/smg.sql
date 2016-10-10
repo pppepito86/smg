@@ -16,7 +16,11 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 DROP DATABASE IF EXISTS `smg`;
-CREATE DATABASE `smg`;
+
+CREATE DATABASE `smg`
+  DEFAULT CHARACTER SET utf8
+  DEFAULT COLLATE utf8_general_ci;
+
 USE `smg`
 
 --
@@ -37,7 +41,7 @@ CREATE TABLE `assignmentproblems` (
   KEY `problemid` (`problemid`),
   CONSTRAINT `assignmentproblems_ibfk_1` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`),
   CONSTRAINT `assignmentproblems_ibfk_2` FOREIGN KEY (`problemid`) REFERENCES `problems` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,7 +64,7 @@ CREATE TABLE `assignments` (
   KEY `groupid` (`groupid`),
   CONSTRAINT `assignments_ibfk_1` FOREIGN KEY (`author`) REFERENCES `users` (`id`),
   CONSTRAINT `assignments_ibfk_2` FOREIGN KEY (`groupid`) REFERENCES `groups` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -79,7 +83,7 @@ CREATE TABLE `groups` (
   UNIQUE KEY `groupname` (`groupname`),
   KEY `creatorid` (`creatorid`),
   CONSTRAINT `groups_ibfk_1` FOREIGN KEY (`creatorid`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +106,7 @@ CREATE TABLE `problems` (
   UNIQUE KEY `problem_version` (`name`,`version`),
   KEY `author` (`author`),
   CONSTRAINT `problems_ibfk_1` FOREIGN KEY (`author`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,7 +122,7 @@ CREATE TABLE `roles` (
   `description` varchar(300) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `rolename` (`rolename`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -148,7 +152,7 @@ CREATE TABLE `submissiondetails` (
   PRIMARY KEY (`id`),
   KEY `submissionid` (`submissionid`),
   CONSTRAINT `submissiondetails_ibfk_1` FOREIGN KEY (`submissionid`) REFERENCES `submissions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,7 +164,6 @@ DROP TABLE IF EXISTS `submissions`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `submissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `assignmentproblemid` int(11) NOT NULL,
   `assignmentid` int(11) NOT NULL,
   `problemid` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
@@ -173,13 +176,13 @@ CREATE TABLE `submissions` (
   `total` int(11) NOT NULL,
   `points` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `assignmentproblemid` (`assignmentproblemid`),
+  KEY `assignmentid` (`assignmentid`),
+  KEY `problemid` (`problemid`),
   KEY `userid` (`userid`),
-  CONSTRAINT `submissions_ibfk_1` FOREIGN KEY (`assignmentproblemid`) REFERENCES `assignmentproblems` (`id`),
-  CONSTRAINT `submissions_ibfk_2` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`),
-  CONSTRAINT `submissions_ibfk_3` FOREIGN KEY (`problemid`) REFERENCES `problems` (`id`),
-  CONSTRAINT `submissions_ibfk_4` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=214 DEFAULT CHARSET=latin1;
+  CONSTRAINT `submissions_ibfk_1` FOREIGN KEY (`assignmentid`) REFERENCES `assignments` (`id`),
+  CONSTRAINT `submissions_ibfk_2` FOREIGN KEY (`problemid`) REFERENCES `problems` (`id`),
+  CONSTRAINT `submissions_ibfk_3` FOREIGN KEY (`userid`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=214 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -199,7 +202,7 @@ CREATE TABLE `usergroups` (
   KEY `groupid` (`groupid`),
   CONSTRAINT `usergroups_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`id`),
   CONSTRAINT `usergroups_ibfk_2` FOREIGN KEY (`groupid`) REFERENCES `groups` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -215,7 +218,7 @@ CREATE TABLE `userroles` (
   `description` varchar(300) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `rolename` (`rolename`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -240,7 +243,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `email` (`email`),
   KEY `roleid` (`roleid`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`roleid`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
