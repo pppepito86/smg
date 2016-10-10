@@ -58,6 +58,11 @@ chmod 700 /etc/init.d/judge
 update-rc.d judge defaults
 update-rc.d judge enable
 
+#backup
+chmod +x /app/judge/install/backup.sh
+chmod +x /app/judge/install/cron.sh
+/app/judge/install/cron.sh
+
 #restart
 sudo reboot
 
