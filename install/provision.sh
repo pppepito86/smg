@@ -73,7 +73,7 @@ do_status() {
   fi
 }
 
-case "$1" in
+case "\$1" in
   start)
     do_start
     ;;
