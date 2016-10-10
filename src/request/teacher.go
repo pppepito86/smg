@@ -131,10 +131,11 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	db.UpdateProblem(p)
 
 	dir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
-	exec.Command("rm", "-rf", dir).Run()
-	os.MkdirAll(dir, 0755)
 	test = strings.Replace(test, "\r", "", -1)
 	if len(test) > 0 {
+		exec.Command("rm", "-rf", dir).Run()
+		os.MkdirAll(dir, 0755)
+
 		fmt.Println("using text field")
 		tests := strings.Split(test, "###")
 		for i, t := range tests {
@@ -161,6 +162,9 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 			ioutil.WriteFile(fileout, []byte(testout), 0755)
 		}
 	} else if fileErr == nil {
+		exec.Command("rm", "-rf", dir).Run()
+		os.MkdirAll(dir, 0755)
+
 		fmt.Println("using file")
 		fp := filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10), header.Filename)
 		fmt.Println("file is", file)
