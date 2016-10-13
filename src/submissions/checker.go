@@ -42,6 +42,11 @@ func testSubmission(s db.Submission) {
 	fmt.Println("compilation successful")
 	db.UpdateVerdict(s.Id, "Compiled", "", 0, tests, 0)
 
+	if tests == 0 {
+		db.UpdateVerdict(s.Id, "System error", "Missing test cases", 0, 0, 0)
+		return
+	}
+
 	for i := 1; i <= tests; i++ {
 		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i), "", correct, tests, correct*s.ProblemPoints/tests)
 		status, reason, time, _ := test(s, compiledFile, testsDir, i)
