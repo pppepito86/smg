@@ -2,6 +2,7 @@ package request
 
 import (
 	"db"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -27,6 +28,40 @@ func HandleTeacher(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 }
 
+func limitsFromRequest(r *http.Request) db.Limits {
+	limits := db.Limits{}
+	if len(r.Form["cpp"]) > 0 {
+		tl, _ := strconv.Atoi(r.Form["cpptime"][0])
+		ml, _ := strconv.Atoi(r.Form["cppmemory"][0])
+		if tl == 0 {
+			tl = 1000
+		}
+		if ml == 0 {
+			ml = 64
+		}
+		cpplimit := db.Limit{"c++", tl, ml}
+		limits["c++"] = cpplimit
+	}
+	if len(r.Form["java"]) > 0 {
+		tl, _ := strconv.Atoi(r.Form["javatime"][0])
+		ml, _ := strconv.Atoi(r.Form["javamemory"][0])
+		if tl == 0 {
+			tl = 1000
+		}
+		if ml == 0 {
+			ml = 64
+		}
+		javalimit := db.Limit{"java", tl, ml}
+		limits["java"] = javalimit
+	}
+	return limits
+}
+
+func limitsAsString(limits db.Limits) string {
+	b, _ := json.Marshal(limits)
+	return string(b)
+}
+
 func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	r.ParseForm()
 	file, header, _ := r.FormFile("file")
@@ -36,16 +71,19 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	test := r.Form["test"][0]
 	visibility := r.Form["visibility"]
 	points, _ := strconv.Atoi(r.Form["points"][0])
+
 	if len(name) != 1 || len(visibility) != 1 {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	limits := limitsAsString(limitsFromRequest(r))
 	p := db.Problem{
 		ProblemName: name[0],
 		Version:     version[0],
 		Description: description[0],
 		Visibility:  visibility[0],
-		Languages:   "java",
+		Languages:   limits,
 		AuthorId:    user.Id,
 		Points:      points,
 	}
@@ -118,13 +156,14 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	description := r.Form["text"]
 	test := r.Form["test"][0]
 	points, _ := strconv.Atoi(r.Form["points"][0])
+	limits := limitsAsString(limitsFromRequest(r))
 	p := db.Problem{
 		Id:          id,
 		ProblemName: name[0],
 		Version:     version[0],
 		Description: description[0],
 		Visibility:  "",
-		Languages:   "java",
+		Languages:   limits,
 		AuthorId:    user.Id,
 		Points:      points,
 	}

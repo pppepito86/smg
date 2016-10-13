@@ -186,6 +186,7 @@ func problemHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64
 	apId, _ := strconv.ParseInt(args[0], 10, 64)
 	ap, _ := db.GetAssignmentProblem(apId)
 	problem, _ := db.GetProblem(ap.ProblemId)
+	problem.LangLimits = LimitsFromString(problem.Languages)
 	response := Response{cid, problem}
 	serveContestHtml(w, r, user, "problem.html", response)
 }
@@ -216,6 +217,7 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 	defer out.Close()
 	_, _ = io.Copy(out, file)
 
+	limits := LimitsFromString(ap.Languages)
 	s := db.Submission{
 		Id:            -1,
 		AssignmentId:  ap.AssignmentId,
@@ -225,6 +227,7 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 		SourceFile:    fp,
 		Verdict:       "pending",
 		ProblemPoints: ap.Points,
+		Limit:         limits[language[0]],
 	}
 
 	s, _ = db.AddSubmission(s)

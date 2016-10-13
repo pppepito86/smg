@@ -206,29 +206,37 @@
                     <label>Points</label>
                     <input type="text" value="{{.Points}}" name="points" id="points" class="form-control" />
                 </div>
-
                 <div class="form-group" >
                     <label >Allowed Languages</label>
-
+                  {{$cpplimit :=index .LangLimits "c++"}}
+                  {{$javalimit :=index .LangLimits "java"}}
 											<div class="checkbox" >
                         <label >
+                          {{if eq $cpplimit.Language "c++"}}
                           <input type="checkbox" name="cpp" value="cpp" checked >C++
+                          {{else}}
+                          <input type="checkbox" name="cpp" value="cpp" >C++
+                          {{end}}
                         </label>
                       
-                        <br /><label >Time Limit in Seconds</label>
-                    <input type="text" name="cpptime" id="cpp" value="2" class="form-control" />
+                        <br /><label >Time Limit in Milliseconds</label>
+                        <input type="text" name="cpptime" id="cpp" value="{{$cpplimit.TimeLimit}}" class="form-control" />
                         <label >Memory Limit in MB</label>
-                    <input type="text" name="cppmemory" id="cpp" value="64" class="form-control" />
+                        <input type="text" name="cppmemory" id="cpp" value="{{$cpplimit.MemoryLimit}}" class="form-control" />
                       </div >
 
 											<div class="checkbox" >
                         <label >
+                          {{if eq $javalimit.Language "java"}}
                           <input type="checkbox" name="java" value="java" checked >Java
+                          {{else}}
+                          <input type="checkbox" name="java" value="java" >Java
+                          {{end}}
                         </label>
-                        <br /><label >Time Limit in Seconds</label>
-                    <input type="text" name="javatime" id="java" value="2" class="form-control" />
+                        <br /><label >Time Limit in Milliseconds</label>
+                    <input type="text" name="javatime" id="java" value="{{$javalimit.TimeLimit}}" class="form-control" />
                         <label >Memory Limit in MB</label>
-                    <input type="text" name="javamemory" id="java" value="64" class="form-control" />
+                    <input type="text" name="javamemory" id="java" value="{{$javalimit.MemoryLimit}}" class="form-control" />
                       </div >
 
                 </div >

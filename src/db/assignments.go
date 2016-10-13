@@ -187,6 +187,7 @@ type AssignmentProblem struct {
 	Number       int64
 	ProblemName  string
 	Points       int
+	Languages    string
 }
 
 func AddProblemToAssignment(aId, pId, number int64, points int) (AssignmentProblem, error) {
@@ -249,15 +250,15 @@ func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 
 func GetAssignmentProblem(apId int64) (AssignmentProblem, error) {
 	db := getConnection()
-	rows, err := db.Query("select id, assignmentid, problemid, points from assignmentproblems"+
-		" where id = ?", apId)
+	rows, err := db.Query("select a.id, a.assignmentid, a.problemid, a.points, p.languages from assignmentproblems as a"+
+		" inner join problems as p on a.problemid=p.id and a.id = ?", apId)
 	if err != nil {
 		return AssignmentProblem{}, nil
 	}
 	defer rows.Close()
 	ap := AssignmentProblem{}
 	for rows.Next() {
-		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId, &ap.Points)
+		err := rows.Scan(&ap.Id, &ap.AssignmentId, &ap.ProblemId, &ap.Points, &ap.Languages)
 		if err != nil {
 			log.Print(err)
 			return AssignmentProblem{}, nil

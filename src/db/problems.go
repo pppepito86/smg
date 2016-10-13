@@ -17,7 +17,16 @@ type Problem struct {
 	Author      string
 	Tests       string
 	Points      int
+	LangLimits  Limits
 }
+
+type Limit struct {
+	Language    string
+	TimeLimit   int
+	MemoryLimit int
+}
+
+type Limits map[string]Limit
 
 func CreateProblem(p Problem) (Problem, error) {
 	db := getConnection()
@@ -97,13 +106,13 @@ func GetProblem(id int64) (Problem, error) {
 func UpdateProblem(p Problem) error {
 	db := getConnection()
 
-	stmt, err := db.Prepare("update problems set name=?, version=?, description=?, points=? where id=?")
+	stmt, err := db.Prepare("update problems set name=?, version=?, description=?, languages=?, points=? where id=?")
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 
-	_, err = stmt.Exec(p.ProblemName, p.Version, p.Description, p.Points, p.Id)
+	_, err = stmt.Exec(p.ProblemName, p.Version, p.Description, p.Languages, p.Points, p.Id)
 	if err != nil {
 		log.Print(err)
 		return err

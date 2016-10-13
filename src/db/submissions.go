@@ -25,6 +25,7 @@ type Submission struct {
 	SubmissionDetails []SubmissionDetail
 	Points            int
 	ProblemPoints     int
+	Limit             Limit
 }
 
 func AddSubmission(s Submission) (Submission, error) {

@@ -98,7 +98,7 @@ CREATE TABLE `problems` (
   `name` varchar(50) NOT NULL,
   `version` varchar(10) DEFAULT NULL,
   `description` varchar(10000) NOT NULL,
-  `languages` varchar(100) NOT NULL,
+  `languages` varchar(1000) NOT NULL,
   `points` int(11) NOT NULL,
   `visibility` varchar(10) NOT NULL,
   `author` int(11) NOT NULL,

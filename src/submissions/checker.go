@@ -26,11 +26,22 @@ func Checker() {
 func testSubmission(s db.Submission) {
 	fmt.Println("Testing: " + s.SourceFile)
 	db.DeleteSubmissionDetails(s.Id)
-	compiledFile, err := compile(s)
-
 	testsDir := filepath.Join("workdir", "problems", strconv.FormatInt(s.ProblemId, 10))
+
 	files, _ := ioutil.ReadDir(testsDir)
 	tests := len(files) / 2
+
+	if s.Limit.Language == "" {
+		db.UpdateVerdict(s.Id, "Language Not Allowed", "", 0, 0, 0)
+		return
+	}
+
+	if tests == 0 {
+		db.UpdateVerdict(s.Id, "System error", "Missing test cases", 0, 0, 0)
+		return
+	}
+
+	compiledFile, err := compile(s)
 	correct := 0
 
 	if err != nil {
@@ -42,14 +53,9 @@ func testSubmission(s db.Submission) {
 	fmt.Println("compilation successful")
 	db.UpdateVerdict(s.Id, "Compiled", "", 0, tests, 0)
 
-	if tests == 0 {
-		db.UpdateVerdict(s.Id, "System error", "Missing test cases", 0, 0, 0)
-		return
-	}
-
 	for i := 1; i <= tests; i++ {
 		db.UpdateVerdict(s.Id, "Running test #"+strconv.Itoa(i), "", correct, tests, correct*s.ProblemPoints/tests)
-		status, reason, time, _ := test(s, compiledFile, testsDir, i)
+		status, reason, time, _ := test(s, compiledFile, testsDir, i, s.Limit)
 		if status == "ok" {
 			correct++
 		}
@@ -62,7 +68,7 @@ func testSubmission(s db.Submission) {
 	}
 }
 
-func test(s db.Submission, compiledFile, testsDir string, testCase int) (string, string, int64, error) {
+func test(s db.Submission, compiledFile, testsDir string, testCase int, limit db.Limit) (string, string, int64, error) {
 	cmdArg := "./test"
 	pwd, _ := os.Getwd()
 	dir := filepath.Join(pwd, filepath.Dir(compiledFile))
@@ -71,7 +77,8 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 	}
 	testStr := strconv.Itoa(testCase)
 	cmdArg = "cat input" + testStr + "|" + cmdArg + ">output" + testStr + " 2>error" + testStr
-	cmd := exec.Command("docker", "run", "--cidfile", "cid", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "64M", "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
+	mLimit := strconv.Itoa(limit.MemoryLimit) + "M"
+	cmd := exec.Command("docker", "run", "--cidfile", "cid", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", mLimit, "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
 	cmd.Dir = filepath.Dir(compiledFile)
 	exec.Command("rm", filepath.Join(cmd.Dir, "cid")).Run()
 	err := exec.Command("cp",
@@ -118,7 +125,7 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int) (string,
 				return "wrong answer", "", durationTime, nil
 			}
 		}
-	case <-time.After(time.Second * 3):
+	case <-time.After(time.Millisecond * time.Duration(limit.TimeLimit)):
 		{
 			cmd.Process.Kill()
 			cid, _ := ioutil.ReadFile(filepath.Join(cmd.Dir, "cid"))

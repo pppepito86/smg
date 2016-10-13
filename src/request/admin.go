@@ -2,6 +2,7 @@ package request
 
 import (
 	"db"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -234,11 +235,24 @@ func addAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
+func LimitsFromString(limitsStr string) db.Limits {
+	var limits db.Limits
+	if err := json.Unmarshal([]byte(limitsStr), &limits); err != nil {
+		fmt.Println("error", err.Error())
+		limits = make(map[string]db.Limit, 0)
+		limits["c++"] = db.Limit{"c++", 1000, 64}
+		limits["java"] = db.Limit{"java", 1000, 64}
+	}
+	return limits
+}
+
 func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../admin/editproblem.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
+
+	problem.LangLimits = LimitsFromString(problem.Languages)
 	dir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
 	files, _ := ioutil.ReadDir(dir)
 	tests := ""
@@ -319,8 +333,11 @@ func allSubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, ci
 
 func rejudge(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
+	p, _ := db.GetProblem(id)
+	limits := LimitsFromString(p.Languages)
 	ss, _ := db.ListProblemSubmissions(id)
 	for _, s := range ss {
+		s.Limit = limits[s.Language]
 		submissions.Push(s)
 	}
 
