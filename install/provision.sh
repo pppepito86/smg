@@ -63,6 +63,11 @@ chmod +x /app/judge/install/backup.sh
 chmod +x /app/judge/install/cron.sh
 /app/judge/install/cron.sh
 
+mkdir -p /app/aws
+curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o /app/aws/"awscli-bundle.zip"
+unzip /app/aws/awscli-bundle.zip -d /app/aws
+/app/aws/awscli-bundle/install -b /usr/bin/aws
+
 #restart
 sudo reboot
 
