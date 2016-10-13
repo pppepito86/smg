@@ -322,6 +322,7 @@ func problemAdminHtml(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("../admin/problem.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
+	problem.LangLimits = LimitsFromString(problem.Languages)
 	t.Execute(w, problem)
 }
 
