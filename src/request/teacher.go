@@ -45,10 +45,16 @@ func limitsFromRequest(r *http.Request) db.Limits {
 	if len(r.Form["java"]) > 0 {
 		tl, _ := strconv.Atoi(r.Form["javatime"][0])
 		ml, _ := strconv.Atoi(r.Form["javamemory"][0])
-		if tl == 0 {
+		if tl <= 0 {
 			tl = 1000
 		}
-		if ml == 0 {
+		if tl > 10000 {
+			tl = 10000
+		}
+		if ml <= 0 {
+			ml = 64
+		}
+		if ml > 64 {
 			ml = 64
 		}
 		javalimit := db.Limit{"java", tl, ml}
