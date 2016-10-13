@@ -54,8 +54,8 @@ func limitsFromRequest(r *http.Request) db.Limits {
 		if ml <= 0 {
 			ml = 64
 		}
-		if ml > 64 {
-			ml = 64
+		if ml > 128 {
+			ml = 128
 		}
 		javalimit := db.Limit{"java", tl, ml}
 		limits["java"] = javalimit
