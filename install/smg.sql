@@ -246,6 +246,21 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `tags` 
+--
+
+DROP TABLE IF EXISTS `tags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tags` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `problemid` int(11) NOT NULL,
+    `tag` varchar(64) NOT NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `tags_ibfk_1` FOREIGN KEY (`problemid`) REFERENCES problems(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `users`
