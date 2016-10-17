@@ -22,6 +22,7 @@ type Response struct {
 
 func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
+        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 	aps, _ := db.ListAssignmentProblems(cid)
@@ -53,6 +54,7 @@ func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int6
 
 func mySubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
+        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 	mySubmissions, _ := db.ListMySubmissions(user.Id, cid)
@@ -115,6 +117,7 @@ func editHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 
 func submitCodeHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
+        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 	aps, _ := db.ListAssignmentProblems(cid)
@@ -193,6 +196,7 @@ func problemHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64
 
 func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
+        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 
