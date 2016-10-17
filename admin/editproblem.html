@@ -32,6 +32,14 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <link rel="stylesheet" href="assets/plugins/wysihtml5/dist/bootstrap-wysihtml5-0.0.2.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-wysihtml5-hack.css" />
+    <style>
+        ul.wysihtml5-toolbar > li {
+            position: relative;
+        }
+    </style>
+    
 </head>
      <!-- END HEAD -->
      <!-- BEGIN BODY -->
@@ -179,7 +187,10 @@
      
                 <div class="form-group" >
                     <label >Text</label>
-                    <textarea id="text" name="text" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >{{.Description}}</textarea >
+                    <textarea id="wysihtml5" name="text" class="form-control" rows="10">{{.Description}}</textarea>
+            
+ 
+                    <!-- <textarea id="text" name="text" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >{{.Description}}</textarea > -->
                 </div >
 <div class="form-group" >
                         <label class="control-label">Test Cases</label>
@@ -292,10 +303,16 @@
     <script src="assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     <!-- END GLOBAL SCRIPTS -->
         <!-- PAGE LEVEL SCRIPTS -->
+    
+    <script src="assets/plugins/wysihtml5/lib/js/wysihtml5-0.3.0.min.js"></script>
+    <script src="assets/plugins/bootstrap-wysihtml5-hack.js"></script>
+    
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
     <script src="assets/plugins/jasny/js/bootstrap-fileupload.js"></script>
      <script>
+         $('#wysihtml5').wysihtml5();
+         
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
          });

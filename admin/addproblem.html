@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
 <!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
@@ -6,7 +6,7 @@
  <!-- BEGIN HEAD -->
 <head>
      <meta charset="UTF-8" />
-    <title>SMG Informatics</title>
+    <title>Online Judge</title>
      <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 	<meta content="" name="description" />
 	<meta content="" name="author" />
@@ -32,6 +32,14 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+    <link rel="stylesheet" href="assets/plugins/wysihtml5/dist/bootstrap-wysihtml5-0.0.2.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap-wysihtml5-hack.css" />
+    <style>
+        ul.wysihtml5-toolbar > li {
+            position: relative;
+        }
+    </style>
+    
 </head>
      <!-- END HEAD -->
      <!-- BEGIN BODY -->
@@ -177,8 +185,9 @@
                     <input type="text" name="version" id="version" placeholder="Version" class="form-control" />
                 </div >
      
+                                    <!--
                 <div class="form-group" >
-                    <label >Text</label>
+                    <label >Text</label> 
                     <textarea id="text" name="text" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >
 <h3>Problem a+b</h3>
     <p> 
@@ -198,7 +207,33 @@
       <tr><td><pre>25</pre></td></tr>
     </table>
   </textarea >
-                </div >
+</div > -->
+                                        
+        <div id="div-1"  class="form-group">
+             <label >Text</label>
+                <textarea id="wysihtml5" name="text" class="form-control" rows="10"><h3>Problem a+b</h3>
+    <p> 
+      Дадени са две цели числа <b><i>a</i></b> и <b><i>b</i></b>. Намерете техния сбор.
+   </p>
+                    </br>
+            <p><b>Вход</b><br>
+      Първият ред съдържа две цели числа - <b><i>a</i></b>, <b><i>b</i></b> <b>(0 < <i>a</i>, <i>b</i> < 100)</b>
+    </p></br> </br>
+    <p>
+      <b>Изход</b><br>
+      Отпечатайте сбора на двете числа - <b><i>a</i> + <i>b</i></b>
+    </p> </br></br>
+    <p>
+      <b>Пример</b><br>
+        <b>Вход</b><br>
+        10 15<br>
+        <b>Изход</b><br>
+        25<br>
+    </p>
+            </textarea>
+            
+        </div>
+
 <div class="form-group" >
                         <label class="control-label">Test Cases</label>
                             <div class="fileupload fileupload-new" data-provides="fileupload"><input type="hidden" value="" name="">
@@ -309,10 +344,17 @@
     <script src="assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     <!-- END GLOBAL SCRIPTS -->
         <!-- PAGE LEVEL SCRIPTS -->
+    <script src="assets/plugins/wysihtml5/lib/js/wysihtml5-0.3.0.min.js"></script>
+    <script src="assets/plugins/bootstrap-wysihtml5-hack.js"></script>
+   
+    
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
     <script src="assets/plugins/jasny/js/bootstrap-fileupload.js"></script>
      <script>
+         $('#wysihtml5').wysihtml5();
+         
+         
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
          });
