@@ -11,6 +11,7 @@ type Problem struct {
 	ProblemName string
 	Version     string
 	Description string
+    Tags        []string
 	Visibility  string
 	Languages   string
 	AuthorId    int64
@@ -50,6 +51,12 @@ func CreateProblem(p Problem) (Problem, error) {
 	}
 
 	p.Id = lastId
+    
+    for _, tag := range p.Tags {
+        TagProblem(p.Id, tag)
+    }
+    
+    
 	return p, nil
 }
 
@@ -70,13 +77,23 @@ func ListProblems() ([]Problem, error) {
 			log.Print(err)
 			return []Problem{}, err
 		}
-		problems = append(problems, p)
+        
+        p.Tags, err = GetListOfTags(p.Id)
+        if err != nil {
+			log.Print(err)
+			return []Problem{}, err
+		}
+		
+        problems = append(problems, p)
 	}
 	err = rows.Err()
 	if err != nil {
 		log.Print(err)
 		return []Problem{}, err
 	}
+    
+    
+    
 	return problems, nil
 }
 
@@ -100,7 +117,77 @@ func GetProblem(id int64) (Problem, error) {
 		log.Print(err)
 		return Problem{}, nil
 	}
+    
+    p.Tags, err = GetListOfTags(p.Id)
+    if err != nil {
+        log.Print(err)
+        return Problem{}, err
+    }
+    
 	return p, nil
+}
+
+func TagProblem(id int64, tag string) error {
+    db := getConnection()
+    
+    stmt, err := db.Prepare("INSERT INTO tags(problemid, tag) VALUES(?, ?)")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(id, tag)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+    
+    return nil
+}
+
+func GetListOfTags(problemid int64) ([]string, error) {
+    db := getConnection()
+	rows, err := db.Query("select tag from tags where problemid=?", problemid)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+	defer rows.Close()
+    
+	tags := make([]string, 0)
+	for rows.Next() {
+		var tag string
+		err := rows.Scan(&tag)
+		if err != nil {
+			log.Print(err)
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+        return []string{}, err
+	}
+	return tags, nil
+}
+
+func RemoveTagsForProblem(problemid int64) error {
+    db := getConnection()
+    
+    stmt, err := db.Prepare("DELETE FROM tags WHERE problemid=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(problemid)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+    
+    return nil
 }
 
 func UpdateProblem(p Problem) error {
@@ -117,6 +204,16 @@ func UpdateProblem(p Problem) error {
 		log.Print(err)
 		return err
 	}
+    
+    err = RemoveTagsForProblem(p.Id)
+    if err != nil {
+		log.Print(err)
+		return err
+	}
+    
+    for _, tag := range p.Tags {
+        TagProblem(p.Id, tag)
+    }
 
 	return nil
 }

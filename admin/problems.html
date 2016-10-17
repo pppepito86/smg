@@ -172,6 +172,7 @@
                                             <th>Id</th>
                                             <th>Problem name</th>
                                             <th>Version</th>
+                                            <th>Tags</th>
                                             <th>Author</th>
                                             <th style="width: 70px;">Rejudge</th>
                                         </tr>
@@ -182,6 +183,7 @@
                                             <td>{{$element.Id}}</td>
                                             <td><a href="/problem.html?id={{$element.Id}}">{{$element.ProblemName}}</a></td>
                                             <td>{{$element.Version}}</td>
+                                            <td>{{range $tag :=  $element.Tags}} <span>#{{$tag}}</span> {{end}}</td>
                                             <td class="center">{{$element.Author}}</td>
                                             <td class="center" style="text-align: center">
                                             <a href="/rejudge?id={{$element.Id}}" class="text-muted text-center btn btn-default btn-sm btn-grad">X</a>

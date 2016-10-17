@@ -68,25 +68,47 @@ func limitsAsString(limits db.Limits) string {
 	return string(b)
 }
 
+func parseTagList(tags string) []string {
+    var tagList []string
+    tagList = []string{}
+    tokens := strings.Split(tags, ",")
+    for _, token := range tokens {
+        token = strings.TrimSpace(token)
+        if(token != "") {
+            tagList = append(tagList, token)
+        }
+    }
+    return tagList
+}
+
 func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	r.ParseForm()
 	file, header, _ := r.FormFile("file")
 	name := r.Form["problemname"]
 	version := r.Form["version"]
+    tags := r.Form["tags"]
 	description := r.Form["text"]
 	test := r.Form["test"][0]
 	visibility := r.Form["visibility"]
 	points, _ := strconv.Atoi(r.Form["points"][0])
-
+    
 	if len(name) != 1 || len(visibility) != 1 {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+    
+    var tagList []string
+    if len(tags) > 0 && tags[0] != "" {
+        tagList = parseTagList(tags[0])
+    } else {
+        tagList = []string{}
+    }
+    
 	limits := limitsAsString(limitsFromRequest(r))
 	p := db.Problem{
 		ProblemName: name[0],
 		Version:     version[0],
+        Tags:        tagList,
 		Description: description[0],
 		Visibility:  visibility[0],
 		Languages:   limits,
@@ -95,6 +117,8 @@ func addProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 	p, _ = db.CreateProblem(p)
 
+    
+    
 	os.MkdirAll(filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10)), 0755)
 	test = strings.Replace(test, "\r", "", -1)
 	if len(test) > 0 {
@@ -159,13 +183,23 @@ func editProblem(w http.ResponseWriter, r *http.Request, user db.User) {
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	name := r.Form["problemname"]
 	version := r.Form["version"]
+    tags := r.Form["tags"]
 	description := r.Form["text"]
 	test := r.Form["test"][0]
 	points, _ := strconv.Atoi(r.Form["points"][0])
 	limits := limitsAsString(limitsFromRequest(r))
+    
+    var tagList []string
+    if len(tags) > 0 && tags[0] != "" {
+        tagList = parseTagList(tags[0])
+    } else {
+        tagList = []string{}
+    }
+    
 	p := db.Problem{
 		Id:          id,
 		ProblemName: name[0],
+        Tags:        tagList,
 		Version:     version[0],
 		Description: description[0],
 		Visibility:  "",
