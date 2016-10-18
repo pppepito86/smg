@@ -157,6 +157,54 @@ func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
+type PointsPerWeek struct {
+    Week   string
+    Points int
+}
+
+func GetPointsPerWeek(userId int64) []PointsPerWeek {
+    
+	Response := make([]PointsPerWeek, 0)
+	subs, _ := ListMyAllSubmissions(userId)
+
+	monday := func(t time.Time) time.Time {
+		tt := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+		tt = tt.AddDate(0, 0, -(int(tt.Weekday())+6)%7)
+		return tt
+	}
+
+	currWeek := monday(subs[0].Time)
+	nextWeek := currWeek.AddDate(0, 0, 7)
+
+	problemPoints := make(map[int64]int, 0)
+	totalPoints := 0
+	subIdx := 0
+	for subIdx < len(subs) {
+		currWeekResponse := PointsPerWeek{
+			currWeek.String()[:10], 0,
+		}
+
+		for subIdx < len(subs) && subs[subIdx].Time.After(currWeek) && subs[subIdx].Time.Before(nextWeek) {
+			lastPts, _ := problemPoints[subs[subIdx].ProblemId]
+			currPts := subs[subIdx].Points
+			if currPts > lastPts {
+				totalPoints += currPts - lastPts
+			}
+
+			problemPoints[subs[subIdx].ProblemId] = currPts
+
+			subIdx++
+		}
+		currWeekResponse.Points = totalPoints
+		Response = append(Response, currWeekResponse)
+		// add totalPoints for current week
+		currWeek = nextWeek
+		nextWeek = nextWeek.AddDate(0, 0, 7)
+	}
+	
+    return Response
+}
+
 func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, submissions.problemid, language, sourcefile, time, verdict, submissions.points, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+

@@ -242,7 +242,20 @@
           
 		<script src="assets/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="assets/plugins/morris/morris.js"></script>
-    <script src="assets/plugins/morris/morris-demo.js"></script>
+    <script>
+        // Load the graphics
+        $.get("/pointsperweek", function(data1, status){
+            Morris.Line({
+                element: 'morris-line-chart',
+                data: data1,
+                xkey: 'Week',
+                ykeys: ['Points'],
+                labels: ['Points'],
+                //hideHover: 'auto',
+               // resize: true
+            });
+        });
+    </script>
 
 
      <!-- END PAGE LEVEL SCRIPTS -->

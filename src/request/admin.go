@@ -83,7 +83,11 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		assignmentsAdminHtml(w, r)
 	} else if path == "/addassignment.html" {
 		addAdminAssignmentHtml(w, r)
-	} else if path == "/logout" {
+    } else if path == "/studentprogress.html" {
+		studentProgressHtml(w, r)
+    }else if path == "/pointsperweek" {
+        pointPerWeekAdmin(w, r, user)
+    } else if path == "/logout" {
 		logout(w, r)
 	} else {
 		assignmentsAdminHtml(w, r)
@@ -282,6 +286,12 @@ func addAdminAssignmentHtml(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 }
 
+func studentProgressHtml(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../admin/dashboard.html")
+	t.Execute(w, nil)
+}
+
 func usersAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../admin/users.html")
@@ -344,3 +354,27 @@ func rejudge(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/problems", http.StatusFound)
 }
+
+func pointPerWeekAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
+	w.Header().Set("Content-Type", "application/json")
+	
+    r.ParseForm()
+	userId, err := strconv.ParseInt(r.Form["id"][0], 10, 64)
+    if err != nil {
+		fmt.Println("err", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+    
+    Response := db.GetPointsPerWeek(userId)
+
+	json, err := json.Marshal(Response)
+	fmt.Println("json", json)
+	if err != nil {
+		fmt.Println("err", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(json)
+}
+

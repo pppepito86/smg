@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"time"
 )
 
 func HandleUser(w http.ResponseWriter, r *http.Request, user db.User) {
@@ -56,8 +55,10 @@ func HandleUser(w http.ResponseWriter, r *http.Request, user db.User) {
 		dashboardUserHtml(w, r, user)
 	} else if path == "/pointsperweek" {
 		pointPerWeek(w, r, user)
-	} else {
-		assignmentsUserHtml(w, r, user)
+    } else if path == "/assignments.html" {
+        assignmentsUserHtml(w, r, user);
+    } else {
+		dashboardUserHtml(w, r, user)
 	}
 }
 
@@ -106,48 +107,8 @@ func joinGroupHtml(w http.ResponseWriter, r *http.Request) {
 
 func pointPerWeek(w http.ResponseWriter, r *http.Request, user db.User) {
 	w.Header().Set("Content-Type", "application/json")
-	type Response1 struct {
-		Week   string
-		Points int
-	}
-	Response := make([]Response1, 0)
-	subs, _ := db.ListMyAllSubmissions(user.Id)
-
-	monday := func(t time.Time) time.Time {
-		tt := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
-		tt = tt.AddDate(0, 0, -(int(tt.Weekday())+6)%7)
-		return tt
-	}
-
-	currWeek := monday(subs[0].Time)
-	nextWeek := currWeek.AddDate(0, 0, 7)
-
-	problemPoints := make(map[int64]int, 0)
-	totalPoints := 0
-	subIdx := 0
-	for subIdx < len(subs) {
-		currWeekResponse := Response1{
-			currWeek.String()[:10], 0,
-		}
-
-		for subIdx < len(subs) && subs[subIdx].Time.After(currWeek) && subs[subIdx].Time.Before(nextWeek) {
-			lastPts, _ := problemPoints[subs[subIdx].ProblemId]
-			currPts := subs[subIdx].Points
-			if currPts > lastPts {
-				totalPoints += currPts - lastPts
-			}
-
-			problemPoints[subs[subIdx].ProblemId] = currPts
-
-			subIdx++
-		}
-		currWeekResponse.Points = totalPoints
-		Response = append(Response, currWeekResponse)
-		// add totalPoints for current week
-		currWeek = nextWeek
-		nextWeek = nextWeek.AddDate(0, 0, 7)
-	}
-	fmt.Println(Response)
+	
+    Response := db.GetPointsPerWeek(user.Id)
 
 	json, err := json.Marshal(Response)
 	fmt.Println("json", json)

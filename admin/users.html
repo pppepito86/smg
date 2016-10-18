@@ -121,6 +121,11 @@
                         <i class="icon-table"></i> Assignments
                     </a>                   
                 </li>
+                <li class="panel">
+                    <a href="studentprogress.html" >
+                        <i class="icon-table"></i> Student Progress
+                    </a>                   
+                </li>
             </ul>
 
         </div>
@@ -162,7 +167,9 @@
                                     <tbody>
                                         {{range $index, $element := .}}
                                         <tr>
-                                            <td>{{$element.Id}}</td>
+                                            <td>
+                                                <a href="/studentprogress.html?id={{$element.Id}}">{{$element.Id}}</a>
+                                                </td>
                                             <td>{{$element.UserName}}</td>
                                             <td>{{$element.FirstName}}</td>
                                             <td class="center">{{$element.LastName}}</td>
