@@ -195,7 +195,12 @@ func GetPointsPerWeek(userId int64) []PointsPerWeek {
 
 			subIdx++
 		}
-		currWeekResponse.Points = totalPoints
+        
+        
+        currWeekResponse.Points = totalPoints
+        if(len(Response) > 0) {
+            currWeekResponse.Points -= Response[len(Response)-1].Points
+        }
 		Response = append(Response, currWeekResponse)
 		// add totalPoints for current week
 		currWeek = nextWeek
