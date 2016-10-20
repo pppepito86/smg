@@ -58,6 +58,7 @@ CREATE TABLE `assignments` (
   `endtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `author` int(11) NOT NULL,
   `groupid` int(11) DEFAULT NULL,
+  `testinfo` VARCHAR(16) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `author` (`author`),

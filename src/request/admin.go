@@ -116,6 +116,10 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 	name := r.Form["assignmentname"]
 	p1 := r.Form["problem1"]
 	groupId := r.Form["groupid"]
+    testInfo := "show"
+    if len(r.Form["test-info"]) > 0 {
+        testInfo = "hide"
+    }
 	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
 	if len(name) != 1 {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -144,6 +148,7 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 		GroupId:        gid,
 		StartTime:      startTime,
 		EndTime:        endTime,
+        TestInfo:      testInfo, 
 	}
 	a, _ = db.CreateAssignment(a)
 	if p1[0] != "" {
@@ -163,6 +168,12 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	name := r.Form["assignmentname"]
 	p1 := r.Form["problem1"]
 	groupId := r.Form["groupid"]
+    
+    testInfo := "show"
+    if len(r.Form["test-info"]) > 0 {
+        testInfo = "hide"
+    }
+    
 	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
 	if len(name) != 1 {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -190,6 +201,7 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	a.StartTime = startTime
 	a.EndTime = endTime
 	a.GroupId = gid
+    a.TestInfo = testInfo
 	db.UpdateAssignment(a)
 	aps, _ := db.ListAssignmentProblems(cid)
 	if p1[0] != "" {

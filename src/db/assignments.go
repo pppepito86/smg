@@ -17,18 +17,19 @@ type Assignment struct {
 	Problems       string
 	StartTime      time.Time
 	EndTime        time.Time
+    TestInfo       string
 }
 
 func CreateAssignment(a Assignment) (Assignment, error) {
 	db := getConnection()
 
-	stmt, err := db.Prepare("INSERT INTO assignments(name, author, groupid, starttime, endtime) VALUES(?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO assignments(name, author, groupid, starttime, endtime, testinfo) VALUES(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return a, err
 	}
 
-	res, err := stmt.Exec(a.AssignmentName, a.AuthorId, a.GroupId, a.StartTime, a.EndTime)
+	res, err := stmt.Exec(a.AssignmentName, a.AuthorId, a.GroupId, a.StartTime, a.EndTime, a.TestInfo)
 	if err != nil {
 		log.Print(err)
 		return a, err
@@ -46,7 +47,7 @@ func CreateAssignment(a Assignment) (Assignment, error) {
 
 func ListAssignment(aid int64) (Assignment, error) {
 	db := getConnection()
-	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime from assignments"+
+	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime, assignments.testinfo from assignments"+
 		" inner join users on assignments.id=? and assignments.author = users.id"+
 		" inner join groups on assignments.groupid = groups.id", aid)
 	a := Assignment{}
@@ -56,7 +57,7 @@ func ListAssignment(aid int64) (Assignment, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime)
+		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime, &a.TestInfo)
 		if err != nil {
 			log.Print(err)
 			return a, err
@@ -137,13 +138,13 @@ func ListAssignmentsForUser(user User) ([]Assignment, error) {
 func UpdateAssignment(a Assignment) error {
 	db := getConnection()
 
-	stmt, err := db.Prepare("update assignments set name=?,groupid=?,starttime=?,endtime=? where id=?")
+	stmt, err := db.Prepare("update assignments set name=?,groupid=?,starttime=?,endtime=?,testinfo=? where id=?")
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 
-	_, err = stmt.Exec(a.AssignmentName, a.GroupId, a.StartTime, a.EndTime, a.Id)
+	_, err = stmt.Exec(a.AssignmentName, a.GroupId, a.StartTime, a.EndTime, a.TestInfo, a.Id)
 	if err != nil {
 		log.Print(err)
 		return err

@@ -26,6 +26,7 @@ type Submission struct {
 	Points            int
 	ProblemPoints     int
 	Limit             Limit
+    TestInfo          string
 }
 
 func AddSubmission(s Submission) (Submission, error) {
@@ -81,8 +82,9 @@ func ListSubmissions() ([]Submission, error) {
 
 func ListSubmission(submissionId int64) (Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select submissions.id, submissions.userid, language, sourcefile, time, verdict, reason, problems.name from submissions"+
-		"	inner join problems on problems.id=submissions.problemid and submissions.id=?", submissionId)
+	rows, err := db.Query("select submissions.id, submissions.userid, language, sourcefile, time, verdict, reason, problems.name, assignments.testinfo from submissions"+
+		"	inner join problems on problems.id=submissions.problemid and submissions.id=?" +
+    "	inner join assignments on assignments.id=submissions.assignmentid", submissionId)
 	s := Submission{}
 	if err != nil {
 		log.Print(err)
@@ -90,7 +92,7 @@ func ListSubmission(submissionId int64) (Submission, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&s.Id, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason, &s.ProblemName)
+		err := rows.Scan(&s.Id, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason, &s.ProblemName, &s.TestInfo)
 		if err != nil {
 			log.Print(err)
 			return s, err

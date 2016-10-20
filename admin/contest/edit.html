@@ -197,6 +197,10 @@
                     <label>Group</label>
                     <input type="text" value="{{.Data.GroupId}}" name="groupid" id="groupid" placeholder="Group name" class="form-control" />
                 </div>
+                                    
+                <label>
+                    <input type="checkbox" name="test-info" value="hide" {{if eq .Data.TestInfo "hide"}}checked{{end}}> Hide test info
+                </label>
      
                 <div class="form-group">
                     <div class="col-lg-4">
