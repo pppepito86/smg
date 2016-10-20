@@ -222,6 +222,12 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 	_, _ = io.Copy(out, file)
 
 	limits := LimitsFromString(ap.Languages)
+    limit := limits[language[0]]
+    
+    // FIXME:
+    if language[0] == "nodejs" {
+        limit = limits["java"]
+    }
 	s := db.Submission{
 		Id:            -1,
 		AssignmentId:  ap.AssignmentId,
@@ -231,7 +237,7 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 		SourceFile:    fp,
 		Verdict:       "pending",
 		ProblemPoints: ap.Points,
-		Limit:         limits[language[0]],
+		Limit:         limit,
 	}
 
 	s, _ = db.AddSubmission(s)

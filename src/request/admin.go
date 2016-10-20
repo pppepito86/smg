@@ -349,6 +349,11 @@ func rejudge(w http.ResponseWriter, r *http.Request) {
 	ss, _ := db.ListProblemSubmissions(id)
 	for _, s := range ss {
 		s.Limit = limits[s.Language]
+        
+        // FIXME:
+        if s.Language == "nodejs" {
+            s.Limit = limits["java"]
+        }
 		submissions.Push(s)
 	}
 
