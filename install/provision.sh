@@ -60,8 +60,13 @@ update-rc.d judge enable
 
 #backup
 chmod +x /app/judge/install/backup.sh
-chmod +x /app/judge/install/cron.sh
-/app/judge/install/cron.sh
+chmod +x /app/judge/install/cronbackup.sh
+/app/judge/install/cronbackup.sh
+
+#clean
+chmod +x /app/judge/install/clean.sh
+chmod +x /app/judge/install/cronclean.sh
+/app/judge/install/cronclean.sh
 
 mkdir -p /app/aws
 curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o /app/aws/"awscli-bundle.zip"

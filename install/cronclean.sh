@@ -1,13 +1,12 @@
 #!/bin/bash
 
 # Cron expression
-cron="36 22 * * * /app/judge/install/backup.sh >> /app/backup.out 2>&1"
+cron="06 22 * * * /app/judge/install/clean.sh >> /app/clean.out 2>&1"
 
 # Escape all the asterisks so we can grep for it
 cron_escaped=$(echo "$cron" | sed s/\*/\\\\*/g)
 
-# Check if cron job already in crontab
-crontab -l | grep "${cronescaped}"
+crontab -l | grep "${cron_escaped}"
 if [[ $? -eq 0 ]] ;
   then
     echo "Crontab already exists."
