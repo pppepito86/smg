@@ -192,18 +192,15 @@ func GetPointsPerWeek(userId int64) []PointsPerWeek {
 			currPts := subs[subIdx].Points
 			if currPts > lastPts {
 				totalPoints += currPts - lastPts
+				problemPoints[subs[subIdx].ProblemId] = currPts
 			}
-
-			problemPoints[subs[subIdx].ProblemId] = currPts
 
 			subIdx++
 		}
 
-		currWeekResponse.Points = totalPoints
+		currWeekResponse.Points = totalPoints - totalPointsLastWeek
+		totalPointsLastWeek = totalPoints
 
-		currWeekResponse.Points -= totalPointsLastWeek
-
-		totalPointsLastWeek = currWeekResponse.Points
 		Response = append(Response, currWeekResponse)
 		// add totalPoints for current week
 		currWeek = nextWeek
