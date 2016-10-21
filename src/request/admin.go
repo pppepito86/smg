@@ -83,11 +83,11 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		assignmentsAdminHtml(w, r)
 	} else if path == "/addassignment.html" {
 		addAdminAssignmentHtml(w, r)
-    } else if path == "/studentprogress.html" {
+	} else if path == "/studentprogress.html" {
 		studentProgressHtml(w, r)
-    }else if path == "/pointsperweek" {
-        pointPerWeekAdmin(w, r, user)
-    } else if path == "/logout" {
+	} else if path == "/pointsperweek" {
+		pointPerWeekAdmin(w, r, user)
+	} else if path == "/logout" {
 		logout(w, r)
 	} else {
 		assignmentsAdminHtml(w, r)
@@ -116,10 +116,10 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 	name := r.Form["assignmentname"]
 	p1 := r.Form["problem1"]
 	groupId := r.Form["groupid"]
-    testInfo := "show"
-    if len(r.Form["test-info"]) > 0 {
-        testInfo = "hide"
-    }
+	testInfo := "show"
+	if len(r.Form["test-info"]) > 0 {
+		testInfo = "hide"
+	}
 	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
 	if len(name) != 1 {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -148,7 +148,7 @@ func addAssignment(w http.ResponseWriter, r *http.Request, user db.User) {
 		GroupId:        gid,
 		StartTime:      startTime,
 		EndTime:        endTime,
-        TestInfo:      testInfo, 
+		TestInfo:       testInfo,
 	}
 	a, _ = db.CreateAssignment(a)
 	if p1[0] != "" {
@@ -168,12 +168,12 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	name := r.Form["assignmentname"]
 	p1 := r.Form["problem1"]
 	groupId := r.Form["groupid"]
-    
-    testInfo := "show"
-    if len(r.Form["test-info"]) > 0 {
-        testInfo = "hide"
-    }
-    
+
+	testInfo := "show"
+	if len(r.Form["test-info"]) > 0 {
+		testInfo = "hide"
+	}
+
 	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
 	if len(name) != 1 {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -201,25 +201,16 @@ func editAssignment(w http.ResponseWriter, r *http.Request, user db.User, cid in
 	a.StartTime = startTime
 	a.EndTime = endTime
 	a.GroupId = gid
-    a.TestInfo = testInfo
+	a.TestInfo = testInfo
 	db.UpdateAssignment(a)
-	aps, _ := db.ListAssignmentProblems(cid)
 	if p1[0] != "" {
+		db.DeleteAssignmentProblems(cid)
 		ppp := strings.Split(p1[0], ",")
 		for i, pp := range ppp {
 			pp = strings.TrimSpace(pp)
 			p1Id, _ := strconv.ParseInt(pp, 10, 64)
 			problem, _ := db.GetProblem(p1Id)
-			if i < len(aps) {
-				db.UpdateAssignmentProblem(aps[i].Id, p1Id, problem.Points)
-			} else {
-				db.AddProblemToAssignment(cid, p1Id, int64(i+1), problem.Points)
-			}
-		}
-		if len(ppp) < len(aps) {
-			for _, ap := range aps[len(ppp):len(aps)] {
-				db.DeleteAssignmentProblem(ap.Id)
-			}
+			db.AddProblemToAssignment(cid, p1Id, int64(i+1), problem.Points)
 		}
 	}
 	http.Redirect(w, r, "/contest/"+strconv.FormatInt(cid, 10)+"/problems", http.StatusFound)
@@ -361,11 +352,11 @@ func rejudge(w http.ResponseWriter, r *http.Request) {
 	ss, _ := db.ListProblemSubmissions(id)
 	for _, s := range ss {
 		s.Limit = limits[s.Language]
-        
-        // FIXME:
-        if s.Language == "nodejs" {
-            s.Limit = limits["java"]
-        }
+
+		// FIXME:
+		if s.Language == "nodejs" {
+			s.Limit = limits["java"]
+		}
 		submissions.Push(s)
 	}
 
@@ -374,16 +365,16 @@ func rejudge(w http.ResponseWriter, r *http.Request) {
 
 func pointPerWeekAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 	w.Header().Set("Content-Type", "application/json")
-	
-    r.ParseForm()
+
+	r.ParseForm()
 	userId, err := strconv.ParseInt(r.Form["id"][0], 10, 64)
-    if err != nil {
+	if err != nil {
 		fmt.Println("err", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-    
-    Response := db.GetPointsPerWeek(userId)
+
+	Response := db.GetPointsPerWeek(userId)
 
 	json, err := json.Marshal(Response)
 	fmt.Println("json", json)
@@ -394,4 +385,3 @@ func pointPerWeekAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 	w.Write(json)
 }
-

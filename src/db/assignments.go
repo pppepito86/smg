@@ -17,7 +17,7 @@ type Assignment struct {
 	Problems       string
 	StartTime      time.Time
 	EndTime        time.Time
-    TestInfo       string
+	TestInfo       string
 }
 
 func CreateAssignment(a Assignment) (Assignment, error) {
@@ -296,6 +296,24 @@ func DeleteAssignmentProblem(apId int64) error {
 	}
 
 	_, err = stmt.Exec(apId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
+}
+
+func DeleteAssignmentProblems(aId int64) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("delete from assignmentproblems where assignmentid=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	_, err = stmt.Exec(aId)
 	if err != nil {
 		log.Print(err)
 		return err
