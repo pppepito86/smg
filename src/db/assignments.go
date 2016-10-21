@@ -225,7 +225,7 @@ func AddProblemToAssignment(aId, pId, number int64, points int) (AssignmentProbl
 func ListAssignmentProblems(assignmentid int64) ([]AssignmentProblem, error) {
 	db := getConnection()
 	rows, err := db.Query("select assignmentproblems.id, assignmentid, problemid, assignmentproblems.number, assignmentproblems.points, problems.name from assignmentproblems"+
-		" inner join problems on assignmentproblems.assignmentid=? and assignmentproblems.problemid=problems.id order by problemid", assignmentid)
+		" inner join problems on assignmentproblems.assignmentid=? and assignmentproblems.problemid=problems.id order by assignmentproblems.number", assignmentid)
 	if err != nil {
 		log.Print(err)
 		return []AssignmentProblem{}, err
