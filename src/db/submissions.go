@@ -26,7 +26,7 @@ type Submission struct {
 	Points            int
 	ProblemPoints     int
 	Limit             Limit
-    TestInfo          string
+	TestInfo          string
 }
 
 func AddSubmission(s Submission) (Submission, error) {
@@ -83,8 +83,8 @@ func ListSubmissions() ([]Submission, error) {
 func ListSubmission(submissionId int64) (Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, submissions.userid, language, sourcefile, time, verdict, reason, problems.name, assignments.testinfo from submissions"+
-		"	inner join problems on problems.id=submissions.problemid and submissions.id=?" +
-    "	inner join assignments on assignments.id=submissions.assignmentid", submissionId)
+		"	inner join problems on problems.id=submissions.problemid and submissions.id=?"+
+		"	inner join assignments on assignments.id=submissions.assignmentid", submissionId)
 	s := Submission{}
 	if err != nil {
 		log.Print(err)
@@ -160,12 +160,12 @@ func ListMyAllSubmissions(userId int64) ([]Submission, error) {
 }
 
 type PointsPerWeek struct {
-    Week   string
-    Points int
+	Week   string
+	Points int
 }
 
 func GetPointsPerWeek(userId int64) []PointsPerWeek {
-    
+
 	Response := make([]PointsPerWeek, 0)
 	subs, _ := ListMyAllSubmissions(userId)
 
@@ -181,6 +181,7 @@ func GetPointsPerWeek(userId int64) []PointsPerWeek {
 	problemPoints := make(map[int64]int, 0)
 	totalPoints := 0
 	subIdx := 0
+	totalPointsLastWeek := 0
 	for subIdx < len(subs) {
 		currWeekResponse := PointsPerWeek{
 			currWeek.String()[:10], 0,
@@ -197,19 +198,19 @@ func GetPointsPerWeek(userId int64) []PointsPerWeek {
 
 			subIdx++
 		}
-        
-        
-        currWeekResponse.Points = totalPoints
-        if(len(Response) > 0) {
-            currWeekResponse.Points -= Response[len(Response)-1].Points
-        }
+
+		currWeekResponse.Points = totalPoints
+
+		currWeekResponse.Points -= totalPointsLastWeek
+
+		totalPointsLastWeek = currWeekResponse.Points
 		Response = append(Response, currWeekResponse)
 		// add totalPoints for current week
 		currWeek = nextWeek
 		nextWeek = nextWeek.AddDate(0, 0, 7)
 	}
-	
-    return Response
+
+	return Response
 }
 
 func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
