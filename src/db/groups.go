@@ -22,6 +22,7 @@ func CreateGroup(group Group) (Group, error) {
 		log.Print(err)
 		return group, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(group.GroupName, group.Description, group.CreatorId)
 	if err != nil {
@@ -37,8 +38,6 @@ func CreateGroup(group Group) (Group, error) {
 
 	group.Id = lastId
 
-	//userGroup, _ := CreateUserGroup(group.CreatorId, group.Id)
-	//CreateUserGroupRole(userGroup.Id, 1)
 	return group, nil
 }
 
@@ -48,6 +47,7 @@ func FindGroupByName(name string) (Group, error) {
 	if err != nil {
 		return Group{}, err
 	}
+
 	defer rows.Close()
 	for rows.Next() {
 		var group Group
@@ -84,14 +84,6 @@ func ListGroups() []Group {
 	return groups
 }
 
-/*
-type GroupRole struct {
-	Id          int64
-	RoleName    string // admin, student, parent
-	Description string
-}
-*/
-
 type UserGroup struct {
 	Id      int64
 	UserId  int64
@@ -108,6 +100,7 @@ func CreateUserGroup(userId, groupId int64) (UserGroup, error) {
 		log.Print(err)
 		return userGroup, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(userId, groupId)
 	if err != nil {
@@ -132,6 +125,7 @@ func ListUserGroups() ([]UserGroup, error) {
 		log.Print(err)
 		return []UserGroup{}, err
 	}
+
 	defer rows.Close()
 	userGroups := make([]UserGroup, 0)
 	for rows.Next() {
@@ -177,48 +171,3 @@ func ListGroupsForUser(userId int64) ([]Group, error) {
 	}
 	return groups, nil
 }
-
-/*
-type UserGroupRole struct {
-	Id          int64
-	UserGroupId int64
-	GroupRoleId int64
-}
-
-func CreateUserGroupRole(userGroupId, groupRoleId int64) (UserGroupRole, error) {
-	db := getConnection()
-
-	userGroupRole := UserGroupRole{-1, userGroupId, groupRoleId}
-
-	stmt, err := db.Prepare("INSERT INTO usergrouproles(usergroupid, grouproleid) VALUES(?, ?)")
-	if err != nil {
-		log.Fatal(err)
-		return userGroupRole, err
-	}
-
-	res, err := stmt.Exec(userGroupId, groupRoleId)
-	if err != nil {
-		log.Fatal(err)
-		return userGroupRole, err
-	}
-
-	lastId, err := res.LastInsertId()
-	if err != nil {
-		log.Fatal(err)
-		return userGroupRole, err
-	}
-
-	userGroupRole.Id = lastId
-	return userGroupRole, nil
-}
-
-func main() {
-	err := OpenConnection()
-	if err != nil {
-		panic("Could not open db connection: " + err.Error())
-	}
-	defer db.Close()
-	CreateUser(User{-1, "user6", "first6", "last6", "email6", "pass6"})
-	fmt.Println(ListUsers())
-}
-*/

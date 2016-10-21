@@ -37,6 +37,7 @@ func AddSubmission(s Submission) (Submission, error) {
 		log.Print(err)
 		return s, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(s.AssignmentId, s.ProblemId, s.UserId, s.Language, s.SourceFile, s.Verdict, s.Reason)
 	if err != nil {
@@ -302,6 +303,7 @@ func UpdateVerdict(id int64, verdict, reason string, correct, total, points int)
 		log.Print(err)
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(verdict, reason, correct, total, points, id)
 	if err != nil {
@@ -338,6 +340,7 @@ func AddSubmissionDetails(sid int64, step, verdict, reason string, time int64) (
 		log.Print(err)
 		return sd, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(sd.SubmissionId, sd.Step, sd.Verdict, sd.Reason, sd.Time)
 	if err != nil {
@@ -363,6 +366,7 @@ func DeleteSubmissionDetails(sId int64) error {
 		log.Print(err)
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(sId)
 	if err != nil {

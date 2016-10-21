@@ -28,6 +28,7 @@ func CreateAssignment(a Assignment) (Assignment, error) {
 		log.Print(err)
 		return a, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(a.AssignmentName, a.AuthorId, a.GroupId, a.StartTime, a.EndTime, a.TestInfo)
 	if err != nil {
@@ -143,6 +144,7 @@ func UpdateAssignment(a Assignment) error {
 		log.Print(err)
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(a.AssignmentName, a.GroupId, a.StartTime, a.EndTime, a.TestInfo, a.Id)
 	if err != nil {
@@ -205,6 +207,7 @@ func AddProblemToAssignment(aId, pId, number int64, points int) (AssignmentProbl
 		log.Print(err)
 		return ap, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(aId, pId, number, points)
 	if err != nil {
@@ -276,6 +279,7 @@ func UpdateAssignmentProblem(apId, problemId int64, points int) error {
 		log.Print(err)
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(problemId, points, apId)
 	if err != nil {
@@ -294,6 +298,7 @@ func DeleteAssignmentProblem(apId int64) error {
 		log.Print(err)
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(apId)
 	if err != nil {
@@ -312,6 +317,7 @@ func DeleteAssignmentProblems(aId int64) error {
 		log.Print(err)
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(aId)
 	if err != nil {

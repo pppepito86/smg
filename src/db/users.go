@@ -33,6 +33,7 @@ func CreateUser(user User) (User, error) {
 		log.Print(err)
 		return user, err
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(user.RoleId, user.UserName, user.FirstName, user.LastName, user.Email, user.PasswordHash, user.PasswordSalt, user.IsDisabled)
 	if err != nil {
@@ -104,6 +105,7 @@ func UpdateUserRole(userId, roleId int64) error {
 		log.Print(err)
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(roleId, userId)
 	if err != nil {
