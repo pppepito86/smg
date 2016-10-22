@@ -297,9 +297,9 @@ func studentProgressHtml(w http.ResponseWriter, r *http.Request) {
 
 func usersAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/users.html")
+	t, _ := template.ParseFiles("../admin/users.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	users, _ := db.ListUsers()
-	t.Execute(w, users)
+	t.ExecuteTemplate(w, "layout", users)
 }
 
 func contestantsAdminHtml(w http.ResponseWriter, r *http.Request, id int64) {
@@ -325,9 +325,9 @@ func groupsAdminHtml(w http.ResponseWriter, r *http.Request) {
 
 func problemsAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/problems.html")
+	t, _ := template.ParseFiles("../admin/problems.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	problems, _ := db.ListProblems()
-	t.Execute(w, problems)
+	t.ExecuteTemplate(w, "layout", problems)
 }
 
 func problemAdminHtml(w http.ResponseWriter, r *http.Request) {
