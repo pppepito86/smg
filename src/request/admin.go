@@ -231,14 +231,14 @@ func changeUserRole(w http.ResponseWriter, r *http.Request) {
 
 func addAdminGroupHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/addgroup.html")
+	t, _ := template.ParseFiles("../admin/addgroup.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	users, _ := db.ListUsers()
 	t.Execute(w, users)
 }
 
 func addAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/addproblem.html")
+	t, _ := template.ParseFiles("../admin/addproblem.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	t.Execute(w, nil)
 }
 
@@ -255,7 +255,7 @@ func LimitsFromString(limitsStr string) db.Limits {
 
 func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/editproblem.html")
+	t, _ := template.ParseFiles("../admin/editproblem.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 
@@ -285,7 +285,7 @@ func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 
 func addAdminAssignmentHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/addassignment.html")
+	t, _ := template.ParseFiles("../admin/addassignment.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	t.Execute(w, nil)
 }
 
@@ -299,7 +299,7 @@ func usersAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../admin/users.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	users, _ := db.ListUsers()
-	t.ExecuteTemplate(w, "layout", users)
+	t.Execute(w, users)
 }
 
 func contestantsAdminHtml(w http.ResponseWriter, r *http.Request, id int64) {
@@ -319,7 +319,7 @@ func assignmentsAdminHtml(w http.ResponseWriter, r *http.Request) {
 
 func groupsAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/groups.html")
+	t, _ := template.ParseFiles("../admin/groups.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	t.Execute(w, db.ListGroups())
 }
 
@@ -327,12 +327,12 @@ func problemsAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../admin/problems.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	problems, _ := db.ListProblems()
-	t.ExecuteTemplate(w, "layout", problems)
+	t.Execute(w, problems)
 }
 
 func problemAdminHtml(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/problem.html")
+	t, _ := template.ParseFiles("../admin/problem.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 	problem.LangLimits = LimitsFromString(problem.Languages)

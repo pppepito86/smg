@@ -39,109 +39,8 @@
     <div id="wrap">
 
 
-         <!-- HEADER SECTION -->
-        <div id="top">
-
-            <nav class="navbar navbar-inverse navbar-fixed-top " style="padding-top: 10px;">
-                <a data-original-title="Show/Hide Menu" data-placement="bottom" data-tooltip="tooltip" class="accordion-toggle btn btn-primary btn-sm visible-xs" data-toggle="collapse" href="#menu" id="menu-toggle">
-                    <i class="icon-align-justify"></i>
-                </a>
-                <!-- LOGO SECTION -->
-                <header class="navbar-header">
-
-                    <a href="index.html" class="navbar-brand">
-                    <img src="assets/img/logo.png" alt="" /></a>
-                </header>
-                <!-- END LOGO SECTION -->
-                <ul class="nav navbar-top-links navbar-right">
-                    <!--ADMIN SETTINGS SECTIONS -->
-
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="icon-user "></i>&nbsp; <i class="icon-chevron-down "></i>
-                        </a>
-
-                        <ul class="dropdown-menu dropdown-user">
-                            <li><a href="#"><i class="icon-user"></i> User Profile </a>
-                            </li>
-                            <li><a href="#"><i class="icon-gear"></i> Settings </a>
-                            </li>
-                            <li class="divider"></li>
-                            <li><a href="/logout"><i class="icon-signout"></i> Logout </a>
-                            </li>
-                        </ul>
-
-                    </li>
-                    <!--END ADMIN SETTINGS -->
-                </ul>
-
-
-            </nav>
-
-        </div>
-        <!-- END HEADER SECTION -->
-
-
-
-        <!-- MENU SECTION -->
-       <div id="left">
-            <div class="media user-media well-small">
-                <a class="user-link" href="#">
-                    <img class="media-object img-thumbnail user-img" alt="User Picture" src="assets/img/user.png" />
-                </a>
-                <!--br />
-                <div class="media-body">
-                    <h5 class="media-heading"> Joe Romlin</h5>
-                    <ul class="list-unstyled user-info">
-                        
-                        <li>
-                             <a class="btn btn-success btn-xs btn-circle" style="width: 10px;height: 12px;"></a> Online
-                           
-                        </li>
-                       
-                    </ul>
-                </div>
-                <br /-->
-            </div>
-
-            <ul id="menu" class="collapse">
-
-                
-                <li class="panel">
-                    <a href="index.html" >
-                        <i class="icon-table"></i> Dashboard
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="users.html" >
-                        <i class="icon-table"></i> Users
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="groups.html" >
-                        <i class="icon-table"></i> Groups
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="problems.html" >
-                        <i class="icon-table"></i> Problems
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="assignments.html" >
-                        <i class="icon-table"></i> Assignments
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="studentprogress.html" >
-                        <i class="icon-table"></i> Student Progress
-                    </a>                   
-                </li>
-            </ul>
-
-        </div>
-        <!--END MENU SECTION -->
-
+      {{template "header"}}
+      {{template "menu"}}
 
         <!--PAGE CONTENT -->
         <div id="content">
@@ -214,11 +113,8 @@
 
      <!--END MAIN WRAPPER -->
 
-   <!-- FOOTER -->
-    <div id="footer">
-        <p>&copy;  pppepito86 &nbsp;2016 &nbsp;</p>
-    </div>
-    <!--END FOOTER -->
+     {{template "footer"}}
+
      <!-- GLOBAL SCRIPTS -->
     <script src="assets/plugins/jquery-2.0.3.min.js"></script>
      <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
