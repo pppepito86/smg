@@ -49,7 +49,7 @@
     <div id="wrap">
 
      {{template "header"}}
-     {{template "menu"}}
+     {{template "menu" .}}
 
         <!--PAGE CONTENT -->
         <div id="content">
@@ -77,29 +77,29 @@
                           <div class="row">
                             <div class="col-lg-12">
                               <div id="div-1" class="accordion-body collapse in body">
-                                <form action="/editproblem?id={{.Id}}" enctype="multipart/form-data" method="POST" role="form" >
+                                <form action="/editproblem?id={{.Data.Id}}" enctype="multipart/form-data" method="POST" role="form" >
 
                 <div class="form-group" >
                     <label>Problem name</label>
-                    <input type="text" name="problemname" value="{{.ProblemName}}" id="problemname" placeholder="Problem name" class="form-control" />
+                    <input type="text" name="problemname" value="{{.Data.ProblemName}}" id="problemname" placeholder="Problem name" class="form-control" />
                 </div>
 
                 <div class="form-group" >
                     <label >Version</label>
-                    <input type="text" name="version" value="{{.Version}}" id="version" placeholder="Version" class="form-control" />
+                    <input type="text" name="version" value="{{.Data.Version}}" id="version" placeholder="Version" class="form-control" />
                 </div >
                                     
                 <div class="form-group" >
                     <label> Tags (csv) </label>
-                    <input type="text" name="tags" id="tags" value="{{range $tag :=  $.Tags}}{{$tag}}, {{end}}" placeholder="binary search, dp, dijkstra" class="form-control" />
+                    <input type="text" name="tags" id="tags" value="{{range $tag :=  $.Data.Tags}}{{$tag}}, {{end}}" placeholder="binary search, dp, dijkstra" class="form-control" />
                 </div >
      
                 <div class="form-group" >
                     <label >Text</label>
-                    <textarea id="wysihtml5" name="text" class="form-control" rows="10">{{.Description}}</textarea>
+                    <textarea id="wysihtml5" name="text" class="form-control" rows="10">{{.Data.Description}}</textarea>
             
  
-                    <!-- <textarea id="text" name="text" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >{{.Description}}</textarea > -->
+                    <!-- <textarea id="text" name="text" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >{{.Data.Description}}</textarea > -->
                 </div >
 <div class="form-group" >
                         <label class="control-label">Test Cases</label>
@@ -119,17 +119,17 @@
                                     </div>
                         </div>
                     </div>
-                    <textarea id="test" name="test" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >{{.Tests}}</textarea >
+                    <textarea id="test" name="test" class="form-control" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 194px;" >{{.Data.Tests}}</textarea >
                         </div>
 
                 <div class="form-group" >
                     <label>Points</label>
-                    <input type="text" value="{{.Points}}" name="points" id="points" class="form-control" />
+                    <input type="text" value="{{.Data.Points}}" name="points" id="points" class="form-control" />
                 </div>
                 <div class="form-group" >
                     <label >Allowed Languages</label>
-                  {{$cpplimit :=index .LangLimits "c++"}}
-                  {{$javalimit :=index .LangLimits "java"}}
+                  {{$cpplimit :=index .Data.LangLimits "c++"}}
+                  {{$javalimit :=index .Data.LangLimits "java"}}
 											<div class="checkbox" >
                         <label >
                           {{if eq $cpplimit.Language "c++"}}

@@ -22,7 +22,7 @@ type Response struct {
 
 func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
-        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
+		http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 	aps, _ := db.ListAssignmentProblems(cid)
@@ -54,7 +54,7 @@ func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int6
 
 func mySubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
-        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
+		http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 	mySubmissions, _ := db.ListMySubmissions(user.Id, cid)
@@ -117,7 +117,7 @@ func editHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 
 func submitCodeHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
-        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
+		http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 	aps, _ := db.ListAssignmentProblems(cid)
@@ -196,7 +196,7 @@ func problemHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64
 
 func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	if !isUserAssignedToContest(user, cid) {
-        http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
+		http.Redirect(w, r, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
 		return
 	}
 
@@ -222,12 +222,12 @@ func submitCode(w http.ResponseWriter, r *http.Request, user db.User, cid int64)
 	_, _ = io.Copy(out, file)
 
 	limits := LimitsFromString(ap.Languages)
-    limit := limits[language[0]]
-    
-    // FIXME:
-    if language[0] == "nodejs" {
-        limit = limits["java"]
-    }
+	limit := limits[language[0]]
+
+	// FIXME:
+	if language[0] == "nodejs" {
+		limit = limits["java"]
+	}
 	s := db.Submission{
 		Id:            -1,
 		AssignmentId:  ap.AssignmentId,

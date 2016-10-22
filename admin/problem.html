@@ -41,7 +41,7 @@
 
 
       {{template "header"}}
-      {{template "menu"}}
+      {{template "menu" .}}
 
         <!--PAGE CONTENT -->
         <div id="content">
@@ -61,10 +61,10 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                           Problem&nbsp;
-                          <a href="/editproblem.html?id={{.Id}}" class="btn btn-default btn-sm btn-grad">+Edit</a>
+                          <a href="/editproblem.html?id={{.Data.Id}}" class="btn btn-default btn-sm btn-grad">+Edit</a>
                         </div>
                         <div class="panel-body">
-                          {{.Description}}
+                          {{.Data.Description}}
                        </div>
                         <div class="panel-body">
                           <h4>Ограничения</h4>
@@ -78,7 +78,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       {{range $index, $element := .LangLimits}}
+                                       {{range $index, $element := .Data.LangLimits}}
                                         <tr>
                                             <td>{{$element.Language}}</td>
                                             <td>{{$element.TimeLimit}}</td>

@@ -229,17 +229,24 @@ func changeUserRole(w http.ResponseWriter, r *http.Request) {
 	db.UpdateUserRole(userId, roleId)
 }
 
-func addAdminGroupHtml(w http.ResponseWriter, r *http.Request) {
+type Resp struct {
+	Data interface{}
+	Role string
+}
+
+func sendAdminResponse(w http.ResponseWriter, page string, data interface{}) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/addgroup.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
+	t, _ := template.ParseFiles("../admin/"+page+".html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
+	t.Execute(w, Resp{data, "admin"})
+}
+
+func addAdminGroupHtml(w http.ResponseWriter, r *http.Request) {
 	users, _ := db.ListUsers()
-	t.Execute(w, users)
+	sendAdminResponse(w, "addgroup", users)
 }
 
 func addAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/addproblem.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
-	t.Execute(w, nil)
+	sendAdminResponse(w, "addproblem", nil)
 }
 
 func LimitsFromString(limitsStr string) db.Limits {
@@ -254,8 +261,6 @@ func LimitsFromString(limitsStr string) db.Limits {
 }
 
 func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/editproblem.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 
@@ -280,26 +285,20 @@ func editAdminProblemHtml(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	problem.Tests = tests
-	t.Execute(w, problem)
+	sendAdminResponse(w, "editproblem", problem)
 }
 
 func addAdminAssignmentHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/addassignment.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
-	t.Execute(w, nil)
+	sendAdminResponse(w, "addassignment", nil)
 }
 
 func studentProgressHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/dashboard.html")
-	t.Execute(w, nil)
+	sendAdminResponse(w, "dashboard", nil)
 }
 
 func usersAdminHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/users.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	users, _ := db.ListUsers()
-	t.Execute(w, users)
+	sendAdminResponse(w, "users", users)
 }
 
 func contestantsAdminHtml(w http.ResponseWriter, r *http.Request, id int64) {
@@ -318,25 +317,19 @@ func assignmentsAdminHtml(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupsAdminHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/groups.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
-	t.Execute(w, db.ListGroups())
+	sendAdminResponse(w, "groups", db.ListGroups())
 }
 
 func problemsAdminHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/problems.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	problems, _ := db.ListProblems()
-	t.Execute(w, problems)
+	sendAdminResponse(w, "problems", problems)
 }
 
 func problemAdminHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/problem.html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
 	id, _ := strconv.ParseInt(r.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 	problem.LangLimits = LimitsFromString(problem.Languages)
-	t.Execute(w, problem)
+	sendAdminResponse(w, "problem", problem)
 }
 
 func allSubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {

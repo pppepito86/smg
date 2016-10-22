@@ -55,11 +55,17 @@ func HandleUser(w http.ResponseWriter, r *http.Request, user db.User) {
 		dashboardUserHtml(w, r, user)
 	} else if path == "/pointsperweek" {
 		pointPerWeek(w, r, user)
-    } else if path == "/assignments.html" {
-        assignmentsUserHtml(w, r, user);
-    } else {
+	} else if path == "/assignments.html" {
+		assignmentsUserHtml(w, r, user)
+	} else {
 		dashboardUserHtml(w, r, user)
 	}
+}
+
+func sendUserResponse(w http.ResponseWriter, page string, data interface{}) {
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../user/"+page+".html", "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
+	t.Execute(w, Resp{data, "user"})
 }
 
 func joinGroup(w http.ResponseWriter, r *http.Request, user db.User) {
@@ -71,16 +77,12 @@ func joinGroup(w http.ResponseWriter, r *http.Request, user db.User) {
 }
 
 func assignmentsUserHtml(w http.ResponseWriter, r *http.Request, user db.User) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../user/assignments.html")
 	assignments, _ := db.ListAssignmentsForUser(user)
-	t.Execute(w, assignments)
+	sendUserResponse(w, "assignments", assignments)
 }
 
 func dashboardUserHtml(w http.ResponseWriter, r *http.Request, user db.User) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../user/dashboard.html")
-	t.Execute(w, nil)
+	sendUserResponse(w, "dashboard", nil)
 }
 
 func competitionHtml(w http.ResponseWriter, r *http.Request) {
@@ -93,22 +95,18 @@ func competitionHtml(w http.ResponseWriter, r *http.Request) {
 }
 
 func userGroupsHtml(w http.ResponseWriter, r *http.Request, user db.User) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../user/groups.html")
 	userGroups, _ := db.ListGroupsForUser(user.Id)
-	t.Execute(w, userGroups)
+	sendUserResponse(w, "groups", userGroups)
 }
 
 func joinGroupHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../user/joingroup.html")
-	t.Execute(w, nil)
+	sendUserResponse(w, "joingroup", nil)
 }
 
 func pointPerWeek(w http.ResponseWriter, r *http.Request, user db.User) {
 	w.Header().Set("Content-Type", "application/json")
-	
-    Response := db.GetPointsPerWeek(user.Id)
+
+	Response := db.GetPointsPerWeek(user.Id)
 
 	json, err := json.Marshal(Response)
 	fmt.Println("json", json)

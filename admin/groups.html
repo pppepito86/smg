@@ -40,7 +40,7 @@
 
 
      {{template "header"}}
-     {{template "menu"}}
+     {{template "menu" .}}
 
         <!--PAGE CONTENT -->
         <div id="content">
@@ -79,7 +79,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{range $index, $element := .}}
+                                        {{range $index, $element := .Data}}
                                         <tr>
                                             <td>{{$element.Id}}</td>
                                             <td>{{$element.GroupName}}</td>
