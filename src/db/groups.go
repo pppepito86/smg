@@ -147,7 +147,9 @@ func ListUserGroups() ([]UserGroup, error) {
 
 func ListGroupsForUser(userId int64) ([]Group, error) {
 	db := getConnection()
-	rows, err := db.Query("select groups.id, groupname, description, creatorid from groups inner join usergroups on groups.id=usergroups.groupid and usergroups.userid=?", userId)
+	rows, err := db.Query("select groups.id, groupname, description, creatorid, users.username from groups"+
+		" inner join usergroups on groups.id=usergroups.groupid and usergroups.userid=?"+
+		" inner join users on groups.creatorid = users.id", userId)
 
 	if err != nil {
 		log.Print(err)
@@ -157,7 +159,7 @@ func ListGroupsForUser(userId int64) ([]Group, error) {
 	groups := make([]Group, 0)
 	for rows.Next() {
 		var group Group
-		err := rows.Scan(&group.Id, &group.GroupName, &group.Description, &group.CreatorId)
+		err := rows.Scan(&group.Id, &group.GroupName, &group.Description, &group.CreatorId, &group.Creator)
 		if err != nil {
 			log.Print(err)
 			return []Group{}, err

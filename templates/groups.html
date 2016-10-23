@@ -24,7 +24,6 @@
 
     <!-- PAGE LEVEL STYLES -->
     <link href="assets/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
-    <link rel="stylesheet" href="assets/plugins/social-buttons/social-buttons.css">
     <!-- END PAGE LEVEL  STYLES -->
        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -40,8 +39,8 @@
     <div id="wrap">
 
 
-      {{template "header"}}
-      {{template "menu" .}}
+     {{template "header"}}
+     {{template "menu" .}}
 
         <!--PAGE CONTENT -->
         <div id="content">
@@ -66,7 +65,11 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                            Groups&nbsp; 
+                           {{if eq .Role "admin"}}
+                            <a href="/addgroup.html" class="btn btn-default btn-sm btn-grad">+Add</a>
+                            {{else}}
                             <a href="/joingroup.html" class="btn btn-default btn-sm btn-grad">+Join</a>
+                            {{end}}
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">
@@ -85,7 +88,7 @@
                                             <td>{{$element.Id}}</td>
                                             <td>{{$element.GroupName}}</td>
                                             <td>{{$element.Description}}</td>
-                                            <td class="center">{{$element.CreatorId}}</td>
+                                            <td class="center">{{$element.Creator}}</td>
                                         </tr>
                                         {{end}}
                                     </tbody>
@@ -103,6 +106,7 @@
 
         </div>
        <!--END PAGE CONTENT -->
+
 
     </div>
 
@@ -122,6 +126,18 @@
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
          });
+        function getval(sel) {
+          var res = sel.value.split("-");
+
+    $.post("/changeuserrole",
+    {
+        userid: res[0],
+        roleid: res[1]
+    },
+    function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+    });
+        }
     </script>
      <!-- END PAGE LEVEL SCRIPTS -->
 </body>
