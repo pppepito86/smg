@@ -308,10 +308,8 @@ func contestantsAdminHtml(w http.ResponseWriter, r *http.Request, user db.User, 
 }
 
 func assignmentsAdminHtml(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/assignments.html")
 	assignments, _ := db.ListAssignments()
-	t.Execute(w, assignments)
+	sendAdminResponse(w, "assignments", assignments)
 }
 
 func groupsAdminHtml(w http.ResponseWriter, r *http.Request) {
