@@ -41,7 +41,7 @@ func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 		} else if page == "submission" {
 			submissionHtml(w, r, user, contestId, split[2:])
 		} else if page == "contestants" {
-			contestantsAdminHtml(w, r, contestId)
+			contestantsAdminHtml(w, r, user, contestId)
 		} else if page == "standings" {
 			standingsHtml(w, r, user, contestId)
 		} else if page == "submitcode" {
@@ -301,12 +301,10 @@ func usersAdminHtml(w http.ResponseWriter, r *http.Request) {
 	sendAdminResponse(w, "users", users)
 }
 
-func contestantsAdminHtml(w http.ResponseWriter, r *http.Request, id int64) {
-	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../admin/contest/contestants.html")
+func contestantsAdminHtml(w http.ResponseWriter, r *http.Request, user db.User, id int64) {
 	users, _ := db.ListUsersForAssignment(id)
-	response := Response{id, users}
-	t.Execute(w, response)
+	response := Response{id, users, ""}
+	serveContestHtml(w, r, user, "contestants.html", response)
 }
 
 func assignmentsAdminHtml(w http.ResponseWriter, r *http.Request) {
@@ -334,7 +332,7 @@ func problemAdminHtml(w http.ResponseWriter, r *http.Request) {
 
 func allSubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 	submissions, _ := db.ListSubmissionsForAssignment(cid)
-	response := Response{cid, submissions}
+	response := Response{cid, submissions, ""}
 	serveContestHtml(w, r, user, "submissions.html", response)
 }
 

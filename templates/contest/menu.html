@@ -1,0 +1,69 @@
+{{define "menu"}}
+        <!-- MENU SECTION -->
+       <div id="left">
+            <div class="media user-media well-small">
+                <a class="user-link" href="#">
+                    <img class="media-object img-thumbnail user-img" alt="User Picture" src="/assets/img/user.png" />
+                </a>
+                <!--br />
+                <div class="media-body">
+                    <h5 class="media-heading"> Petar Petrov</h5>
+                    <ul class="list-unstyled user-info">
+                        
+                        <li>
+                             <a class="btn btn-success btn-xs btn-circle" style="width: 10px;height: 12px;"></a> Online
+                           
+                        </li>
+                       
+                    </ul>
+                </div>
+                <br /-->
+            </div>
+
+            <ul id="menu" class="collapse">
+  
+              {{if eq .Role "admin"}} 
+                <li class="panel">
+                    <a href="/contest/{{.Id}}/edit" >
+                        <i class="icon-edit"></i> Edit
+                    </a>                   
+                </li>
+                {{end}}
+                <li class="panel">
+                    <a href="/contest/{{.Id}}/problems" >
+                        <i class="icon-list"></i> Problems
+                    </a>                   
+                </li>
+                <li class="panel">
+                    <a href="/contest/{{.Id}}/submit" >
+                        <i class="icon-upload"></i> Submit Code
+                    </a>                   
+                </li>
+                <li class="panel">
+                    <a href="/contest/{{.Id}}/mysubmissions" >
+                        <i class="icon-code"></i> My Submissions
+                    </a>                   
+                </li>
+              {{if eq .Role "admin"}} 
+                <li class="panel">
+                    <a href="/contest/{{.Id}}/submissions" >
+                        All Submissions
+                    </a>                   
+                </li>
+                 <li class="panel">
+                    <a href="/contest/{{.Id}}/contestants" >
+                        All Contestants 
+                    </a>                   
+                </li>
+                   <li class="panel">
+                    <a href="/contest/{{.Id}}/standings" >
+                        Standings 
+                    </a>                   
+                </li>
+                {{end}}
+
+            </ul>
+
+        </div>
+        <!--END MENU SECTION -->
+{{end}}

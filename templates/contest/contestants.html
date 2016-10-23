@@ -40,97 +40,8 @@
     <div id="wrap">
 
 
-         <!-- HEADER SECTION -->
-        <div id="top">
-
-            <nav class="navbar navbar-inverse navbar-fixed-top " style="padding-top: 10px;">
-                <a data-original-title="Show/Hide Menu" data-placement="bottom" data-tooltip="tooltip" class="accordion-toggle btn btn-primary btn-sm visible-xs" data-toggle="collapse" href="#menu" id="menu-toggle">
-                    <i class="icon-align-justify"></i>
-                </a>
-                <!-- LOGO SECTION -->
-                <header class="navbar-header">
-
-                    <a href="index.html" class="navbar-brand">
-                    <img src="/assets/img/logo.png" alt="" /></a>
-                </header>
-                <!-- END LOGO SECTION -->
-                    <!--END ADMIN SETTINGS -->
-            </nav>
-
-        </div>
-        <!-- END HEADER SECTION -->
-
-
-
-        <!-- MENU SECTION -->
-       <div id="left">
-            <div class="media user-media well-small">
-                <a class="user-link" href="#">
-                    <img class="media-object img-thumbnail user-img" alt="User Picture" src="/assets/img/user.png" />
-                </a>
-                <!--br />
-                <div class="media-body">
-                    <h5 class="media-heading"> Petar Petrov</h5>
-                    <ul class="list-unstyled user-info">
-                        
-                        <li>
-                             <a class="btn btn-success btn-xs btn-circle" style="width: 10px;height: 12px;"></a> Online
-                           
-                        </li>
-                       
-                    </ul>
-                </div>
-                <br /-->
-            </div>
-
-            <ul id="menu" class="collapse">
-  
-                <li class="panel">
-                    <a href="/contest/{{.Id}}/edit" >
-                        <i class="icon-edit"></i> Edit
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="/contest/{{.Id}}/problems" >
-                        <i class="icon-list"></i> Problems
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="/contest/{{.Id}}/submit" >
-                        <i class="icon-upload"></i> Submit Code
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="/contest/{{.Id}}/mysubmissions" >
-                        <i class="icon-code"></i> My Submissions
-                    </a>                   
-                </li>
-                <li class="panel">
-                    <a href="/contest/{{.Id}}/submissions" >
-                        All Submissions
-                    </a>                   
-                </li>
-                 <li class="panel">
-                    <a href="/contest/{{.Id}}/contestants" >
-                        All Contestants 
-                    </a>                   
-                </li>
-                   <li class="panel">
-                    <a href="/contest/{{.Id}}/standings" >
-                        Standings 
-                    </a>                   
-                </li>
- 
-               <!--li class="panel">
-                    <a href="standings.html?id={{.Id}}" >
-                        <i class="icon-table"></i> Standing
-                    </a>                   
-                </li-->
-            </ul>
-
-        </div>
-        <!--END MENU SECTION -->
-
+      {{template "header"}}
+      {{template "menu" .}}
 
         <!--PAGE CONTENT -->
         <div id="content">
@@ -193,11 +104,8 @@
 
      <!--END MAIN WRAPPER -->
 
-   <!-- FOOTER -->
-    <div id="footer">
-        <p>&copy;  pppepito86&nbsp;2016 &nbsp;</p>
-    </div>
-    <!--END FOOTER -->
+     {{template "footer"}}
+
      <!-- GLOBAL SCRIPTS -->
     <script src="/assets/plugins/jquery-2.0.3.min.js"></script>
      <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script>

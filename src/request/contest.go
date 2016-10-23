@@ -18,6 +18,7 @@ import (
 type Response struct {
 	Id   int64
 	Data interface{}
+	Role string
 }
 
 func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
@@ -48,7 +49,7 @@ func problemsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int6
 			d.Status[ap.Id] = "#ffffff"
 		}
 	}
-	response := Response{cid, d}
+	response := Response{cid, d, ""}
 	serveContestHtml(w, r, user, "problems.html", response)
 }
 
@@ -58,8 +59,8 @@ func mySubmissionsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid
 		return
 	}
 	mySubmissions, _ := db.ListMySubmissions(user.Id, cid)
-	response := Response{cid, mySubmissions}
-	serveContestHtml(w, r, user, "submissions.html", response)
+	response := Response{cid, mySubmissions, ""}
+	serveContestHtml(w, r, user, "mysubmissions.html", response)
 }
 
 func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64, args []string) {
@@ -92,7 +93,7 @@ func submissionHtml(w http.ResponseWriter, r *http.Request, user db.User, cid in
 		}
 	}
 	submission.SubmissionDetails = details
-	response := Response{cid, submission}
+	response := Response{cid, submission, ""}
 	serveContestHtml(w, r, user, "submission.html", response)
 }
 
@@ -111,7 +112,7 @@ func editHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64) {
 		problems = problems[1:len(problems)]
 	}
 	assignment.Problems = problems
-	response := Response{cid, assignment}
+	response := Response{cid, assignment, ""}
 	serveContestHtml(w, r, user, "edit.html", response)
 }
 
@@ -121,7 +122,7 @@ func submitCodeHtml(w http.ResponseWriter, r *http.Request, user db.User, cid in
 		return
 	}
 	aps, _ := db.ListAssignmentProblems(cid)
-	response := Response{cid, aps}
+	response := Response{cid, aps, ""}
 	serveContestHtml(w, r, user, "submitcode.html", response)
 }
 
@@ -170,18 +171,18 @@ func standingsHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int
 		}
 	}
 	result.Info = info
-	response := Response{cid, result}
+	response := Response{cid, result, ""}
 	serveContestHtml(w, r, user, "standings.html", response)
 }
 
 func serveContestHtml(w http.ResponseWriter, r *http.Request, user db.User, html string, response Response) {
 	w.Header().Set("Content-Type", "text/html")
 	if user.RoleName == "admin" {
-		html = "../admin/contest/" + html
+		response.Role = "admin"
 	} else {
-		html = "../user/" + html
+		response.Role = "user"
 	}
-	t, _ := template.ParseFiles(html)
+	t, _ := template.ParseFiles("../templates/contest/"+html, "../templates/contest/header.html", "../templates/contest/menu.html", "../templates/contest/footer.html")
 	t.Execute(w, response)
 }
 
@@ -190,7 +191,7 @@ func problemHtml(w http.ResponseWriter, r *http.Request, user db.User, cid int64
 	ap, _ := db.GetAssignmentProblem(apId)
 	problem, _ := db.GetProblem(ap.ProblemId)
 	problem.LangLimits = LimitsFromString(problem.Languages)
-	response := Response{cid, problem}
+	response := Response{cid, problem, ""}
 	serveContestHtml(w, r, user, "problem.html", response)
 }
 
