@@ -2,7 +2,6 @@ package contest
 
 import (
 	"db"
-	"net/http"
 	"request/util"
 )
 
@@ -12,8 +11,7 @@ type ContestantsHandler struct {
 }
 
 func (h *ContestantsHandler) Execute() error {
-	if !util.IsUserAssignedToContest(h.User, h.Cid) {
-		http.Redirect(h.W, h.R, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
+	if h.User.RoleName != "admin" {
 		return nil
 	}
 

@@ -2,6 +2,7 @@ package contest
 
 import (
 	"db"
+	"net/http"
 	"request/util"
 	"strconv"
 )
@@ -12,6 +13,11 @@ type ProblemHandler struct {
 }
 
 func (h *ProblemHandler) Execute() error {
+	if !util.IsUserAssignedToContest(h.User, h.Cid) {
+		http.Redirect(h.W, h.R, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
+		return nil
+	}
+
 	apId, _ := strconv.ParseInt(h.Args[0], 10, 64)
 	ap, _ := db.GetAssignmentProblem(apId)
 	problem, _ := db.GetProblem(ap.ProblemId)
