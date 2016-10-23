@@ -16,6 +16,7 @@ import (
 
 func HandleAdmin(w http.ResponseWriter, r *http.Request, user db.User) {
 	path := r.URL.Path
+
 	if strings.HasPrefix(path, "/contest/") {
 		split := strings.Split(strings.TrimPrefix(path, "/contest/"), "/")
 		if len(split) < 2 {

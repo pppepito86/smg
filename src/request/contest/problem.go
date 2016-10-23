@@ -2,19 +2,13 @@ package contest
 
 import (
 	"db"
-	"net/http"
 	"request/util"
 	"strconv"
 )
 
 type ProblemHandler struct {
 	util.NoInputValidator
-
-	R    *http.Request
-	W    http.ResponseWriter
-	User db.User
-	Cid  int64
-	Args []string
+	ContestRequestInfo
 }
 
 func (h *ProblemHandler) Execute() error {

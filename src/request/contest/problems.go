@@ -8,11 +8,7 @@ import (
 
 type ProblemsHandler struct {
 	util.NoInputValidator
-
-	R    *http.Request
-	W    http.ResponseWriter
-	User db.User
-	Cid  int64
+	ContestRequestInfo
 }
 
 func (h *ProblemsHandler) Execute() error {

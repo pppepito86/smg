@@ -3,34 +3,19 @@ package request
 import (
 	"fmt"
 	"net/http"
+	"request/contest"
+	"strings"
 	"text/template"
 )
-
-type InputValidator interface {
-	Validate() error
-}
-
-type RequestHandler interface {
-	Execute() error
-}
 
 func Route(w http.ResponseWriter, r *http.Request) {
 	user := GetUser(*r)
 	fmt.Println(r.URL, user.Id, r.RemoteAddr)
 
-	/*
-		if strings.Contains(r.URL.Path, "contest") && strings.Contains(r.URL.Path, "problem") {
-			cid, _ := strconv.ParseInt(strings.Split(r.URL.Path, "/")[2], 10, 64)
-			handler := contest.ProblemsHandler{
-				R:    r,
-				W:    w,
-				User: user,
-				Cid:  cid,
-			}
-			handler.Execute()
-			return
-		}
-	*/
+	if strings.Index(r.URL.Path, "/contest/") == 0 {
+		contest.Route(w, r, user)
+		return
+	}
 
 	if r.URL.Path == "/error.html" {
 		errorHtml(w, r)

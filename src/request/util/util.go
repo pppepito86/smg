@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+type InputValidator interface {
+	Validate() error
+}
+
+type RequestHandler interface {
+	InputValidator
+	Execute() error
+}
+
 type NoInputValidator struct{}
 
 func (NoInputValidator) Validate() error {
