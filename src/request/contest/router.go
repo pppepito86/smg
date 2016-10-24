@@ -6,6 +6,7 @@ import (
 	"request/util"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 type ContestRequestInfo struct {
@@ -61,4 +62,15 @@ func Route(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 
 	handler.Execute()
+}
+func ServeContestHtml(info ContestRequestInfo, html string, data interface{}) {
+	info.W.Header().Set("Content-Type", "text/html")
+
+	t, _ := template.ParseFiles("../templates/contest/"+html, "../templates/contest/header.html", "../templates/contest/menu.html", "../templates/contest/footer.html")
+	response := util.Response{info.Cid, data, info.User.RoleName, false}
+	if info.User.RoleName == "teacher" {
+		a, _ := db.ListAssignment(info.Cid)
+		response.Author = a.AuthorId == info.User.Id
+	}
+	t.Execute(info.W, response)
 }

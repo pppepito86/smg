@@ -24,7 +24,7 @@ func (h *SubmissionHandler) Execute() error {
 
 	id, _ := strconv.ParseInt(h.Args[0], 10, 64)
 	submission, _ := db.ListSubmission(id)
-	if h.User.RoleName != "admin" && submission.UserId != h.User.Id {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && submission.UserId != h.User.Id {
 		return nil
 	}
 
@@ -51,8 +51,7 @@ func (h *SubmissionHandler) Execute() error {
 		}
 	}
 	submission.SubmissionDetails = details
-	response := util.Response{h.Cid, submission, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "submission.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "submission.html", submission)
 
 	return nil
 }

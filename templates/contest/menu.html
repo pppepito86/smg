@@ -28,6 +28,14 @@
                         <i class="icon-edit"></i> Edit
                     </a>                   
                 </li>
+                {{else}}
+                  {{if .Author}} 
+                    <li class="panel">
+                      <a href="/contest/{{.Id}}/edit" >
+                          <i class="icon-edit"></i> Edit
+                      </a>                   
+                    </li>
+                  {{end}}
                 {{end}}
                 <li class="panel">
                     <a href="/contest/{{.Id}}/problems" >
@@ -61,6 +69,24 @@
                     </a>                   
                 </li>
                 {{end}}
+              {{if eq .Role "teacher"}} 
+                <li class="panel">
+                    <a href="/contest/{{.Id}}/submissions" >
+                        All Submissions
+                    </a>                   
+                </li>
+                 <li class="panel">
+                    <a href="/contest/{{.Id}}/contestants" >
+                        All Contestants 
+                    </a>                   
+                </li>
+                   <li class="panel">
+                    <a href="/contest/{{.Id}}/standings" >
+                        Standings 
+                    </a>                   
+                </li>
+                {{end}}
+
 
             </ul>
 

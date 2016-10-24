@@ -12,7 +12,7 @@ type AddGroupHandler struct {
 }
 
 func (h *AddGroupHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 

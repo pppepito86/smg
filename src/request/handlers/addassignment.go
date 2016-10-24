@@ -15,7 +15,7 @@ type AddAssignmentHandler struct {
 }
 
 func (h *AddAssignmentHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 

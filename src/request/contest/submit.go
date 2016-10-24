@@ -18,8 +18,7 @@ func (h *SubmitHandler) Execute() error {
 	}
 
 	aps, _ := db.ListAssignmentProblems(h.Cid)
-	response := util.Response{h.Cid, aps, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "submitcode.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "submitcode.html", aps)
 
 	return nil
 }

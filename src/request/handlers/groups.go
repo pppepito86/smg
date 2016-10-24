@@ -13,7 +13,7 @@ type GroupsHandler struct {
 func (h *GroupsHandler) Execute() error {
 	var groups []db.Group
 
-	if h.User.RoleName == "admin" {
+	if h.User.RoleName == "admin" || h.User.RoleName == "teacher" {
 		groups = db.ListGroups()
 	} else {
 		groups, _ = db.ListGroupsForUser(h.User.Id)

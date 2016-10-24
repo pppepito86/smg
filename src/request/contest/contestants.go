@@ -11,13 +11,12 @@ type ContestantsHandler struct {
 }
 
 func (h *ContestantsHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 
 	users, _ := db.ListUsersForAssignment(h.Cid)
-	response := util.Response{h.Cid, users, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "contestants.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "contestants.html", users)
 
 	return nil
 }

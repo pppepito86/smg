@@ -66,10 +66,14 @@
                         <div class="panel-heading">
                            Groups&nbsp; 
                            {{if eq .Role "admin"}}
-                            <a href="/addgroup.html" class="btn btn-default btn-sm btn-grad">+Add</a>
-                            {{else}}
-                            <a href="/joingroup.html" class="btn btn-default btn-sm btn-grad">+Join</a>
+                              <a href="/addgroup.html" class="btn btn-default btn-sm btn-grad">+Add</a>
+                           {{else}}
+                             {{if eq .Role "teacher"}}
+                                <a href="/addgroup.html" class="btn btn-default btn-sm btn-grad">+Add</a>
+                             {{else}}
+                                <a href="/joingroup.html" class="btn btn-default btn-sm btn-grad">+Join</a>
                             {{end}}
+                           {{end}}
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">

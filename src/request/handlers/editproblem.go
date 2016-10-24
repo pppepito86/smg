@@ -20,7 +20,7 @@ type EditProblemHandler struct {
 }
 
 func (h *EditProblemHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 

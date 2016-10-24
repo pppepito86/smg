@@ -40,8 +40,7 @@ func (h *ProblemsHandler) Execute() error {
 			d.Status[ap.Id] = "#ffffff"
 		}
 	}
-	response := util.Response{h.Cid, d, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "problems.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "problems.html", d)
 
 	return nil
 }

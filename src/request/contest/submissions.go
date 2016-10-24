@@ -11,13 +11,12 @@ type SubmissionsHandler struct {
 }
 
 func (h *SubmissionsHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 
 	submissions, _ := db.ListSubmissionsForAssignment(h.Cid)
-	response := util.Response{h.Cid, submissions, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "submissions.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "submissions.html", submissions)
 
 	return nil
 }

@@ -13,7 +13,7 @@ type AssignmentsHandler struct {
 func (h *AssignmentsHandler) Execute() error {
 	var assignments []db.Assignment
 
-	if h.User.RoleName == "admin" {
+	if h.User.RoleName == "admin" || h.User.RoleName == "teacher" {
 		assignments, _ = db.ListAssignments()
 	} else {
 		assignments, _ = db.ListAssignmentsForUser(h.User)

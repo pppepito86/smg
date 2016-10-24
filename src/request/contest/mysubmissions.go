@@ -18,8 +18,7 @@ func (h *MySubmissionsHandler) Execute() error {
 	}
 
 	mySubmissions, _ := db.ListMySubmissions(h.User.Id, h.Cid)
-	response := util.Response{h.Cid, mySubmissions, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "mysubmissions.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "mysubmissions.html", mySubmissions)
 
 	return nil
 }

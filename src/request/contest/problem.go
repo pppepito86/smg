@@ -22,8 +22,7 @@ func (h *ProblemHandler) Execute() error {
 	ap, _ := db.GetAssignmentProblem(apId)
 	problem, _ := db.GetProblem(ap.ProblemId)
 	problem.LangLimits = util.LimitsFromString(problem.Languages)
-	response := util.Response{h.Cid, problem, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "problem.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "problem.html", problem)
 
 	return nil
 }

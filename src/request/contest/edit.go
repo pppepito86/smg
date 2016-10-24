@@ -12,11 +12,15 @@ type EditHandler struct {
 }
 
 func (h *EditHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 
 	assignment, _ := db.ListAssignment(h.Cid)
+	if assignment.AuthorId != h.User.Id {
+		return nil
+	}
+
 	aps, _ := db.ListAssignmentProblems(h.Cid)
 	problems := ""
 	for _, ap := range aps {
@@ -26,8 +30,7 @@ func (h *EditHandler) Execute() error {
 		problems = problems[1:len(problems)]
 	}
 	assignment.Problems = problems
-	response := util.Response{h.Cid, assignment, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "edit.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "edit.html", assignment)
 
 	return nil
 }

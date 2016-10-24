@@ -58,6 +58,18 @@
                 </li>
                 {{end}}
   
+              {{if eq .Role "teacher"}} 
+              <li class="panel">
+                    <a href="problems.html" >
+                        <i class="icon-table"></i> Problems
+                    </a>                   
+                </li>
+               <li class="panel">
+                    <a href="studentprogress.html" >
+                        <i class="icon-table"></i> Student Progress
+                    </a>                   
+                </li>
+              {{end}}
             </ul>
 
         </div>

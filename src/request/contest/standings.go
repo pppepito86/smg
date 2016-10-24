@@ -11,7 +11,7 @@ type StandingsHandler struct {
 }
 
 func (h *StandingsHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 
@@ -55,8 +55,7 @@ func (h *StandingsHandler) Execute() error {
 		}
 	}
 	result.Info = info
-	response := util.Response{h.Cid, result, ""}
-	util.ServeContestHtml(h.W, h.R, h.User, "standings.html", response)
+	ServeContestHtml(h.ContestRequestInfo, "standings.html", result)
 
 	return nil
 }

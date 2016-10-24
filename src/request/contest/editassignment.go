@@ -15,7 +15,12 @@ type EditAssignmentHandler struct {
 }
 
 func (h *EditAssignmentHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
+		return nil
+	}
+
+	a, _ := db.ListAssignment(h.Cid)
+	if a.AuthorId != h.User.Id {
 		return nil
 	}
 
@@ -51,7 +56,6 @@ func (h *EditAssignmentHandler) Execute() error {
 	location, _ := time.LoadLocation("Europe/Sofia")
 	startTime := time.Date(y1, time.Month(M1), d1, h1, m1, 0, 0, location)
 	endTime := time.Date(y2, time.Month(M2), d2, h2, m2, 0, 0, location)
-	a, _ := db.ListAssignment(h.Cid)
 	a.AssignmentName = name[0]
 	a.StartTime = startTime
 	a.EndTime = endTime

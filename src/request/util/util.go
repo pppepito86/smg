@@ -33,31 +33,21 @@ func (NoInputValidator) Validate() error {
 }
 
 type Response struct {
-	Id   int64
-	Data interface{}
-	Role string
+	Id     int64
+	Data   interface{}
+	Role   string
+	Author bool
 }
 
 func ServeHtml(w http.ResponseWriter, user db.User, html string, data interface{}) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../templates/"+html, "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
-	response := Response{0, data, user.RoleName}
-	t.Execute(w, response)
-}
-
-func ServeContestHtml(w http.ResponseWriter, r *http.Request, user db.User, html string, response Response) {
-	w.Header().Set("Content-Type", "text/html")
-	if user.RoleName == "admin" {
-		response.Role = "admin"
-	} else {
-		response.Role = "user"
-	}
-	t, _ := template.ParseFiles("../templates/contest/"+html, "../templates/contest/header.html", "../templates/contest/menu.html", "../templates/contest/footer.html")
+	response := Response{0, data, user.RoleName, false}
 	t.Execute(w, response)
 }
 
 func IsUserAssignedToContest(user db.User, id int64) bool {
-	if user.RoleName == "admin" {
+	if user.RoleName == "admin" || user.RoleName == "teacher" {
 		return true
 	}
 	ok, _ := db.IsUserAssignedToCompetition(user.Id, id)

@@ -12,7 +12,7 @@ type ProblemHandler struct {
 }
 
 func (h *ProblemHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 

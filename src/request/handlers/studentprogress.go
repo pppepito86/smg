@@ -8,7 +8,7 @@ type StudentProgressHandler struct {
 }
 
 func (h *StudentProgressHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 
