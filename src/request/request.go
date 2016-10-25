@@ -61,7 +61,7 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		handler = &handlers.DashboardHandler{RequestInfo: info}
 	}
 
-	if path == "/rejudge.html" {
+	if path == "/rejudge" {
 		handler = &handlers.RejudgeHandler{RequestInfo: info}
 	}
 
