@@ -169,6 +169,9 @@ func GetPointsPerWeek(userId int64) []PointsPerWeek {
 
 	Response := make([]PointsPerWeek, 0)
 	subs, _ := ListMyAllSubmissions(userId)
+	if len(subs) == 0 {
+		return Response
+	}
 
 	monday := func(t time.Time) time.Time {
 		tt := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
