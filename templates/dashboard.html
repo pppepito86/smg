@@ -56,6 +56,82 @@
                 
                 
                 <div class="row">
+                    <div class="col-lg-12">    
+                        <h1> Добре дошли!</h1>
+                        
+                        {{if eq .Role "user"}} 
+                        <div style="font-size:large"> 
+                            <p> За да се включите към вашата група: 
+                                <ol> 
+                                    <li> от менюто в ляво изберете <b>Groups</b>,</li>
+                                    <li>Щракнете върху бутона <b>+Join</b> и</li>
+                                    <li>напишете името на групата. </li>
+                                </ol> 
+                            </p>
+                            <p>За да решавате задачи:
+                                <ol>
+                                    <li>от менюто изберете <b>Assignments</b>,</li>
+                                    <li>щракнете върху съответното задание.</li>
+                                    <li>можете да разгледате задачите от заданието като изберете <b>Problems</b> от менюто</li>
+                                    <li>можете да качите решение - <b>Submit</b> code от менюто</li>
+                                    <li>можете да видите качените от вас решения - <b>My submission</b></li>
+                                </ol>
+                            </p>            
+                        </div>           
+                        {{end}}
+                        
+                
+                
+                        {{if eq .Role "teacher"}} 
+                        <div style="font-size:large"> 
+                            <p>В системата потребителите са обединени в групи (напр. група "5а клас", "школа" и т.н.). За да дадете задачи за дадена група, трябва да създадете задание (assignment). </p>
+                            
+                            <p> <h3>Създаване на група </h3>
+                                <ol> 
+                                    <li> от менюто в ляво изберете <b>Groups</b>,</li>
+                                    <li>Щракнете върху бутона <b>+Add</b> и</li>
+                                    <li>Въведете име и описание на групата</li>
+                                    <li>Учениците се добавят сами към групата. За целта от техните акаунти избират <b>Groups</b> -> <b>Join</b> -> и пишат името на групата.</li>
+                                </ol> 
+                            </p>
+                            <p><h3>Разглеждане на вече съществуващи задачи</h3>
+                                <ol>
+                                    <li>от менюто изберете <b>Problems</b>,</li>
+                                    <li>отворете съответната задача</li>
+                                    <li>в полето Search (горе-дясно) можете да търсите по етикет на задачата. (С етикетите можете да намерите типа задачи, които ви трябват. Примерни етикети са cout, array, loop, binary search)</li>
+                                </ol>
+                            </p> 
+                            <p><h3>Създаване на задача</h3>
+                                <ol>
+                                    <li>от менюто изберете <b>Problems</b>,</li>
+                                    <li>щракнете <b>+Add</b></li>
+                                    <li>попълнете полетета като следвате инструкциите на място</li>
+                                </ol>
+                            </p> 
+                            <p><h3>Създаване на задание</h3>
+                                Заданията са начина да дадете определен набор от задачи на някоя група. Примерни задания са "Работа в час - 2 окт 2016", "Домашна работа", "Упражнение на масиви", "Контролно на масиви" и т.н. 
+                                <ol>
+                                    <li>от менюто изберете <b>Assignments</b>,</li>
+                                    <li>щракнете <b>+Add</b></li>
+                                    <li>попълнете полетета като следвате инструкциите на място</li>
+                                    <li>като отворите заданието ще можете да видите всички изпратени решения и класиране на участниците по точки</li>
+                                </ol>
+                            </p>
+                            <p><h3>Ако имате въпроси</h3>
+                                Пишете мейл на <a href="mailto:shalamanov.marin@gmail.com" target="_top">shalamanov.marin@gmail.com</a> или на <a href="mailto:pppepito86@gmail.com" target="_top">pppepito86@gmail.com</a>.
+                            </p>
+                        </div>           
+                        {{end}}
+        
+                    
+                    </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    <!--
                   <div class="col-lg-7">
                       <div class="panel panel-default">
                             <div class="panel-heading">
@@ -66,6 +142,7 @@
                       </div>
                       </div>
                   </div>
+-->
                   
 <div class="col-lg-5">
                          
@@ -144,7 +221,8 @@
         <!-- PAGE LEVEL SCRIPTS -->
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
-     <script>
+     
+    <script>
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
          });
@@ -153,6 +231,7 @@
 		<script src="assets/plugins/morris/raphael-2.1.0.min.js"></script>
     <script src="assets/plugins/morris/morris.js"></script>
     <script>
+        /*
         // Load the graphics
         $.get("/pointsperweek", function(data1, status){
             Morris.Line({
@@ -164,7 +243,7 @@
                 //hideHover: 'auto',
                // resize: true
             });
-        });
+        }); */
     </script>
 
 
