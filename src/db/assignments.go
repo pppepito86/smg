@@ -103,6 +103,37 @@ func ListAssignments() ([]Assignment, error) {
 	return assignments, nil
 }
 
+func ListAssignmentsForAuthor(aId int64) ([]Assignment, error) {
+	db := getConnection()
+	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime from assignments"+
+		" inner join users on assignments.author = users.id and assignments.author = ?"+
+		" inner join groups on assignments.groupid = groups.id", aId)
+	if err != nil {
+		log.Print(err)
+		return []Assignment{}, err
+	}
+	location, _ := time.LoadLocation("Europe/Sofia")
+	defer rows.Close()
+	assignments := make([]Assignment, 0)
+	for rows.Next() {
+		var a Assignment
+		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime)
+		a.StartTime = a.StartTime.In(location)
+		a.EndTime = a.EndTime.In(location)
+
+		if err != nil {
+			log.Print(err)
+			return []Assignment{}, err
+		}
+		assignments = append(assignments, a)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []Assignment{}, err
+	}
+	return assignments, nil
+}
 func ListAssignmentsForUser(user User) ([]Assignment, error) {
 	db := getConnection()
 	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime from assignments"+

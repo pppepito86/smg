@@ -46,7 +46,9 @@ func Route(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if path == "/assignments.html" {
-		handler = &handlers.AssignmentsHandler{RequestInfo: info}
+		handler = &handlers.AllAssignmentsHandler{RequestInfo: info}
+	} else if path == "/myassignments.html" {
+		handler = &handlers.MyAssignmentsHandler{RequestInfo: info}
 	} else if path == "/addassignment.html" || path == "/addassignment" {
 		handler = &handlers.AddAssignmentHandler{RequestInfo: info}
 	}

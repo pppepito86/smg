@@ -5,16 +5,16 @@ import (
 	"request/util"
 )
 
-type AssignmentsHandler struct {
+type MyAssignmentsHandler struct {
 	util.NoInputValidator
 	util.RequestInfo
 }
 
-func (h *AssignmentsHandler) Execute() error {
+func (h *MyAssignmentsHandler) Execute() error {
 	var assignments []db.Assignment
 
 	if h.User.RoleName == "admin" || h.User.RoleName == "teacher" {
-		assignments, _ = db.ListAssignments()
+		assignments, _ = db.ListAssignmentsForAuthor(h.User.Id)
 	} else {
 		assignments, _ = db.ListAssignmentsForUser(h.User)
 	}
