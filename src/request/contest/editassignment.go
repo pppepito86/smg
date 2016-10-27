@@ -20,7 +20,7 @@ func (h *EditAssignmentHandler) Execute() error {
 	}
 
 	a, _ := db.ListAssignment(h.Cid)
-	if a.AuthorId != h.User.Id {
+	if h.User.RoleName != "admin" && a.AuthorId != h.User.Id {
 		return nil
 	}
 
