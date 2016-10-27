@@ -131,3 +131,28 @@ func (h *AddProblemHandler) executePost() {
 	http.Redirect(h.W, h.R, "/problems.html", http.StatusFound)
 
 }
+
+type DuplicateProblemHandler struct {
+	util.NoInputValidator
+	util.RequestInfo
+}
+
+func (h *DuplicateProblemHandler) Execute() error {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
+		return nil
+	}
+
+	id, _ := strconv.ParseInt(h.R.URL.Query()["id"][0], 10, 64)
+	problem, _ := db.GetProblem(id)
+	problem.Id = 0
+	problem.Version = h.User.UserName
+
+	problem, _ = db.CreateProblem(problem)
+	oldProblemDir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
+	newProblemDir := filepath.Join("workdir", "problems", strconv.FormatInt(problem.Id, 10))
+	exec.Command("cp", "-R", oldProblemDir, newProblemDir).Run()
+
+	http.Redirect(h.W, h.R, "/editproblem.html?id="+strconv.FormatInt(problem.Id, 10), http.StatusFound)
+
+	return nil
+}

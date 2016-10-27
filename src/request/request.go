@@ -35,6 +35,8 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		handler = &handlers.AddProblemHandler{RequestInfo: info}
 	} else if path == "/editproblem.html" || path == "/editproblem" {
 		handler = &handlers.EditProblemHandler{RequestInfo: info}
+	} else if path == "/duplicateproblem.html" {
+		handler = &handlers.DuplicateProblemHandler{RequestInfo: info}
 	}
 
 	if path == "/groups.html" {

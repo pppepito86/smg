@@ -68,6 +68,14 @@
                           <a href="/editproblem.html?id={{.Data.Id}}" class="btn btn-default btn-sm btn-grad">+Edit</a>
                             {{end}}
                           {{end}}
+
+                          {{if eq .Role "admin"}}
+                          <a href="/duplicateproblem.html?id={{.Data.Id}}" class="btn btn-default btn-sm btn-grad">+Duplicate</a>
+                          {{end}}
+                          {{if eq .Role "teacher"}}
+                          <a href="/duplicateproblem.html?id={{.Data.Id}}" class="btn btn-default btn-sm btn-grad">+Duplicate</a>
+                          {{end}}
+ 
                         </div>
                         <div class="panel-body">
                           {{.Data.Description}}
