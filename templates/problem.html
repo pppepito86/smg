@@ -61,7 +61,13 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                           Problem&nbsp;
+                          {{if eq .Role "admin"}}
                           <a href="/editproblem.html?id={{.Data.Id}}" class="btn btn-default btn-sm btn-grad">+Edit</a>
+                          {{else}}
+                            {{if .Author }}
+                          <a href="/editproblem.html?id={{.Data.Id}}" class="btn btn-default btn-sm btn-grad">+Edit</a>
+                            {{end}}
+                          {{end}}
                         </div>
                         <div class="panel-body">
                           {{.Data.Description}}

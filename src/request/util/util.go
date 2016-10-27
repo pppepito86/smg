@@ -40,9 +40,13 @@ type Response struct {
 }
 
 func ServeHtml(w http.ResponseWriter, user db.User, html string, data interface{}) {
+	ServeHtmlWithAuthor(w, user, html, data, false)
+}
+
+func ServeHtmlWithAuthor(w http.ResponseWriter, user db.User, html string, data interface{}, isAuthor bool) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../templates/"+html, "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
-	response := Response{0, data, user.RoleName, false}
+	response := Response{0, data, user.RoleName, isAuthor}
 	t.Execute(w, response)
 }
 

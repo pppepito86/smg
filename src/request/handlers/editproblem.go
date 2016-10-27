@@ -37,6 +37,10 @@ func (h *EditProblemHandler) executeGet() {
 	id, _ := strconv.ParseInt(h.R.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 
+	if h.User.RoleName == "teacher" && h.User.Id != problem.AuthorId {
+		return
+	}
+
 	problem.LangLimits = util.LimitsFromString(problem.Languages)
 	dir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
 	files, _ := ioutil.ReadDir(dir)
@@ -65,6 +69,12 @@ func (h *EditProblemHandler) executePost() {
 	h.R.ParseForm()
 	file, header, fileErr := h.R.FormFile("file")
 	id, _ := strconv.ParseInt(h.R.URL.Query()["id"][0], 10, 64)
+
+	problem, _ := db.GetProblem(id)
+	if h.User.RoleName == "teacher" && h.User.Id != problem.AuthorId {
+		return
+	}
+
 	name := h.R.Form["problemname"]
 	version := h.R.Form["version"]
 	tags := h.R.Form["tags"]
