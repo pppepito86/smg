@@ -12,6 +12,7 @@ import (
 	"request/util"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type AddProblemHandler struct {
@@ -145,7 +146,14 @@ func (h *DuplicateProblemHandler) Execute() error {
 	id, _ := strconv.ParseInt(h.R.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 	problem.Id = 0
-	problem.Version = h.User.UserName
+
+	t := time.Now().UnixNano() / int64(time.Millisecond)
+	tt := strconv.FormatInt(t, 10)
+	if len(tt) > 10 {
+		problem.Version = tt[len(tt)-10:]
+	} else {
+		problem.Version = tt
+	}
 
 	problem, _ = db.CreateProblem(problem)
 	oldProblemDir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
