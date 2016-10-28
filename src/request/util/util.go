@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"time"
 )
 
 type RequestInfo struct {
@@ -59,8 +58,7 @@ func IsUserAssignedToContest(user db.User, a db.Assignment) bool {
 	if !ok {
 		return false
 	}
-	time := time.Now()
-	return time.After(a.StartTime) && time.Before(a.EndTime)
+	return a.IsActive || a.HasFinished
 }
 
 func LimitsFromString(limitsStr string) db.Limits {

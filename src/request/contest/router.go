@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 )
 
 type ContestRequestInfo struct {
@@ -37,6 +38,10 @@ func Route(w http.ResponseWriter, r *http.Request, user db.User) {
 
 	page := split[1]
 	assignment, _ := db.ListAssignment(contestId)
+	time := time.Now()
+	assignment.IsActive = time.After(assignment.StartTime) && time.Before(assignment.EndTime)
+	assignment.HasFinished = time.After(assignment.EndTime)
+
 	info := ContestRequestInfo{r, w, user, contestId, split[2:], assignment}
 	var handler util.RequestHandler
 	if page == "problems" {

@@ -19,6 +19,8 @@ type Assignment struct {
 	EndTime        time.Time
 	TestInfo       string
 	Standings      string
+	IsActive       bool
+	HasFinished    bool
 }
 
 func CreateAssignment(a Assignment) (Assignment, error) {

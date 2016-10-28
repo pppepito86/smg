@@ -42,11 +42,13 @@
                         <i class="icon-list"></i> Problems
                     </a>                   
                 </li>
+                {{if or (or (eq .Role "admin") (eq .Role "teacher")) (.Assignment.IsActive)}}
                 <li class="panel">
                     <a href="/contest/{{.Id}}/submit" >
                         <i class="icon-upload"></i> Submit Code
                     </a>                   
                 </li>
+                {{end}}
                 <li class="panel">
                     <a href="/contest/{{.Id}}/mysubmissions" >
                         <i class="icon-code"></i> My Submissions
