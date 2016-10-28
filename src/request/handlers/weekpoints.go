@@ -28,7 +28,7 @@ func (h *WeekPointsHandler) Execute() error {
 	} else {
 		userId = h.User.Id
 	}
-	if h.User.RoleName != "admin" && userId != h.User.Id {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && userId != h.User.Id {
 		return nil
 	}
 
