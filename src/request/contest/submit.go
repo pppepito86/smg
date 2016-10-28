@@ -12,8 +12,12 @@ type SubmitHandler struct {
 }
 
 func (h *SubmitHandler) Execute() error {
-	if !h.Assignment.IsActive || !util.IsUserAssignedToContest(h.User, h.Assignment) {
+	if !util.IsUserAssignedToContest(h.User, h.Assignment) {
 		http.Redirect(h.W, h.R, "/error.html?error=\"You are not allowed to access this assignment\"", http.StatusFound)
+		return nil
+	}
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && !h.Assignment.IsActive {
+		http.Redirect(h.W, h.R, "/error.html?error=\"You are not allowed to submit in this assignment\"", http.StatusFound)
 		return nil
 	}
 

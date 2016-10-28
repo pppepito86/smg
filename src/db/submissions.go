@@ -242,6 +242,34 @@ func ListSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
 	return submissions, nil
 }
 
+func ListAcceptedSubmissionsForAssignment(assignmentId int64) ([]Submission, error) {
+	db := getConnection()
+	rows, err := db.Query("select submissions.id, submissions.problemid, language, sourcefile, time, verdict, submissions.points, problems.name, users.id, users.username, users.firstname, users.lastname from submissions"+
+		"	inner join problems on problems.id=submissions.problemid and submissions.verdict='Accepted' and submissions.assignmentid=?"+
+		"	inner join users on users.id=submissions.userid", assignmentId)
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	defer rows.Close()
+	submissions := make([]Submission, 0)
+	for rows.Next() {
+		var s Submission
+		err := rows.Scan(&s.Id, &s.ProblemId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Points, &s.ProblemName, &s.UserId, &s.User, &s.FirstName, &s.LastName)
+		if err != nil {
+			log.Print(err)
+			return []Submission{}, err
+		}
+		submissions = append(submissions, s)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []Submission{}, err
+	}
+	return submissions, nil
+}
+
 func ListMySubmissionsForProblem(userId, aId, pId int64) ([]Submission, error) {
 	db := getConnection()
 	rows, err := db.Query("select submissions.id, language, sourcefile, verdict from submissions"+

@@ -37,11 +37,13 @@
                     </li>
                   {{end}}
                 {{end}}
+
                 <li class="panel">
                     <a href="/contest/{{.Id}}/problems" >
                         <i class="icon-list"></i> Problems
                     </a>                   
                 </li>
+
                 {{if or (or (eq .Role "admin") (eq .Role "teacher")) (.Assignment.IsActive)}}
                 <li class="panel">
                     <a href="/contest/{{.Id}}/submit" >
@@ -49,36 +51,31 @@
                     </a>                   
                 </li>
                 {{end}}
+
                 <li class="panel">
                     <a href="/contest/{{.Id}}/mysubmissions" >
                         <i class="icon-code"></i> My Submissions
                     </a>                   
                 </li>
-              {{if eq .Role "admin"}} 
+
+                {{if or (or (eq .Role "admin") (eq .Role "teacher")) (.Assignment.HasFinished)}}
                 <li class="panel">
                     <a href="/contest/{{.Id}}/submissions" >
                         All Submissions
                     </a>                   
                 </li>
+                {{end}}
+
+              {{if or (eq .Role "admin") (eq .Role "teacher")}} 
                  <li class="panel">
                     <a href="/contest/{{.Id}}/contestants" >
                         All Contestants 
                     </a>                   
                 </li>
                {{end}}
-              {{if eq .Role "teacher"}} 
-                <li class="panel">
-                    <a href="/contest/{{.Id}}/submissions" >
-                        All Submissions
-                    </a>                   
-                </li>
-                 <li class="panel">
-                    <a href="/contest/{{.Id}}/contestants" >
-                        All Contestants 
-                    </a>                   
-                </li>
-               {{end}}
-               {{if ne .Assignment.Standings ""}} 
+
+
+               {{if or (or (eq .Role "admin") (eq .Role "teacher")) (ne .Assignment.Standings "")}} 
                    <li class="panel">
                     <a href="/contest/{{.Id}}/standings" >
                         Standings 
