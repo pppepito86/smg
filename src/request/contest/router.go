@@ -10,11 +10,12 @@ import (
 )
 
 type ContestRequestInfo struct {
-	R    *http.Request
-	W    http.ResponseWriter
-	User db.User
-	Cid  int64
-	Args []string
+	R          *http.Request
+	W          http.ResponseWriter
+	User       db.User
+	Cid        int64
+	Args       []string
+	Assignment db.Assignment
 }
 
 func Route(w http.ResponseWriter, r *http.Request, user db.User) {
@@ -35,7 +36,8 @@ func Route(w http.ResponseWriter, r *http.Request, user db.User) {
 	}
 
 	page := split[1]
-	info := ContestRequestInfo{r, w, user, contestId, split[2:]}
+	assignment, _ := db.ListAssignment(contestId)
+	info := ContestRequestInfo{r, w, user, contestId, split[2:], assignment}
 	var handler util.RequestHandler
 	if page == "problems" {
 		handler = &ProblemsHandler{ContestRequestInfo: info}
@@ -61,13 +63,17 @@ func Route(w http.ResponseWriter, r *http.Request, user db.User) {
 		handler = &EditAssignmentHandler{ContestRequestInfo: info}
 	}
 
+	if handler == nil {
+		handler = &ProblemsHandler{ContestRequestInfo: info}
+	}
+
 	handler.Execute()
 }
 func ServeContestHtml(info ContestRequestInfo, html string, data interface{}) {
 	info.W.Header().Set("Content-Type", "text/html")
 
 	t, _ := template.ParseFiles("../templates/contest/"+html, "../templates/contest/header.html", "../templates/contest/menu.html", "../templates/contest/footer.html")
-	response := util.Response{info.Cid, data, info.User.RoleName, false}
+	response := util.Response{info.Cid, data, info.User.RoleName, false, info.Assignment}
 	if info.User.RoleName == "teacher" {
 		a, _ := db.ListAssignment(info.Cid)
 		response.Author = a.AuthorId == info.User.Id

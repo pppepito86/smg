@@ -33,10 +33,11 @@ func (NoInputValidator) Validate() error {
 }
 
 type Response struct {
-	Id     int64
-	Data   interface{}
-	Role   string
-	Author bool
+	Id         int64
+	Data       interface{}
+	Role       string
+	Author     bool
+	Assignment db.Assignment
 }
 
 func ServeHtml(w http.ResponseWriter, user db.User, html string, data interface{}) {
@@ -46,19 +47,18 @@ func ServeHtml(w http.ResponseWriter, user db.User, html string, data interface{
 func ServeHtmlWithAuthor(w http.ResponseWriter, user db.User, html string, data interface{}, isAuthor bool) {
 	w.Header().Set("Content-Type", "text/html")
 	t, _ := template.ParseFiles("../templates/"+html, "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
-	response := Response{0, data, user.RoleName, isAuthor}
+	response := Response{0, data, user.RoleName, isAuthor, db.Assignment{}}
 	t.Execute(w, response)
 }
 
-func IsUserAssignedToContest(user db.User, id int64) bool {
+func IsUserAssignedToContest(user db.User, a db.Assignment) bool {
 	if user.RoleName == "admin" || user.RoleName == "teacher" {
 		return true
 	}
-	ok, _ := db.IsUserAssignedToCompetition(user.Id, id)
+	ok, _ := db.IsUserAssignedToCompetition(user.Id, a.Id)
 	if !ok {
 		return false
 	}
-	a, _ := db.ListAssignment(id)
 	time := time.Now()
 	return time.After(a.StartTime) && time.Before(a.EndTime)
 }

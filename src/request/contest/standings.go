@@ -4,6 +4,7 @@ import (
 	"db"
 	"request/util"
 	"sort"
+	"strconv"
 )
 
 type StandingsHandler struct {
@@ -33,7 +34,8 @@ func (slice UsersInfo) Swap(i, j int) {
 }
 
 func (h *StandingsHandler) Execute() error {
-	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
+	top, _ := strconv.Atoi(h.Assignment.Standings)
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && top == 0 {
 		return nil
 	}
 
@@ -72,6 +74,11 @@ func (h *StandingsHandler) Execute() error {
 		}
 	}
 	sort.Sort(info)
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
+		if top < len(info) {
+			info = info[:top]
+		}
+	}
 	for i, _ := range info {
 		info[i].Place = i + 1
 	}

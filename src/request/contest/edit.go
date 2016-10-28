@@ -16,7 +16,7 @@ func (h *EditHandler) Execute() error {
 		return nil
 	}
 
-	assignment, _ := db.ListAssignment(h.Cid)
+	assignment := h.Assignment
 	if h.User.RoleName != "admin" && assignment.AuthorId != h.User.Id {
 		return nil
 	}
