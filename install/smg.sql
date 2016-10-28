@@ -59,6 +59,7 @@ CREATE TABLE `assignments` (
   `author` int(11) NOT NULL,
   `groupid` int(11) DEFAULT NULL,
   `testinfo` VARCHAR(16) NOT NULL,
+  `standings` VARCHAR(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `author` (`author`),

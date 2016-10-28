@@ -41,6 +41,10 @@ func (h *AddAssignmentHandler) executePost() {
 	if len(h.R.Form["test-info"]) > 0 {
 		testInfo = "hide"
 	}
+	standings := ""
+	if len(h.R.Form["standings"]) > 0 {
+		standings = "5"
+	}
 	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
 	if len(name) != 1 {
 		h.W.WriteHeader(http.StatusInternalServerError)
@@ -70,6 +74,7 @@ func (h *AddAssignmentHandler) executePost() {
 		StartTime:      startTime,
 		EndTime:        endTime,
 		TestInfo:       testInfo,
+		Standings:      standings,
 	}
 	a, _ = db.CreateAssignment(a)
 	if p1[0] != "" {

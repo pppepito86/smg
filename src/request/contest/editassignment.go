@@ -34,6 +34,11 @@ func (h *EditAssignmentHandler) Execute() error {
 		testInfo = "hide"
 	}
 
+	standings := ""
+	if len(h.R.Form["standings"]) > 0 {
+		standings = "5"
+	}
+
 	gid, _ := strconv.ParseInt(groupId[0], 10, 64)
 	if len(name) != 1 {
 		h.W.WriteHeader(http.StatusInternalServerError)
@@ -61,6 +66,7 @@ func (h *EditAssignmentHandler) Execute() error {
 	a.EndTime = endTime
 	a.GroupId = gid
 	a.TestInfo = testInfo
+	a.Standings = standings
 	db.UpdateAssignment(a)
 	if p1[0] != "" {
 		db.DeleteAssignmentProblems(h.Cid)
