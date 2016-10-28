@@ -81,8 +81,7 @@ func ListMyUsers(id int64) ([]User, error) {
 	db := getConnection()
 	rows, err := db.Query("select distinct u.id, u.roleid, u.username, u.firstname, u.lastname, u.email, u.isdisabled, r.rolename from usergroups as ug"+
 		" inner join users as u on u.id = ug.userid"+
-		" inner join groups as g on ug.groupid=g.id"+
-		" inner join assignments as a on a.groupid=g.id and a.author=?"+
+		" inner join groups as g on ug.groupid=g.id and g.creatorid = ?"+
 		" inner join roles as r on u.roleid = r.id", id)
 
 	if err != nil {
