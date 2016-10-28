@@ -70,7 +70,9 @@
                                             <th>First name</th>
                                             <th>Last name</th>
                                             <th>Email</th>
+                                            {{if eq .Role "admin"}}
                                             <th>Role</th>
+                                            {{end}}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -83,6 +85,7 @@
                                             <td>{{$element.FirstName}}</td>
                                             <td class="center">{{$element.LastName}}</td>
                                             <td class="center">{{$element.Email}}</td>
+                                            {{if eq $.Role "admin"}}
                                             <td class="center">
                                                
                                            <select class="form-control" onchange="getval(this);" >
@@ -91,6 +94,7 @@
                                              <option value="{{$element.Id}}-3" {{if eq $element.RoleName "user"}}selected{{end}}>user</option>
                                             </select>
                                             </td>
+                                            {{end}}
                                         </tr>
                                         {{end}}
                                     </tbody>

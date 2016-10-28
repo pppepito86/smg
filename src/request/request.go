@@ -59,6 +59,8 @@ func Route(w http.ResponseWriter, r *http.Request) {
 
 	if path == "/users.html" {
 		handler = &handlers.UsersHandler{RequestInfo: info}
+	} else if path == "/myusers.html" {
+		handler = &handlers.MyUsersHandler{RequestInfo: info}
 	} else if path == "/changeuserrole" {
 		handler = &handlers.ChangeUserRoleHandler{RequestInfo: info}
 	}
