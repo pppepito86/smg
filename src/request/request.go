@@ -29,6 +29,8 @@ func Route(w http.ResponseWriter, r *http.Request) {
 
 	if path == "/problems.html" {
 		handler = &handlers.ProblemsHandler{RequestInfo: info}
+	} else if path == "/myproblems.html" {
+		handler = &handlers.MyProblemsHandler{RequestInfo: info}
 	} else if path == "/problem.html" {
 		handler = &handlers.ProblemHandler{RequestInfo: info}
 	} else if path == "/addproblem.html" || path == "/addproblem" {

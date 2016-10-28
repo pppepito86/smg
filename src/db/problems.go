@@ -95,6 +95,41 @@ func ListProblems() ([]Problem, error) {
 	return problems, nil
 }
 
+func ListProblemsWithAuthor(aId int64) ([]Problem, error) {
+	db := getConnection()
+	rows, err := db.Query("select problems.id, problems.name, problems.version, problems.points, problems.description, problems.languages, problems.visibility, problems.author, users.username from problems"+
+		" inner join users on problems.author = users.id and problems.author = ?", aId)
+	if err != nil {
+		log.Print(err)
+		return []Problem{}, err
+	}
+	defer rows.Close()
+	problems := make([]Problem, 0)
+	for rows.Next() {
+		var p Problem
+		err := rows.Scan(&p.Id, &p.ProblemName, &p.Version, &p.Points, &p.Description, &p.Languages, &p.Visibility, &p.AuthorId, &p.Author)
+		if err != nil {
+			log.Print(err)
+			return []Problem{}, err
+		}
+
+		p.Tags, err = GetListOfTags(p.Id)
+		if err != nil {
+			log.Print(err)
+			return []Problem{}, err
+		}
+
+		problems = append(problems, p)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []Problem{}, err
+	}
+
+	return problems, nil
+}
+
 func GetProblem(id int64) (Problem, error) {
 	db := getConnection()
 	rows, err := db.Query("select id, name, version, points, description, languages, visibility, author from problems where id=?", id)
