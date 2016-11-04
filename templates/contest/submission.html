@@ -124,7 +124,7 @@
                                             {{end}}
                                             <td class="center">{{$element.Reason}}</td>
                                             <td class="center">{{$element.Time}}</td>
-                                            {{if or (eq $.Role "admin") (eq .Data.TestInfo "show")}}
+                                            {{if or (eq $.Role "admin") (eq $.Data.TestInfo "show")}}
                                             <td class="center">{{$element.Input}}</td>
                                             <td class="center">{{$element.Output}}</td>
                                             {{end}}
