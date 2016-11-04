@@ -105,7 +105,9 @@
                                         <tr>
                                             <th>Step</th>
                                             <th>Status</th>
+                                            {{if or (eq .Role "admin") (eq .Data.TestInfo "show")}}
                                             <th>Reason</th>
+                                            {{end}}
                                             <th>Time</th>
                                             {{if or (eq .Role "admin") (eq .Data.TestInfo "show")}}
                                             <th>Input</th>
@@ -122,7 +124,9 @@
                                             {{else}}
                                               <td class="center" style="background-color:#ff0000" >{{$element.Verdict}}</td>
                                             {{end}}
+                                            {{if or (eq $.Role "admin") (eq $.Data.TestInfo "show")}}
                                             <td class="center">{{$element.Reason}}</td>
+                                            {{end}}
                                             <td class="center">{{$element.Time}}</td>
                                             {{if or (eq $.Role "admin") (eq $.Data.TestInfo "show")}}
                                             <td class="center">{{$element.Input}}</td>
