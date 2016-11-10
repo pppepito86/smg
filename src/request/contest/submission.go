@@ -24,7 +24,7 @@ func (h *SubmissionHandler) Execute() error {
 
 	id, _ := strconv.ParseInt(h.Args[0], 10, 64)
 	submission, _ := db.ListSubmission(id)
-	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && (submission.UserId != h.User.Id && !a.HasFinished) {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && (submission.UserId != h.User.Id && !h.ContestRequestInfo.Assignment.HasFinished) {
 		return nil
 	}
 
