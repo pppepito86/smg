@@ -146,6 +146,7 @@ func (h *DuplicateProblemHandler) Execute() error {
 	id, _ := strconv.ParseInt(h.R.URL.Query()["id"][0], 10, 64)
 	problem, _ := db.GetProblem(id)
 	problem.Id = 0
+	problem.AuthorId = h.User.Id
 
 	t := time.Now().UnixNano() / int64(time.Millisecond)
 	tt := strconv.FormatInt(t, 10)
