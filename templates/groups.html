@@ -84,6 +84,8 @@
                                             <th>Group name</th>
                                             <th>Description</th>
                                             <th>Owner</th>
+                                            <th>Members</th>
+                                            <th>Progress</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -93,6 +95,9 @@
                                             <td>{{$element.GroupName}}</td>
                                             <td>{{$element.Description}}</td>
                                             <td class="center">{{$element.Creator}}</td>
+                                            <td><a href="/usersingroup.html?id={{$element.Id}}">show</a></td>
+                                            <td><a href="/groupprogress.html?id={{$element.Id}}">show</a></td>
+                                            
                                         </tr>
                                         {{end}}
                                     </tbody>

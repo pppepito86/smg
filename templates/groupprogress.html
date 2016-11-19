@@ -123,12 +123,12 @@
             }
         };
         
-        var addChartForUser = function(userId) {
+        var addChartForUser = function(name, userId) {
             var chartId = "chart" + userId;
             document.getElementById("charts").innerHTML += ` <div class="col-lg-4">
                       <div class="panel panel-default">
                             <div class="panel-heading">
-                                ` + userId + `
+                                ` + name + "(" + userId + ")" + `
                             </div>
                       <div class="panel-body">
                         <div id="` + chartId + `"></div>
@@ -155,27 +155,21 @@
             
         }
         
-        addChartForUser(192);
-        addChartForUser(193);
-        addChartForUser(195);
+//        addChartForUser(192);
+//        addChartForUser(193);
+//        addChartForUser(195);
+//        
+//        addChartForUser(197);
         
-        addChartForUser(197);
+        var groupId = getUrlParameter("id");
         
-        if(getUrlParameter("id")) {
-            $("#user-id").val(getUrlParameter("id"))
-            $.get("/pointsperweek?id=" + getUrlParameter("id"), function(data1, status){
-                $("morris-line-chart").empty()
-
-                Morris.Line({
-                    element: 'morris-line-chart',
-                    data: data1,
-                    xkey: 'Week',
-                    ykeys: ['Points'],
-                    labels: ['Points'],
-                    //hideHover: 'auto',
-                    resize: true
-                });
+        if(groupId) {
+            $.get("/usersingroup?id=" + groupId, function(data1, status){
+                for(i = 0; i < data1.length; i++) {
+                    addChartForUser(data1[i].FirstName + " " + data1[i].LastName, data1[i].Id);
+                }
             });
+            
         }
         
     </script>
