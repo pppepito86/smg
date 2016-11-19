@@ -107,6 +107,35 @@ func ListMyUsers(id int64) ([]User, error) {
 	return users, nil
 }
 
+func ListUsersInGroup(groupId int64) ([]User, error) {
+	db := getConnection()
+	rows, err := db.Query("select distinct u.id, u.roleid, u.username, u.firstname, u.lastname, u.email, u.isdisabled, r.rolename from usergroups as ug"+
+		" inner join users as u on u.id = ug.userid and ug.groupid = ? " +
+		" inner join roles as r on u.roleid = r.id", groupId)
+
+	if err != nil {
+		log.Print(err)
+		return []User{}, err
+	}
+	defer rows.Close()
+	users := make([]User, 0)
+	for rows.Next() {
+		var user User
+		err := rows.Scan(&user.Id, &user.RoleId, &user.UserName, &user.FirstName, &user.LastName, &user.Email, &user.IsDisabled, &user.RoleName)
+		if err != nil {
+			log.Print(err)
+			return []User{}, err
+		}
+		users = append(users, user)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Print(err)
+		return []User{}, err
+	}
+	return users, nil
+}
+
 func GetUser(username string) (User, error) {
 	db := getConnection()
 	rows, err := db.Query("select users.id, roleid, username, firstname, lastname, email, passwordhash, passwordsalt, isdisabled, rolename from users inner join roles on username= ? and isdisabled=? and users.roleid=roles.id", username, false)

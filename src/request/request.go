@@ -61,6 +61,8 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		handler = &handlers.UsersHandler{RequestInfo: info}
 	} else if path == "/myusers.html" {
 		handler = &handlers.MyUsersHandler{RequestInfo: info}
+    } else if path == "/usersingroup.html" {
+		handler = &handlers.UsersInGroupHandler{RequestInfo: info}
 	} else if path == "/changeuserrole" {
 		handler = &handlers.ChangeUserRoleHandler{RequestInfo: info}
 	}
@@ -75,6 +77,9 @@ func Route(w http.ResponseWriter, r *http.Request) {
 
 	if path == "/studentprogress.html" {
 		handler = &handlers.StudentProgressHandler{RequestInfo: info}
+	}
+    if path == "/groupprogress.html" {
+		handler = &handlers.GroupProgressHandler{RequestInfo: info}
 	}
 	if path == "/pointsperweek" {
 		handler = &handlers.WeekPointsHandler{RequestInfo: info}
