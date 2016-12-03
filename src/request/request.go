@@ -14,6 +14,12 @@ func Route(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	fmt.Println(r.URL, user.Id, r.RemoteAddr)
 
+	if path == "/noi" {
+		noiUrl := "https://docs.google.com/forms/d/e/1FAIpQLSdeodrF0AYlnDkHRs2s1YtD-qWkBACv2GZAsk3WVdB7uFUfrw/viewform?usp=send_form"
+		http.Redirect(w, r, noiUrl, http.StatusFound)
+		return
+	}
+
 	if user.RoleName == "" {
 		HandleGuest(w, r)
 		return
