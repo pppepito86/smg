@@ -5,8 +5,8 @@ add-apt-repository ppa:ubuntu-lxc/lxd-stable -y
 add-apt-repository ppa:webupd8team/java -y
 apt-get update
 
-#install git
-apt-get install git -y
+#install git&stuff
+apt-get install -y curl git gcc make python-dev vim-nox jq cgroup-lite silversearcher-ag
 
 #clone app
 git clone https://github.com/pppepito86/smg.git /app/judge
@@ -25,10 +25,22 @@ echo "LANG=en_US.UTF-8" >> /etc/environment
 echo "LANGUAGE=en_US.UTF-8" >> /etc/environment
 source /etc/environment
 
+# Set up vim for golang development
+git clone https://github.com/luan/vimfiles.git $HOME/.vim
+curl vimfiles.luan.sh/install | bash
+
+# set up bash-it
+git clone --depth=1 https://github.com/Bash-it/bash-it.git $HOME/.bash_it
+~/.bash_it/install.sh --silent
+echo "echo -e -n \"\x1b[\x35 q\"" > ~/.bash_it/custom/cursor.sh
+
+# Set up tmux
+wget -O $HOME/.tmux.conf https://raw.githubusercontent.com/luan/dotfiles/master/tmux.conf
+
 #install mysql
 echo "mysql-server-5.6 mysql-server/root_password password password" | debconf-set-selections
 echo "mysql-server-5.6 mysql-server/root_password_again password password" | debconf-set-selections
-apt-get install mysql-server-5.6 -y
+apt-get install mysql-server-5.7 -y
 
 #import database smg
 mysql -u root -ppassword < /app/judge/install/smg.sql
@@ -47,9 +59,9 @@ apt-get install oracle-java8-installer -y
 
 #remove docker memory swap warning
 #WARNING: Your kernel does not support swap limit capabilities, memory limited without swap.
-sed -i -e 's/GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/' /etc/default/grub
+#sed -i -e 's/GRUB_CMDLINE_LINUX=.*$/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/' /etc/default/grub
 #echo "GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"" >> /etc/default/grub
-sh -c exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
+#sh -c exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
 
 #create start service
 cp /app/judge/install/judge /etc/init.d/judge
