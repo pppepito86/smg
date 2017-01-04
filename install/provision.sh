@@ -90,6 +90,16 @@ curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o /app/aws/"awscli-bu
 unzip /app/aws/awscli-bundle.zip -d /app/aws
 /app/aws/awscli-bundle/install -b /usr/bin/aws
 
+#sync time
+apt install -y ntpdate
+ntpdate ntp.ubuntu.com
+
+#upload data
+if [ "$1" = "prod" ]; then
+  aws s3 cp s3://onlinejudge/mail/default.private /etc/opendkim/keys/pesho.org/default.private
+  aws s3 cp s3://onlinejudge/mail/default.txt /etc/opendkim/keys/pesho.org/default.txt
+fi
+
 #restart
 sudo reboot
 
