@@ -40,8 +40,8 @@ echo "echo -e -n \"\x1b[\x35 q\"" > ~/.bash_it/custom/cursor.sh
 wget -O $HOME/.tmux.conf https://raw.githubusercontent.com/luan/dotfiles/master/tmux.conf
 
 #install mysql
-echo "mysql-server-5.6 mysql-server/root_password password password" | debconf-set-selections
-echo "mysql-server-5.6 mysql-server/root_password_again password password" | debconf-set-selections
+echo "mysql-server-5.7 mysql-server/root_password password password" | debconf-set-selections
+echo "mysql-server-5.7 mysql-server/root_password_again password password" | debconf-set-selections
 apt-get install mysql-server-5.7 -y
 
 #import database smg
