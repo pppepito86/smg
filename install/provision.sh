@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e -x
+
 #add go&java repo
 add-apt-repository ppa:ubuntu-lxc/lxd-stable -y
 add-apt-repository ppa:webupd8team/java -y
@@ -69,6 +71,10 @@ cp /app/judge/install/judge /etc/init.d/judge
 chmod 700 /etc/init.d/judge
 update-rc.d judge defaults
 update-rc.d judge enable
+
+#mail
+chmod +x /app/judge/install/mail.sh
+/app/judge/install/mail.sh
 
 #backup
 chmod +x /app/judge/install/backup.sh
