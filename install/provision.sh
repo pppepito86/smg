@@ -75,10 +75,12 @@ update-rc.d judge defaults
 chmod +x /app/judge/install/mail.sh
 /app/judge/install/mail.sh
 
-#backup
-chmod +x /app/judge/install/backup.sh
-chmod +x /app/judge/install/cronbackup.sh
-/app/judge/install/cronbackup.sh
+if [ "$1" = "prod" ]; then
+  #backup
+  chmod +x /app/judge/install/backup.sh
+  chmod +x /app/judge/install/cronbackup.sh
+  /app/judge/install/cronbackup.sh
+fi
 
 #clean
 chmod +x /app/judge/install/clean.sh
@@ -98,6 +100,9 @@ ntpdate ntp.ubuntu.com
 if [ "$1" = "prod" ]; then
   aws s3 cp s3://onlinejudge/mail/default.private /etc/opendkim/keys/pesho.org/default.private
   aws s3 cp s3://onlinejudge/mail/default.txt /etc/opendkim/keys/pesho.org/default.txt
+  aws s3 cp s3://onlinejudge/backup.tar.gz /home/ubuntu/backup.tar.gz
+  tar -C /home/ubuntu/ -xzf /home/ubuntu/backup.tar.gz
+  mysql -u root -ppassword smg < /home/ubuntu/app/backup/smg.sql
 fi
 
 #restart
