@@ -66,11 +66,10 @@ apt-get install oracle-java8-installer -y
 #sh -c exec grub-mkconfig -o /boot/grub/grub.cfg "$@"
 
 #create start service
-cp /app/judge/install/judge /etc/systemd/system/judge
+cp /app/judge/install/judge /etc/init.d/judge
 
-chmod 700 /etc/systemd/system/judge
+chmod 700 /etc/init.d/judge
 update-rc.d judge defaults
-update-rc.d judge enable
 
 #mail
 chmod +x /app/judge/install/mail.sh
