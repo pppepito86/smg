@@ -16,13 +16,6 @@ git clone https://github.com/pppepito86/smg.git /app/judge
 #install go
 apt-get install golang -y
 
-#install mysql driver
-#git clone https://github.com/go-sql-driver/mysql.git /app/judge/src/github.com/go-sql-driver/mysql
-go get github.com/go-sql-driver/mysql
-
-#install bcrypt library
-go get golang.org/x/crypto/bcrypt
-
 #set GOPATH
 echo "GOPATH=/app/judge" >> /etc/environment
 echo "LC_ALL=en_US.UTF-8" >> /etc/environment
@@ -30,6 +23,13 @@ echo "LC_CTYPE=en_US.UTF-8" >> /etc/environment
 echo "LANG=en_US.UTF-8" >> /etc/environment
 echo "LANGUAGE=en_US.UTF-8" >> /etc/environment
 source /etc/environment
+
+#install mysql driver
+#git clone https://github.com/go-sql-driver/mysql.git /app/judge/src/github.com/go-sql-driver/mysql
+go get github.com/go-sql-driver/mysql
+
+#install bcrypt library
+go get golang.org/x/crypto/bcrypt
 
 # Set up vim for golang development
 git clone https://github.com/luan/vimfiles.git $HOME/.vim
