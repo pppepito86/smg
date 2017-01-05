@@ -4,6 +4,8 @@ import (
 	"db"
 	"net/http"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -22,6 +24,11 @@ func register(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/error.html?error="+errMsg, http.StatusFound)
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Form["password"][0]), bcrypt.DefaultCost)
+	if err != nil {
+		http.Redirect(w, r, "/error.html?error="+err.Error(), http.StatusFound)
+	}
+
 	user := db.User{
 		-1,
 		3,
@@ -30,11 +37,11 @@ func register(w http.ResponseWriter, r *http.Request) {
 		r.Form["lastname"][0],
 		r.Form["email"][0],
 		r.Form["password"][0],
-		r.Form["password"][0],
+		string(hashedPassword),
 		false,
 		"",
 	}
-	user, err := db.CreateUser(user)
+	user, err = db.CreateUser(user)
 	if err != nil {
 		http.Redirect(w, r, "/error.html?error="+err.Error(), http.StatusFound)
 	}

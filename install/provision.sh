@@ -13,11 +13,15 @@ apt-get install -y curl git gcc make python-dev vim-nox jq cgroup-lite silversea
 #clone app
 git clone https://github.com/pppepito86/smg.git /app/judge
 
-#install mysql driver
-git clone https://github.com/go-sql-driver/mysql.git /app/judge/src/github.com/go-sql-driver/mysql
-
 #install go
 apt-get install golang -y
+
+#install mysql driver
+#git clone https://github.com/go-sql-driver/mysql.git /app/judge/src/github.com/go-sql-driver/mysql
+go get github.com/go-sql-driver/mysql
+
+#install bcrypt library
+go get golang.org/x/crypto/bcrypt
 
 #set GOPATH
 echo "GOPATH=/app/judge" >> /etc/environment
