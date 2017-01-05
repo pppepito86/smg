@@ -29,7 +29,8 @@ git clone https://github.com/go-sql-driver/mysql.git /app/judge/src/github.com/g
 #go get github.com/go-sql-driver/mysql
 
 #install bcrypt library
-go get golang.org/x/crypto/bcrypt
+git clone https://github.com/golang/crypto.git /app/judge/src/github.com/golang/crypto
+#go get golang.org/x/crypto/bcrypt
 
 # Set up vim for golang development
 git clone https://github.com/luan/vimfiles.git $HOME/.vim
