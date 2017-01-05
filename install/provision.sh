@@ -25,8 +25,8 @@ echo "LANGUAGE=en_US.UTF-8" >> /etc/environment
 source /etc/environment
 
 #install mysql driver
-#git clone https://github.com/go-sql-driver/mysql.git /app/judge/src/github.com/go-sql-driver/mysql
-go get github.com/go-sql-driver/mysql
+git clone https://github.com/go-sql-driver/mysql.git /app/judge/src/github.com/go-sql-driver/mysql
+#go get github.com/go-sql-driver/mysql
 
 #install bcrypt library
 go get golang.org/x/crypto/bcrypt
