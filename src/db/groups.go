@@ -95,14 +95,14 @@ func CreateUserGroup(userId, groupId int64) (UserGroup, error) {
 
 	userGroup := UserGroup{-1, userId, groupId}
 
-	stmt, err := db.Prepare("INSERT INTO usergroups(userid, groupid) VALUES(?, ?)")
+	stmt, err := db.Prepare("INSERT INTO usergroups(userid, groupid, roleid) VALUES(?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return userGroup, err
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(userId, groupId)
+	res, err := stmt.Exec(userId, groupId, 0)
 	if err != nil {
 		log.Print(err)
 		return userGroup, err

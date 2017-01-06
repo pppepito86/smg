@@ -45,6 +45,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Redirect(w, r, "/error.html?error="+err.Error(), http.StatusFound)
 	}
+	db.CreateUserGroup(user.Id, 1)
 
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
