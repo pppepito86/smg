@@ -165,8 +165,13 @@
                     <label >Visibility</label>
 
                     <select id="visibility" name="visibility" class="form-control" >
-                      <option value="private" >Private</option>
+                      {{if eq $.Data.Visibility "private"}}
+                      <option value="private" selected >Private</option>
                       <option value="public" >Public</option>
+                      {{else}}
+                      <option value="private" >Private</option>
+                      <option value="public" selected >Public</option>
+                      {{end}}
                     </select>
                 </div >
 

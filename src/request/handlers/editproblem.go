@@ -80,6 +80,7 @@ func (h *EditProblemHandler) executePost() {
 	tags := h.R.Form["tags"]
 	description := h.R.Form["text"]
 	test := h.R.Form["test"][0]
+	visibility := h.R.Form["visibility"]
 	points, _ := strconv.Atoi(h.R.Form["points"][0])
 	limits := util.LimitsAsString(util.LimitsFromRequest(h.R))
 
@@ -96,7 +97,7 @@ func (h *EditProblemHandler) executePost() {
 		Tags:        tagList,
 		Version:     version[0],
 		Description: description[0],
-		Visibility:  "",
+		Visibility:  visibility[0],
 		Languages:   limits,
 		AuthorId:    h.User.Id,
 		Points:      points,

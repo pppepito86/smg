@@ -228,14 +228,14 @@ func RemoveTagsForProblem(problemid int64) error {
 func UpdateProblem(p Problem) error {
 	db := getConnection()
 
-	stmt, err := db.Prepare("update problems set name=?, version=?, description=?, languages=?, points=? where id=?")
+	stmt, err := db.Prepare("update problems set name=?, version=?, description=?, languages=?, visibility=?, points=? where id=?")
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(p.ProblemName, p.Version, p.Description, p.Languages, p.Points, p.Id)
+	_, err = stmt.Exec(p.ProblemName, p.Version, p.Description, p.Languages, p.Visibility, p.Points, p.Id)
 	if err != nil {
 		log.Print(err)
 		return err
