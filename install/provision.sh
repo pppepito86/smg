@@ -111,6 +111,13 @@ if [ "$1" = "prod" ]; then
   mysql -u root -ppassword smg < /home/ubuntu/app/backup/smg.sql
 fi
 
+if [ ! -z "$AWS_ACCESS_KEY_ID" ]
+then
+  echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > ~/.aws/credentials
+  echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > ~/.aws/credentials
+  echo "export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" > ~/.aws/config
+fi
+
 #restart
 sudo reboot
 

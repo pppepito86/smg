@@ -3,7 +3,7 @@
 do_start() {
   cd /app/judge/src
   export GOPATH=/app/judge
-  go run main.go > /app/stdout.log 2>/app/stderr.log &
+  go run main.go >> /app/stdout.log 2>>/app/stderr.log &
 }
 do_stop() {
   killall -15 main
