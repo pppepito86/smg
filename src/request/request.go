@@ -3,6 +3,7 @@ package request
 import (
 	"fmt"
 	"net/http"
+	"request/api"
 	"request/contest"
 	"request/handlers"
 	"request/util"
@@ -27,6 +28,11 @@ func Route(w http.ResponseWriter, r *http.Request) {
 
 	if strings.Index(path, "/contest/") == 0 {
 		contest.Route(w, r, user)
+		return
+	}
+
+	if strings.Index(path, "/api/") == 0 {
+		api.Route(w, r, user)
 		return
 	}
 
@@ -67,10 +73,10 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		handler = &handlers.UsersHandler{RequestInfo: info}
 	} else if path == "/myusers.html" {
 		handler = &handlers.MyUsersHandler{RequestInfo: info}
-    } else if path == "/usersingroup.html" {
-		handler = &handlers.UsersInGroupHtmlHandler{RequestInfo: info} 
-    } else if path == "/usersingroup" {
-		handler = &handlers.UsersInGroupHandler{RequestInfo: info} 
+	} else if path == "/usersingroup.html" {
+		handler = &handlers.UsersInGroupHtmlHandler{RequestInfo: info}
+	} else if path == "/usersingroup" {
+		handler = &handlers.UsersInGroupHandler{RequestInfo: info}
 	} else if path == "/changeuserrole" {
 		handler = &handlers.ChangeUserRoleHandler{RequestInfo: info}
 	}
@@ -86,7 +92,7 @@ func Route(w http.ResponseWriter, r *http.Request) {
 	if path == "/studentprogress.html" {
 		handler = &handlers.StudentProgressHandler{RequestInfo: info}
 	}
-    if path == "/groupprogress.html" {
+	if path == "/groupprogress.html" {
 		handler = &handlers.GroupProgressHandler{RequestInfo: info}
 	}
 	if path == "/pointsperweek" {
