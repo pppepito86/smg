@@ -36,7 +36,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		r.Form["firstname"][0],
 		r.Form["lastname"][0],
 		r.Form["email"][0],
-		r.Form["password"][0],
+		string(hashedPassword),
 		string(hashedPassword),
 		false,
 		"",

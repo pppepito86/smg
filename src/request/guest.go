@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"session"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HandleGuest(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +56,8 @@ func authenticate(w http.ResponseWriter, r http.Request, username string, passwo
 	if user.UserName == "" {
 		return false
 	}
-	if user.PasswordHash != password {
+	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordSalt), []byte(password))
+	if err != nil {
 		return false
 	}
 	val := fmt.Sprintf("%s-%s", user.UserName, RandomString())
