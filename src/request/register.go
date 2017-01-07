@@ -2,7 +2,10 @@ package request
 
 import (
 	"db"
+	"fmt"
 	"net/http"
+	"net/url"
+	"os/exec"
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
@@ -29,6 +32,8 @@ func register(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/error.html?error="+err.Error(), http.StatusFound)
 	}
 
+	validationCodeByte, _ := bcrypt.GenerateFromPassword([]byte(r.Form["username"][0]+"-"+r.Form["email"][0]), bcrypt.DefaultCost)
+	validationCode := url.QueryEscape(string(validationCodeByte))
 	user := db.User{
 		-1,
 		3,
@@ -40,6 +45,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		string(hashedPassword),
 		false,
 		"",
+		validationCode,
 	}
 	user, err = db.CreateUser(user)
 	if err != nil {
@@ -47,7 +53,23 @@ func register(w http.ResponseWriter, r *http.Request) {
 	}
 	db.CreateUserGroup(user.Id, 1)
 
+	sendEmail(user.Email, user.ValidationCode)
+
 	http.Redirect(w, r, "/index.html", http.StatusFound)
+}
+
+func sendEmail(receiver, code string) {
+	subject := "$(echo -e \"Account Validation at pesho.org\nContent-Type: text/html\")"
+
+	sender := "registration@pesho.org"
+	body := fmt.Sprintf("To validate your account at pesho.org, please click <a target=\"_blank\" href=\\\"http://www.pesho.org/emailvalidation?code=%s\\\">here</a>"+
+		"<br>or just go to http://www.pesho.org/emailvalidation?code=%s", code, code)
+	message := fmt.Sprintf("echo \"%s\" | mail -s \"%s\" -aFrom:\\<%s\\> %s", body, subject, sender, receiver)
+	fmt.Println("message is: " + message)
+	err := exec.Command("/bin/bash", "-c", message).Run()
+	if err != nil {
+		println(err.Error())
+	}
 }
 
 func checkFieldsPresent(fields []string, r *http.Request, err *string) {

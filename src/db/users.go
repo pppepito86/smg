@@ -13,29 +13,30 @@ type Role struct {
 }
 
 type User struct {
-	Id           int64
-	RoleId       int64
-	UserName     string
-	FirstName    string
-	LastName     string
-	Email        string
-	PasswordHash string
-	PasswordSalt string
-	IsDisabled   bool
-	RoleName     string
+	Id             int64
+	RoleId         int64
+	UserName       string
+	FirstName      string
+	LastName       string
+	Email          string
+	PasswordHash   string
+	PasswordSalt   string
+	IsDisabled     bool
+	RoleName       string
+	ValidationCode string
 }
 
 func CreateUser(user User) (User, error) {
 	db := getConnection()
 
-	stmt, err := db.Prepare("INSERT INTO users(roleid, username, firstname, lastname, email, passwordhash, passwordsalt, isdisabled) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO users(roleid, username, firstname, lastname, email, passwordhash, passwordsalt, isdisabled, validationcode) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return user, err
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(user.RoleId, user.UserName, user.FirstName, user.LastName, user.Email, user.PasswordHash, user.PasswordSalt, user.IsDisabled)
+	res, err := stmt.Exec(user.RoleId, user.UserName, user.FirstName, user.LastName, user.Email, user.PasswordHash, user.PasswordSalt, user.IsDisabled, user.ValidationCode)
 	if err != nil {
 		log.Print(err)
 		return user, err
@@ -138,7 +139,7 @@ func ListUsersInGroup(groupId int64) ([]User, error) {
 
 func GetUser(username string) (User, error) {
 	db := getConnection()
-	rows, err := db.Query("select users.id, roleid, username, firstname, lastname, email, passwordhash, passwordsalt, isdisabled, rolename from users inner join roles on username= ? and isdisabled=? and users.roleid=roles.id", username, false)
+	rows, err := db.Query("select users.id, roleid, username, firstname, lastname, email, passwordhash, passwordsalt, isdisabled, validationcode, rolename from users inner join roles on username= ? and isdisabled=? and users.roleid=roles.id", username, false)
 	if err != nil {
 		log.Print(err)
 		return User{}, nil
@@ -146,7 +147,7 @@ func GetUser(username string) (User, error) {
 	defer rows.Close()
 	user := User{}
 	for rows.Next() {
-		err := rows.Scan(&user.Id, &user.RoleId, &user.UserName, &user.FirstName, &user.LastName, &user.Email, &user.PasswordHash, &user.PasswordSalt, &user.IsDisabled, &user.RoleName)
+		err := rows.Scan(&user.Id, &user.RoleId, &user.UserName, &user.FirstName, &user.LastName, &user.Email, &user.PasswordHash, &user.PasswordSalt, &user.IsDisabled, &user.ValidationCode, &user.RoleName)
 		if err != nil {
 			log.Print(err)
 			return User{}, err
@@ -187,6 +188,24 @@ func UpdateUserRole(userId, roleId int64) error {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(roleId, userId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
+}
+
+func ValidateEmail(code string) error {
+	db := getConnection()
+	stmt, err := db.Prepare("update users set validationcode=? where validationcode=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec("", code)
 	if err != nil {
 		log.Print(err)
 		return err

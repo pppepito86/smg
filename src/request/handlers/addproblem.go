@@ -73,6 +73,9 @@ func (h *AddProblemHandler) executePost() {
 		Points:      points,
 	}
 	p, _ = db.CreateProblem(p)
+	if p.Visibility == "public" {
+		db.AddProblemToAssignment(1, p.Id, p.Id, p.Points)
+	}
 
 	os.MkdirAll(filepath.Join("workdir", "problems", strconv.FormatInt(p.Id, 10)), 0755)
 	test = strings.Replace(test, "\r", "", -1)

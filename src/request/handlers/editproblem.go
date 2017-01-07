@@ -103,6 +103,13 @@ func (h *EditProblemHandler) executePost() {
 		Points:      points,
 	}
 	db.UpdateProblem(p)
+	if problem.Visibility != p.Visibility {
+		if p.Visibility == "public" {
+			db.AddProblemToAssignment(1, p.Id, p.Id, p.Points)
+		} else {
+			db.DeleteAssignmentProblem2(1, p.Id)
+		}
+	}
 
 	dir := filepath.Join("workdir", "problems", strconv.FormatInt(id, 10))
 	test = strings.Replace(test, "\r", "", -1)
