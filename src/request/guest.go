@@ -53,7 +53,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) bool {
 
 func authenticate(w http.ResponseWriter, r http.Request, username string, password string) bool {
 	user, _ := db.GetUser(username)
-	if user.UserName == "" {
+	if user.UserName == "" || user.ValidationCode != "" {
 		return false
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordSalt), []byte(password))

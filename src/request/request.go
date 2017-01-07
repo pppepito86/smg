@@ -21,6 +21,13 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.Index(path, "/emailvalidation") == 0 {
+		info := util.RequestInfo{r, w, user}
+		handler := &handlers.ValidateEmailHandler{RequestInfo: info}
+		handler.Execute()
+	} else if strings.Index(path, "/changepassword") == 0 {
+	}
+
 	if user.RoleName == "" {
 		HandleGuest(w, r)
 		return
