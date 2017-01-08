@@ -22,6 +22,8 @@ func Route(w http.ResponseWriter, r *http.Request, user db.User) {
 	var handler util.RequestHandler
 	if page == "users" {
 		UsersHandler(w, r, user, split[1:])
+	} else if page == "assignments" {
+		AssignmentsHandler(w, r, user, split[1:])
 	}
 
 	if handler == nil {

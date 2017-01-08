@@ -49,18 +49,32 @@
             <div class="inner">
                 <div class="row">
                     <div class="col-lg-12">
-
-
-                        <h2> Assignments </h2>
-
-
-
+                        <h2 id="title"> Assignments </h2>
                     </div>
                 </div>
 
                 <hr />
 
-
+                
+                {{if eq .Role "admin" "teacher" }}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a href="/addassignment.html" class="btn btn-default btn-sm btn-grad">+Add</a>
+                            
+                            <!--
+                            {{if eq .Role "teacher"}}
+                            <a href="/addassignment.html" class="btn btn-default btn-sm btn-grad">+Add</a>
+                            {{end}}
+                            -->
+                            <label>
+                                <input id="showAllCheckbox" type="checkbox">
+                                 Show All Assignments
+                            </label>
+                    </div>
+                </div>
+                <hr />
+                {{end}}
+                
                 <div class="row">
                     <div class="col-lg-12" id="assignmentGroups">
                         
@@ -128,15 +142,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-dateFormat/1.0/jquery.dateFormat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script>
-         $(document).ready(function () {
-         });
+        $(document).ready(function () {
+            $("#showAllCheckbox:checkbox").change(
+                function(){
+                    if ($(this).is(':checked')) {
+                        loadData(true);
+                    } else {
+                        loadData(false);
+                    }
+                });
+        });
 
          function collapse(idx) {
             $($("#"+idx).children()[1]).toggle();
          }
+        
+    function loadData(all) {
+        $("#assignmentGroups").empty(); // TODO: Reuse elements that've already been loaden
+        
+        if(all) {
+            $("#title").text("All Assignments");
+        } else {
+            $("#title").text("My Assignments");
+        }
 
+        let assignmentsUrl = (all)?('/api/v1/assignments/'):('/api/v1/users/me/assignments');
         $.when(
-            $.get('/api/v1/users/me/assignments'),
+            $.get(assignmentsUrl),
             $.get('/assets/html/assignment_table.html'),
             $.get('/assets/html/assignment_table_row.html')
         ).done(function (assignmentsReq, templateTableReq, templateRowReq) {
@@ -159,6 +191,9 @@
             $(".assignment-panel-body").hide();
             $('.table').dataTable();
         });
+    }
+
+    loadData(false);
 
     </script>
      <!-- END PAGE LEVEL SCRIPTS -->
