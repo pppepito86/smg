@@ -71,7 +71,7 @@
                           <form action="/contest/{{.Id}}/submitcode" method="POST" enctype="multipart/form-data" class="form-horizontal">
                         <div class="form-group">
                           <label class="control-label col-lg-4">Problems</label>
-                          <div class="col-lg-8">
+                          <div class="col-lg-4">
                           <select name="apid" class="form-control">
                           {{range $index, $element := .Data}}
                           <option value="{{$element.Id}}">{{$element.ProblemName}}</option>
@@ -81,7 +81,7 @@
                         </div>
                         <div class="form-group">
                           <label class="control-label col-lg-4">Language</label>
-                          <div class="col-lg-8">
+                          <div class="col-lg-4">
                           <select name="language" class="form-control">
                               <option value="c++">C++</option>
                               <option value="java">Java</option>
@@ -92,7 +92,7 @@
 
 <div class="form-group">
                         <label class="control-label col-lg-4">Source File</label>
-                        <div class="col-lg-8">
+                        <div class="col-lg-4">
                             <div class="fileupload fileupload-new" data-provides="fileupload"><input type="hidden" value="" name="">
 
 
@@ -156,9 +156,43 @@
     <script src="/assets/plugins/jasny/js/bootstrap-fileupload.js"></script>
 
      <script>
+         var getUrlParameter = function getUrlParameter(sParam) {
+                 var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                         sURLVariables = sPageURL.split('&'),
+                         sParameterName,
+                         i;
+
+                 for (i = 0; i < sURLVariables.length; i++) {
+                             sParameterName = sURLVariables[i].split('=');
+
+                             if (sParameterName[0] === sParam) {
+                                             return sParameterName[1] === undefined ? true : sParameterName[1];
+                                         }
+                         }
+         };
+
+         function loadUrlParameterData() {
+            let lang = getUrlParameter("lang"),
+                 problem = getUrlParameter("problem");
+
+             if(problem) {
+                $("select[name='apid']").val(problem);
+             }
+
+             if(lang) {
+                $("select[name='language']").val(lang);
+             }
+
+         }
+         
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
+             
+             loadUrlParameterData();
+
          });
+
+        
     </script>
      <!-- END PAGE LEVEL SCRIPTS -->
 </body>
