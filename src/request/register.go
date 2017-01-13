@@ -3,6 +3,7 @@ package request
 import (
 	"db"
 	"fmt"
+	"html/template"
 	"net/http"
 	"net/url"
 	"os/exec"
@@ -30,6 +31,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Form["password"][0]), bcrypt.DefaultCost)
 	if err != nil {
 		http.Redirect(w, r, "/error.html?error="+err.Error(), http.StatusFound)
+		return
 	}
 
 	validationCodeByte, _ := bcrypt.GenerateFromPassword([]byte(r.Form["username"][0]+"-"+r.Form["email"][0]), bcrypt.DefaultCost)
@@ -55,7 +57,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 
 	sendEmail(user.Email, user.ValidationCode)
 
-	http.Redirect(w, r, "/index.html", http.StatusFound)
+	w.Header().Set("Content-Type", "text/html")
+	t, _ := template.ParseFiles("../registered.html")
+	t.Execute(w, nil)
 }
 
 func sendEmail(receiver, code string) {
