@@ -1,1 +1,0 @@
-Screen Shot 2016-08-05 at 12.46.19.png

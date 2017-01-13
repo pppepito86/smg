@@ -243,6 +243,9 @@ CREATE TABLE `users` (
   `passwordhash` varchar(128) NOT NULL,
   `passwordsalt` varchar(128) NOT NULL,
   `isdisabled` tinyint(1) DEFAULT NULL,
+  `validationcode` varchar(128) NOT NULL DEFAULT "",
+  `changepasswordcode` varchar(128) DEFAULT NULL,
+  `registrationdate` timestamp DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
@@ -277,6 +280,18 @@ INSERT INTO `users` (id, roleid, username, firstname, lastname, email, passwordh
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+LOCK TABLES `groups` WRITE;
+/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+INSERT INTO `groups` VALUES (1,'public','public',1);
+/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `assignments` WRITE;
+/*!40000 ALTER TABLE `assignments` DISABLE KEYS */;
+INSERT INTO `assignments` VALUES (1,'All Problems','2016-09-16 21:00:00','2020-09-19 21:00:00',1,1,'hide',NULL)
+ /*!40000 ALTER TABLE `assignments` ENABLE KEYS */;
+ UNLOCK TABLES;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

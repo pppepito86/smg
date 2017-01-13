@@ -343,6 +343,25 @@ func DeleteAssignmentProblem(apId int64) error {
 	return nil
 }
 
+func DeleteAssignmentProblem2(aId, pId int64) error {
+	db := getConnection()
+
+	stmt, err := db.Prepare("delete from assignmentproblems where assignmentid=? and problemid=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(aId, pId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
+}
+
 func DeleteAssignmentProblems(aId int64) error {
 	db := getConnection()
 

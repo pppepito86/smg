@@ -106,13 +106,16 @@ if [ "$1" = "prod" ]; then
   aws s3 cp s3://onlinejudge/mail/default.private /etc/opendkim/keys/pesho.org/default.private
   aws s3 cp s3://onlinejudge/mail/default.txt /etc/opendkim/keys/pesho.org/default.txt
   chown opendkim:opendkim /etc/opendkim/keys/pesho.org/default.private
+  chmod 400 /etc/opendkim/keys/pesho.org/default.private
   aws s3 cp s3://onlinejudge/backup.tar.gz /home/ubuntu/backup.tar.gz
   tar -C /home/ubuntu/ -xzf /home/ubuntu/backup.tar.gz
+  mv /home/ubuntu/app/backup/workdir /app/judge/src/
   mysql -u root -ppassword smg < /home/ubuntu/app/backup/smg.sql
 fi
 
 if [ ! -z "$AWS_ACCESS_KEY_ID" ]
 then
+  mkdir ~/.aws
   echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > ~/.aws/credentials
   echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > ~/.aws/credentials
   echo "export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" > ~/.aws/config
