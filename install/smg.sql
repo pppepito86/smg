@@ -289,7 +289,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `assignments` WRITE;
 /*!40000 ALTER TABLE `assignments` DISABLE KEYS */;
-INSERT INTO `assignments` VALUES (1,'All Problems','2016-09-16 21:00:00','2020-09-19 21:00:00',1,1,'hide',NULL)
+INSERT INTO `assignments` VALUES (1,'All Problems','2016-09-16 21:00:00','2020-09-19 21:00:00',1,1,'hide',NULL);
  /*!40000 ALTER TABLE `assignments` ENABLE KEYS */;
  UNLOCK TABLES;
 
