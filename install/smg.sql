@@ -273,7 +273,7 @@ CREATE TABLE `tags` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,'pesho','Petar','Petrov','pppepito86@gmail.com','password','password',0);
+INSERT INTO `users` (id, roleid, username, firstname, lastname, email, passwordhash, passwordsalt, isdisabled) VALUES (1,1,'pesho','Petar','Petrov','pppepito86@gmail.com','password','password',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
