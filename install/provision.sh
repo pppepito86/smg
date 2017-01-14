@@ -111,6 +111,10 @@ if [ "$1" = "prod" ]; then
   tar -C /home/ubuntu/ -xzf /home/ubuntu/backup.tar.gz
   mv /home/ubuntu/app/backup/workdir /app/judge/src/
   mysql -u root -ppassword smg < /home/ubuntu/app/backup/smg.sql
+
+  chmod +x /app/judge/install/cronmail.sh
+  /app/judge/install/cronmail.sh
+
 fi
 
 if [ ! -z "$AWS_ACCESS_KEY_ID" ]
