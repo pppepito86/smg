@@ -26,6 +26,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	}
 	if errMsg != "" {
 		http.Redirect(w, r, "/error.html?error="+errMsg, http.StatusFound)
+		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Form["password"][0]), bcrypt.DefaultCost)
@@ -52,6 +53,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	user, err = db.CreateUser(user)
 	if err != nil {
 		http.Redirect(w, r, "/error.html?error="+err.Error(), http.StatusFound)
+		return
 	}
 	db.CreateUserGroup(user.Id, 1)
 
