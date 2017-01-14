@@ -32,7 +32,6 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		info := util.RequestInfo{r, w, user}
 		handler := &handlers.ValidateEmailHandler{RequestInfo: info}
 		handler.Execute()
-		return
 	} else if strings.Index(path, "/changepassword") == 0 {
 	}
 

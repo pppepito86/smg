@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"db"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
 	"session"
@@ -34,37 +35,40 @@ func getSessionIdCookie(r http.Request) *http.Cookie {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	if postLogin(w, r) {
+	if err := postLogin(w, r); err == nil {
 		http.Redirect(w, r, "/myassignments.html", http.StatusFound)
 	} else {
-		http.Redirect(w, r, "/error.html?error=Login Failed", http.StatusFound)
+		http.Redirect(w, r, "/error.html?error="+err.Error(), http.StatusFound)
 	}
 }
 
-func postLogin(w http.ResponseWriter, r *http.Request) bool {
+func postLogin(w http.ResponseWriter, r *http.Request) error {
 	r.ParseForm()
 	user := r.Form["username"]
 	pass := r.Form["password"]
 	if len(user) != 1 || len(pass) != 1 {
-		return false
+		return errors.New("Credentials not supplied")
 	}
 	return authenticate(w, *r, user[0], pass[0])
 }
 
-func authenticate(w http.ResponseWriter, r http.Request, username string, password string) bool {
+func authenticate(w http.ResponseWriter, r http.Request, username string, password string) error {
 	user, _ := db.GetUser(username)
-	if user.UserName == "" || user.ValidationCode != "" {
-		return false
+	if user.UserName == "" {
+		return errors.New("Incorrect username or password")
+	}
+	if user.ValidationCode != "" {
+		return errors.New("Username not activated! Plese check your email to activate.")
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordSalt), []byte(password))
 	if err != nil {
-		return false
+		return errors.New("Incorrect username or password")
 	}
 	val := fmt.Sprintf("%s-%s", user.UserName, RandomString())
 	cookie := http.Cookie{Name: "session.id", Value: val}
 	http.SetCookie(w, &cookie)
 	session.SetAttribute(val, username)
-	return true
+	return nil
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
