@@ -1,18 +1,16 @@
 package org.pesho.judge.rest.model;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.util.List;
+import java.sql.Timestamp;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "users")
@@ -25,56 +23,66 @@ public class User implements Serializable {
 	@Column(name = "id")
 	private int id;
 
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinColumn(name="role_id")
-	private List<Role> roles;
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="roleid")
+	private Role roles;
 	
+	@NotNull
 	@Column(name = "username", unique=true, length = 50)
 	private String username;
 
-	@Basic(optional = false)
+	@NotNull
 	@Column(name = "firstname", length = 50)
 	private String firstname;
 
-	@Basic(optional = false)
+	@NotNull
 	@Column(name = "lastname", length = 50)
 	private String lastname;
 
-	@Basic(optional = false)
-	@Column(name = "email", length = 50)
+	@NotNull
+	@Column(name = "email", unique=true, length = 50)
 	private String email;
 
-	@Basic(optional = false)
-	@Column(name = "active")
-	private boolean active;
-
-	@Column(name = "time")
-	private Date time;
-
+	@NotNull
+	@Column (name = "passwordhash")
+	private String passwordHash;
+	
+	@NotNull
+	@Column (name = "passwordsalt")
+	private String passwordSalt;
+	
+	@Column(name = "isdisabled")
+	private boolean isDisabled;
+	
+	@NotNull
+	@Column(name = "validationcode")
+	private String validationCode = "";
+	
+	@Column(name = "changepasswordcode")
+	private String changePasswordCode = null;
+	
+	@Column(name = "registrationdate", 
+			columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private Timestamp registrationDate;
+	
 	public User() {
 	}
 	
-	public User(String username, String firstname, String lastname, String email) {
-		this.username = username;
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.email = email;
-	}
-	
-	public List<Role> getRoles() {
-		return roles;
-	}
-	
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
-
 	public int getId() {
 		return id;
 	}
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public Role getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Role roles) {
+		this.roles = roles;
 	}
 
 	public String getUsername() {
@@ -109,20 +117,53 @@ public class User implements Serializable {
 		this.email = email;
 	}
 
-	public boolean isActive() {
-		return active;
+	public String getPasswordHash() {
+		return passwordHash;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
 	}
 
-	public Date getTime() {
-		return time;
+	public String getPasswordSalt() {
+		return passwordSalt;
 	}
 
-	public void setTime(Date time) {
-		this.time = time;
+	public void setPasswordSalt(String passwordSalt) {
+		this.passwordSalt = passwordSalt;
 	}
 
+	public boolean isDisabled() {
+		return isDisabled;
+	}
+
+	public void setDisabled(boolean isDisabled) {
+		this.isDisabled = isDisabled;
+	}
+
+	public String getValidationCode() {
+		return validationCode;
+	}
+
+	public void setValidationCode(String validationCode) {
+		this.validationCode = validationCode;
+	}
+
+	public String getChangePasswordCode() {
+		return changePasswordCode;
+	}
+
+	public void setChangePasswordCode(String changePasswordCode) {
+		this.changePasswordCode = changePasswordCode;
+	}
+
+	public Timestamp getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Timestamp registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+	
+	
 }
