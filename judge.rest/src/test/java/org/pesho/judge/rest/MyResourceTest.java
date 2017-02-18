@@ -2,14 +2,18 @@ package org.pesho.judge.rest;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pesho.judge.rest.model.Role;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 public class MyResourceTest {
 
@@ -44,5 +48,15 @@ public class MyResourceTest {
     public void testGetIt() {
         String responseMsg = target.path("myresource").request().get(String.class);
         assertEquals("Got it!", responseMsg);
+    }
+    
+    @Test
+    public void testCreateRole() {
+    	Role role = new Role();
+    	role.setRoleName("admin");
+    	role.setDescription("admin role");
+    	Response response = target.path("roles").request().accept("application/json").post(Entity.json(role));
+    	Role responseRole = (Role) response.readEntity(Role.class);
+        assertNotSame(responseRole.getId(), 0);
     }
 }
