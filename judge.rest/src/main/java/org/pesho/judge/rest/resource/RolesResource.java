@@ -2,6 +2,9 @@ package org.pesho.judge.rest.resource;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -26,6 +29,14 @@ public class RolesResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Role createRole(Role role) {
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory("judge");
+    	EntityManager em = emf.createEntityManager();
+    	em.getTransaction().begin();
+    	em.persist(role);
+    	em.getTransaction().commit();
+    	em.clear();
+    	emf.close();
+    	
         return role;
     }
     
