@@ -4,6 +4,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -43,7 +44,7 @@ public class MyResourceTest {
     	Role role = new Role();
     	role.setRoleName("admin");
     	role.setDescription("admin role");
-    	Response response = target.path("roles").request().accept("application/json").post(Entity.json(role));
+    	Response response = target.path("roles").request(MediaType.APPLICATION_JSON).post(Entity.json(role));
     	Role responseRole = (Role) response.readEntity(Role.class);
         assertNotSame(responseRole.getId(), 0);
     }

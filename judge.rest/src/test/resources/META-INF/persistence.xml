@@ -5,16 +5,7 @@
 
 	<persistence-unit name="judge" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>org.pesho.judge.rest.model.Assignment</class>
-		<class>org.pesho.judge.rest.model.AssignmentProblem</class>
-		<class>org.pesho.judge.rest.model.Group</class>
-		<class>org.pesho.judge.rest.model.Problem</class>
 		<class>org.pesho.judge.rest.model.Role</class>
-		<class>org.pesho.judge.rest.model.Submission</class>
-		<class>org.pesho.judge.rest.model.SubmissionDetail</class>
-		<class>org.pesho.judge.rest.model.Tag</class>
-		<class>org.pesho.judge.rest.model.User</class>
-		<class>org.pesho.judge.rest.model.UserGroup</class>
 		<properties>
 			<!-- Configuring JDBC properties -->
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />

@@ -36,7 +36,6 @@ public class RolesResource {
     	em.getTransaction().commit();
     	em.clear();
     	emf.close();
-    	
         return role;
     }
     
