@@ -152,7 +152,7 @@ func compile(s db.Submission) (string, error) {
 		return "", errors.New("Language is not supported")
 	}
 
-	cmd := exec.Command("docker", "run", "--cidfile", "cid", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", mLimit, "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
+	cmd := exec.Command("docker", "run", "--cidfile", "cid", "-v", filepath.Dir(destFile)+":/foo", "-w", "/foo", "-i", "--read-only", "-m", "64M", "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
 	cmd.Dir = filepath.Dir(destFile)
 	errPipe, _ := cmd.StderrPipe()
 	err := cmd.Start()
