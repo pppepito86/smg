@@ -74,9 +74,9 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int, limit db
 	dir := filepath.Join(pwd, filepath.Dir(compiledFile))
 	if s.Language == "java" {
 		cmdArg = "java " + filepath.Base(compiledFile)
-    } else if s.Language == "nodejs" {
-        cmdArg = "node " + filepath.Base(compiledFile)
-    }
+	} else if s.Language == "nodejs" {
+		cmdArg = "node " + filepath.Base(compiledFile)
+	}
 	testStr := strconv.Itoa(testCase)
 	cmdArg = "cat input" + testStr + "|" + cmdArg + ">output" + testStr + " 2>error" + testStr
 	mLimit := strconv.Itoa(limit.MemoryLimit) + "M"
@@ -140,17 +140,20 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int, limit db
 
 func compile(s db.Submission) (string, error) {
 	destFile := filepath.Join(filepath.Dir(s.SourceFile), "test")
-	var cmd *exec.Cmd
+	cmdArg := ""
 	if s.Language == "java" {
-		cmd = exec.Command("javac", s.SourceFile)
+		cmdArg = "javac " + s.SourceFile
 		destFile = strings.Replace(s.SourceFile, ".java", "", 1)
 	} else if s.Language == "c++" {
-		cmd = exec.Command("g++", "-O2", "-std=c++11", "-o", destFile, s.SourceFile)
-    } else if s.Language == "nodejs" {
-        return s.SourceFile, nil
-    } else {
+		cmdArg = "g++  -O2 -std=c++11 -o " + destFile + " " + s.SourceFile
+	} else if s.Language == "nodejs" {
+		return s.SourceFile, nil
+	} else {
 		return "", errors.New("Language is not supported")
 	}
+
+	cmd := exec.Command("docker", "run", "--cidfile", "cid", "-v", dir+":/foo", "-w", "/foo", "-i", "--read-only", "-m", mLimit, "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
+	cmd.Dir = filepath.Dir(destFile)
 	errPipe, _ := cmd.StderrPipe()
 	err := cmd.Start()
 	if err != nil {
@@ -161,5 +164,6 @@ func compile(s db.Submission) (string, error) {
 	if err != nil {
 		return "", errors.New(string(errStr))
 	}
+	exec.Command("rm", filepath.Join(cmd.Dir, "cid")).Run()
 	return destFile, nil
 }
