@@ -169,5 +169,5 @@ func compile(s db.Submission) (string, error) {
 		return "", errors.New(string(errStr))
 	}
 	exec.Command("rm", filepath.Join(cmd.Dir, "cid")).Run()
-	return destFile, nil
+	return filepath.Join(filepath.Dir(s.SourceFile), "test"), nil
 }
