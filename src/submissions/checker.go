@@ -141,18 +141,21 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int, limit db
 func compile(s db.Submission) (string, error) {
 	pwd, _ := os.Getwd()
 	destFile := filepath.Join(pwd, filepath.Dir(s.SourceFile), "test")
+	fmt.Println("destFile:", destFile)
+	fmt.Println("destFile dir:", filepath.Dir(destFile))
 	cmdArg := ""
 	if s.Language == "java" {
-		cmdArg = "javac " + s.SourceFile
+		cmdArg = "javac " + filepath.Base(s.SourceFile)
 		destFile = strings.Replace(s.SourceFile, ".java", "", 1)
 	} else if s.Language == "c++" {
-		cmdArg = "g++  -O2 -std=c++11 -o " + destFile + " " + s.SourceFile
+		cmdArg = "g++ -O2 -std=c++11 -o test " + filepath.Base(s.SourceFile)
 	} else if s.Language == "nodejs" {
 		return s.SourceFile, nil
 	} else {
 		return "", errors.New("Language is not supported")
 	}
 
+	fmt.Println("cmdarg:", cmdArg)
 	cmd := exec.Command("docker", "run", "-v", filepath.Dir(destFile)+":/foo", "-w", "/foo", "--network", "none", "pppepito86/judgebox", "/bin/bash", "-c", cmdArg)
 	cmd.Dir = filepath.Dir(destFile)
 	errPipe, _ := cmd.StderrPipe()
