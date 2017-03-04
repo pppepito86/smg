@@ -139,7 +139,8 @@ func test(s db.Submission, compiledFile, testsDir string, testCase int, limit db
 }
 
 func compile(s db.Submission) (string, error) {
-	destFile := filepath.Join(filepath.Dir(s.SourceFile), "test")
+	pwd, _ := os.Getwd()
+	destFile := filepath.Join(pwd, filepath.Dir(s.SourceFile), "test")
 	cmdArg := ""
 	if s.Language == "java" {
 		cmdArg = "javac " + s.SourceFile
