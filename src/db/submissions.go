@@ -329,6 +329,10 @@ func ListProblemSubmissions(pId int64) ([]Submission, error) {
 func UpdateVerdict(id int64, verdict, reason string, correct, total, points int) error {
 	db := getConnection()
 
+	if len(reason) > 1000 {
+		reason = reason[0:1000]
+	}
+
 	stmt, err := db.Prepare("update submissions set verdict=?, reason=?, correct=?, total=?, points=? where id=?")
 	if err != nil {
 		log.Print(err)
