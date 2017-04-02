@@ -156,7 +156,17 @@
          function collapse(idx) {
             $($("#"+idx).children()[1]).toggle();
          }
-        
+    hash = function(str) {
+	  var hash = 0, i, chr;
+	  if (str.length === 0) return hash;
+	  for (i = 0; i < str.length; i++) {
+	    chr   = str.charCodeAt(i);
+	    hash  = ((hash << 5) - hash) + chr;
+	    hash |= 0; // Convert to 32bit integer
+	  }
+	  return hash;
+    };
+	    
     function loadData(all) {
         $("#assignmentGroups").empty(); // TODO: Reuse elements that've already been loaden
         
@@ -184,8 +194,9 @@
 
             data = _.groupBy(data, "Group");
             data = _.each(data, function(group, name) {
-                $.tmpl(templateTable, {id: name, groupname: name}).appendTo("#assignmentGroups");
-                $.tmpl(template, group).appendTo( "#tablebody"+name );
+                let hashName = hash(name);
+                $.tmpl(templateTable, {id: hashName, groupname: name}).appendTo("#assignmentGroups");
+                $.tmpl(template, group).appendTo( "#tablebody"+hashName );
             });
 
             $(".assignment-panel-body").hide();
