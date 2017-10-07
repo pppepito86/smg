@@ -14,7 +14,7 @@ type RejudgeHandler struct {
 }
 
 func (h *RejudgeHandler) Execute() error {
-	if h.User.RoleName != "admin" {
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
 		return nil
 	}
 
@@ -32,7 +32,7 @@ func (h *RejudgeHandler) Execute() error {
 		submissions.Push(s)
 	}
 
-	http.Redirect(h.W, h.R, "/problems", http.StatusFound)
+	http.Redirect(h.W, h.R, "/problems.html", http.StatusFound)
 
 	return nil
 }
