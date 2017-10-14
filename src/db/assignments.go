@@ -3,7 +3,7 @@ package db
 import (
 	"log"
 	"time"
-
+    "strings"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,19 +21,45 @@ type Assignment struct {
 	Standings      string
 	IsActive       bool
 	HasFinished    bool
+    PrejudgeChecks map[string]bool
+}
+
+var AllPrejudgeChecksNames = []string{"goto", "no_float", "fast_cin", 
+                                 "consecutive_newlines", "floating_point_comp", 
+                                 "debug_macro"}
+
+func CreatePrejudgeChecksStr(checks map[string]bool) string {
+  prejudge_checkes_list := []string{}
+  for prejudge_check, enabled := range checks {
+    if enabled {
+      prejudge_checkes_list = append(prejudge_checkes_list, prejudge_check)
+    }
+  }
+  prejudge_checks_str := strings.Join(prejudge_checkes_list, ",")
+  return prejudge_checks_str
+}
+
+func PrejudgeChecksMapFromStr(prejudge_checks_str string) map[string]bool {
+  prejudge_checks := map[string]bool{}
+  for _, check := range strings.Split(prejudge_checks_str, ",") {
+    prejudge_checks[strings.TrimSpace(check)] = true
+  }
+  return prejudge_checks
 }
 
 func CreateAssignment(a Assignment) (Assignment, error) {
 	db := getConnection()
 
-	stmt, err := db.Prepare("INSERT INTO assignments(name, author, groupid, starttime, endtime, testinfo, standings) VALUES(?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO assignments(name, author, groupid, starttime, endtime, testinfo, standings, prejudge_checks) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Print(err)
 		return a, err
 	}
 	defer stmt.Close()
-
-	res, err := stmt.Exec(a.AssignmentName, a.AuthorId, a.GroupId, a.StartTime, a.EndTime, a.TestInfo, a.Standings)
+    
+    prejudge_checks_str := CreatePrejudgeChecksStr(a.PrejudgeChecks)
+    
+	res, err := stmt.Exec(a.AssignmentName, a.AuthorId, a.GroupId, a.StartTime, a.EndTime, a.TestInfo, a.Standings, prejudge_checks_str)
 	if err != nil {
 		log.Print(err)
 		return a, err
@@ -51,7 +77,7 @@ func CreateAssignment(a Assignment) (Assignment, error) {
 
 func ListAssignment(aid int64) (Assignment, error) {
 	db := getConnection()
-	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime, assignments.testinfo, assignments.standings from assignments"+
+	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime, assignments.testinfo, assignments.standings, assignments.prejudge_checks from assignments"+
 		" inner join users on assignments.id=? and assignments.author = users.id"+
 		" inner join groups on assignments.groupid = groups.id", aid)
 	a := Assignment{}
@@ -60,13 +86,19 @@ func ListAssignment(aid int64) (Assignment, error) {
 		return a, err
 	}
 	defer rows.Close()
+    
 	for rows.Next() {
-		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime, &a.TestInfo, &a.Standings)
+        var prejudge_checks_str string
+		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime, &a.TestInfo, &a.Standings, &prejudge_checks_str)
+    
+        a.PrejudgeChecks = PrejudgeChecksMapFromStr(prejudge_checks_str)
+        
 		if err != nil {
 			log.Print(err)
 			return a, err
 		}
 	}
+    // TODO(pppepito86) It seems like the following lines should be in the loop above.  
 	location, _ := time.LoadLocation("Europe/Sofia")
 	a.StartTime = a.StartTime.In(location)
 	a.EndTime = a.EndTime.In(location)
@@ -76,7 +108,7 @@ func ListAssignment(aid int64) (Assignment, error) {
 
 func ListAssignments() ([]Assignment, error) {
 	db := getConnection()
-	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime from assignments" +
+	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime, assignments.prejudge_checks from assignments" +
 		" inner join users on assignments.author = users.id" +
 		" inner join groups on assignments.groupid = groups.id")
 	if err != nil {
@@ -88,10 +120,12 @@ func ListAssignments() ([]Assignment, error) {
 	assignments := make([]Assignment, 0)
 	for rows.Next() {
 		var a Assignment
-		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime)
+        var prejudge_checks_str string
+		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime, &prejudge_checks_str)
 		a.StartTime = a.StartTime.In(location)
 		a.EndTime = a.EndTime.In(location)
-
+        a.PrejudgeChecks = PrejudgeChecksMapFromStr(prejudge_checks_str)
+      
 		if err != nil {
 			log.Print(err)
 			return []Assignment{}, err
@@ -108,7 +142,7 @@ func ListAssignments() ([]Assignment, error) {
 
 func ListAssignmentsForAuthor(aId int64) ([]Assignment, error) {
 	db := getConnection()
-	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime from assignments"+
+	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime, assignments.prejudge_checks from assignments"+
 		" inner join users on assignments.author = users.id and assignments.author = ?"+
 		" inner join groups on assignments.groupid = groups.id", aId)
 	if err != nil {
@@ -120,10 +154,12 @@ func ListAssignmentsForAuthor(aId int64) ([]Assignment, error) {
 	assignments := make([]Assignment, 0)
 	for rows.Next() {
 		var a Assignment
-		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime)
+        var prejudge_checks_str string
+		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime, &prejudge_checks_str)
 		a.StartTime = a.StartTime.In(location)
 		a.EndTime = a.EndTime.In(location)
-
+        a.PrejudgeChecks = PrejudgeChecksMapFromStr(prejudge_checks_str)
+      
 		if err != nil {
 			log.Print(err)
 			return []Assignment{}, err
@@ -139,7 +175,7 @@ func ListAssignmentsForAuthor(aId int64) ([]Assignment, error) {
 }
 func ListAssignmentsForUser(user User) ([]Assignment, error) {
 	db := getConnection()
-	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime from assignments"+
+	rows, err := db.Query("select assignments.id, assignments.name, assignments.author, assignments.groupid, users.username, groups.groupname, assignments.starttime, assignments.endtime, assignments.prejudge_checks from assignments"+
 		" inner join users on assignments.author = users.id"+
 		" inner join groups on assignments.groupid = groups.id"+
 		" inner join usergroups on assignments.groupid = usergroups.groupid and usergroups.userid = ?", user.Id)
@@ -152,14 +188,16 @@ func ListAssignmentsForUser(user User) ([]Assignment, error) {
 	location, _ := time.LoadLocation("Europe/Sofia")
 	for rows.Next() {
 		var a Assignment
-		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime)
+        var prejudge_checks_str string
+		err := rows.Scan(&a.Id, &a.AssignmentName, &a.AuthorId, &a.GroupId, &a.Author, &a.Group, &a.StartTime, &a.EndTime, &prejudge_checks_str)
 		if err != nil {
 			log.Print(err)
 			return []Assignment{}, err
 		}
 		a.StartTime = a.StartTime.In(location)
 		a.EndTime = a.EndTime.In(location)
-
+        a.PrejudgeChecks = PrejudgeChecksMapFromStr(prejudge_checks_str)
+      
 		assignments = append(assignments, a)
 	}
 	err = rows.Err()
@@ -173,14 +211,16 @@ func ListAssignmentsForUser(user User) ([]Assignment, error) {
 func UpdateAssignment(a Assignment) error {
 	db := getConnection()
 
-	stmt, err := db.Prepare("update assignments set name=?,groupid=?,starttime=?,endtime=?,testinfo=?,standings=? where id=?")
+	stmt, err := db.Prepare("update assignments set name=?,groupid=?,starttime=?,endtime=?,testinfo=?,standings=?,prejudge_checks=? where id=?")
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 	defer stmt.Close()
-
-	_, err = stmt.Exec(a.AssignmentName, a.GroupId, a.StartTime, a.EndTime, a.TestInfo, a.Standings, a.Id)
+      
+    prejudge_checks_str := CreatePrejudgeChecksStr(a.PrejudgeChecks)
+  
+	_, err = stmt.Exec(a.AssignmentName, a.GroupId, a.StartTime, a.EndTime, a.TestInfo, a.Standings, prejudge_checks_str, a.Id)
 	if err != nil {
 		log.Print(err)
 		return err

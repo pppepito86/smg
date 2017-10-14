@@ -67,6 +67,14 @@ func (h *AddAssignmentHandler) executePost() {
 	location, _ := time.LoadLocation("Europe/Sofia")
 	startTime := time.Date(y1, time.Month(M1), d1, h1, m1, 0, 0, location)
 	endTime := time.Date(y2, time.Month(M2), d2, h2, m2, 0, 0, location)
+  
+    prejudgeChecks := map[string]bool{}
+    for _, check_name := range db.AllPrejudgeChecksNames {
+      if len(h.R.Form[check_name]) > 0 {
+        prejudgeChecks[check_name] = true
+      }
+    }   
+  
 	a := db.Assignment{
 		AssignmentName: name[0],
 		AuthorId:       h.User.Id,
@@ -75,6 +83,7 @@ func (h *AddAssignmentHandler) executePost() {
 		EndTime:        endTime,
 		TestInfo:       testInfo,
 		Standings:      standings,
+        PrejudgeChecks:   prejudgeChecks,
 	}
 	a, _ = db.CreateAssignment(a)
 	if p1[0] != "" {

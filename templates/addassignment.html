@@ -102,8 +102,8 @@
 
                 <div class="form-group" >
                     <label>End date</label>
-                    	<input type="text" name="enddate" class="form-control" value="15/09/2016" />
-                      <input type="text" name="endtime" value="00:00" class="form-control" />
+                    <input type="text" name="enddate" class="form-control" value="15/09/2016" />
+                    <input type="text" name="endtime" value="00:00" class="form-control" />
                             <!--div class="input-group bootstrap-timepicker"><div class="bootstrap-timepicker-widget dropdown-menu open"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="icon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="icon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementSecond"><i class="icon-chevron-up"></i></a></td></tr><tr><td><input type="text" class="bootstrap-timepicker-hour" maxlength="2"></td> <td class="separator">:</td><td><input type="text" class="bootstrap-timepicker-minute" maxlength="2"></td> <td class="separator">:</td><td><input type="text" class="bootstrap-timepicker-second" maxlength="2"></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="icon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="icon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="decrementSecond"><i class="icon-chevron-down"></i></a></td></tr></tbody></table></div>
                                 <input class="timepicker-24 form-control" type="text">
                                 <span class="input-group-addon add-on"><i class="icon-time"></i></span>
@@ -127,35 +127,57 @@
                 </label>
               </div >
 
-               <div class="form-group" >
+              <div class="form-group" >
                 <label>
                     <input type="checkbox" name="standings" value="hide"  > Show top 5 standings
                 </label>
               </div >
+                                  
+              <div class="form-group" >
+                <label>Prejudge checks</label> <br/>
+                <label class="col-lg-3 col-sm-12">
+                    <input type="checkbox" name="goto" value="on" checked> No goto statements
+                </label>
+                <label class="col-lg-3 col-sm-12">
+                    <input type="checkbox" name="no_float" value="on"> No float variables
+                </label>
+                <label class="col-lg-3 col-sm-12">
+                    <input type="checkbox" name="fast_cin" value="on" checked> Fast input/output
+                </label>
+                <label class="col-lg-3 col-sm-12">
+                    <input type="checkbox" name="consecutive_newlines" value="on" checked> No consecutive newlines
+                </label>
+                <label class="col-lg-3 col-sm-12">
+                    <input type="checkbox" name="floating_point_comp" value="on" checked> Only safe floating point comparisons
+                </label>
+                <label class="col-lg-3 col-sm-12">
+                    <input type="checkbox" name="debug_macro" value="on" checked> Use debug macro instead of cout-s
+                </label>
+              </div >
                                     
-                <div class="form-group" >
-                    <div class="col-lg-4">
-                    </div>
-                    <div class="col-lg-8">
-                        <input type="submit" class="btn btn-default btn-lg" />
-                    </div>
-                </div>
+              <div class="form-group" >
+                  <div class="col-lg-4">
+                  </div>
+                  <div class="col-lg-8">
+                      <input type="submit" class="btn btn-default btn-lg" />
+                  </div>
+              </div>
 
-                                </form>
-                              </div>
-                            </div>
+                            </form>
                           </div>
-
                         </div>
+                      </div>
+
                     </div>
                 </div>
             </div>
-                  </div>
-
-
-
-
         </div>
+              </div>
+
+
+
+
+    </div>
        <!--END PAGE CONTENT -->
 
 
