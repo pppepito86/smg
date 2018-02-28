@@ -61,21 +61,12 @@ func (h *EditAssignmentHandler) Execute() error {
 	location, _ := time.LoadLocation("Europe/Sofia")
 	startTime := time.Date(y1, time.Month(M1), d1, h1, m1, 0, 0, location)
 	endTime := time.Date(y2, time.Month(M2), d2, h2, m2, 0, 0, location)
-  
-    prejudgeChecks := map[string]bool{}
-    for _, check_name := range db.AllPrejudgeChecksNames {
-      if len(h.R.Form[check_name]) > 0 {
-        prejudgeChecks[check_name] = true
-      }
-    } 
-  
 	a.AssignmentName = name[0]
 	a.StartTime = startTime
 	a.EndTime = endTime
 	a.GroupId = gid
 	a.TestInfo = testInfo
 	a.Standings = standings
-    a.PrejudgeChecks = prejudgeChecks
 	db.UpdateAssignment(a)
 	if p1[0] != "" {
 		db.DeleteAssignmentProblems(h.Cid)
