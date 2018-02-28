@@ -118,6 +118,25 @@ func CreateUserGroup(userId, groupId int64) (UserGroup, error) {
 	return userGroup, nil
 }
 
+func RemoveUserGroup(userId, groupId int64) (error) {
+	db := getConnection()
+
+	stmt, err := db.Prepare("DELETE FROM usergroups WHERE userid=? AND groupid=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userId, groupId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
+}
+
 func ListUserGroups() ([]UserGroup, error) {
 	db := getConnection()
 	rows, err := db.Query("select id, userid, groupid from usergroups")

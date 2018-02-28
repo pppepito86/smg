@@ -93,6 +93,8 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		handler = &handlers.UsersInGroupHandler{RequestInfo: info}
 	} else if path == "/changeuserrole" {
 		handler = &handlers.ChangeUserRoleHandler{RequestInfo: info}
+	} else if path == "/kickuser" {
+		handler = &handlers.KickUserHandler{RequestInfo: info}
 	}
 
 	if path == "/dashboard.html" {

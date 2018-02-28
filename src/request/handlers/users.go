@@ -65,7 +65,13 @@ func (h *UsersInGroupHtmlHandler) Execute() error {
 	}
     
 	users, _ := db.ListUsersInGroup(groupId)
-	util.ServeHtml(h.W, h.User, "users.html", users)
+
+	templateData := struct {
+		Users		interface{}
+		GroupId 	int64
+	} {users, groupId}
+
+	util.ServeHtml(h.W, h.User, "users-in-group.html", templateData )
 
 	return nil
 }
