@@ -21,6 +21,11 @@ type UserInfo struct {
 
 type UsersInfo []UserInfo
 
+type Result struct {
+	Problems []string
+	Info     []UserInfo
+}
+
 func (slice UsersInfo) Len() int {
 	return len(slice)
 }
@@ -33,20 +38,12 @@ func (slice UsersInfo) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
-func (h *StandingsHandler) Execute() error {
-	top, _ := strconv.Atoi(h.Assignment.Standings)
-	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && top == 0 {
-		return nil
-	}
+func GetStandings(contestId int64) (Result, error) {
+	problems, _ := db.ListAssignmentProblems(contestId)
+	users, _ := db.ListUsersForAssignment(contestId)
+	submissions, _ := db.ListSubmissionsForAssignment(contestId)
 
-	problems, _ := db.ListAssignmentProblems(h.Cid)
-	users, _ := db.ListUsersForAssignment(h.Cid)
-	submissions, _ := db.ListSubmissionsForAssignment(h.Cid)
 
-	type Result struct {
-		Problems []string
-		Info     []UserInfo
-	}
 	result := Result{}
 	problemsMap := make(map[int64]int)
 	for idx, problem := range problems {
@@ -57,7 +54,9 @@ func (h *StandingsHandler) Execute() error {
 	info := UsersInfo{}
 	for idx, user := range users {
 		usersMap[user.Id] = idx
-		userInfo := UserInfo{0, user.UserName, user.FirstName, user.LastName, make([]int, len(problems)+1)}
+		userInfo := UserInfo {0,
+		user.UserName, user.FirstName, user.LastName,
+		make([]int, len(problems)+1)}
 		info = append(info, userInfo)
 	}
 	for _, submission := range submissions {
@@ -74,16 +73,32 @@ func (h *StandingsHandler) Execute() error {
 		}
 	}
 	sort.Sort(info)
-	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
-		if top < len(info) {
-			info = info[:top]
-		}
-	}
+
 	for i, _ := range info {
 		info[i].Place = i + 1
 	}
 
 	result.Info = info
+	return result, nil
+}
+
+func (h *StandingsHandler) Execute() error {
+	top, _ := strconv.Atoi(h.Assignment.Standings)
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" && top == 0 {
+		return nil
+	}
+
+	result, err := GetStandings(h.Cid)
+	if err != nil {
+		return err
+	}
+
+	if h.User.RoleName != "admin" && h.User.RoleName != "teacher" {
+		if top < len(result.Info) {
+			result.Info = result.Info[:top]
+		}
+	}
+
 	ServeContestHtml(h.ContestRequestInfo, "standings.html", result)
 
 	return nil

@@ -73,6 +73,8 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		handler = &handlers.AddGroupHandler{RequestInfo: info}
 	} else if path == "/joingroup.html" || path == "/joingroup" {
 		handler = &handlers.JoinGroupHandler{RequestInfo: info}
+	} else if path == "/groupstandings.html" {
+		handler = &handlers.GroupStandingsHandler{RequestInfo: info}
 	}
 
 	if path == "/assignments.html" {
