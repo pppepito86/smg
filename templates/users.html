@@ -70,6 +70,7 @@
                                             <th>First name</th>
                                             <th>Last name</th>
                                             <th>Email</th>
+                                            <th>Submissions</th>
                                             {{if eq .Role "admin"}}
                                             <th>Role</th>
                                             {{end}}
@@ -85,6 +86,7 @@
                                             <td>{{$element.FirstName}}</td>
                                             <td class="center">{{$element.LastName}}</td>
                                             <td class="center">{{$element.Email}}</td>
+                                            <td> <a href="user.html?id={{$element.Id}}"> submissions </a></td>
                                             {{if eq $.Role "admin"}}
                                             <td class="center">
                                                

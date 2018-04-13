@@ -70,6 +70,7 @@
                                             <th>First name</th>
                                             <th>Last name</th>
                                             <th>Email</th>
+                                            <th>Submissions</th>
                                             <th>Kick</th>
                                             {{if eq .Role "admin"}}
                                             <th>Role</th>
@@ -86,6 +87,7 @@
                                             <td>{{$element.FirstName}}</td>
                                             <td class="center">{{$element.LastName}}</td>
                                             <td class="center">{{$element.Email}}</td>
+                                            <td> <a href="user.html?id={{$element.Id}}"> submissions </a></td>
                                             <td class="center"><a href="/kickuser?groupid={{$.Data.GroupId}}&userid={{$element.Id}}">kick</a></td>
                                             {{if eq $.Role "admin"}}
                                             <td class="center">
