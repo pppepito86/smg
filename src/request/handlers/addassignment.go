@@ -29,7 +29,8 @@ func (h *AddAssignmentHandler) Execute() error {
 }
 
 func (h *AddAssignmentHandler) executeGet() {
-	util.ServeHtml(h.W, h.User, "addassignment.html", nil)
+	groups := db.ListGroups()
+	util.ServeHtml(h.W, h.User, "addassignment.html", groups)
 }
 
 func (h *AddAssignmentHandler) executePost() {

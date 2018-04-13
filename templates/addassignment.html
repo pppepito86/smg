@@ -102,7 +102,7 @@
 
                 <div class="form-group" >
                     <label>End date</label>
-                    	<input type="text" name="enddate" class="form-control" value="15/09/2016" />
+                    	<input type="text" name="enddate" class="form-control" value="15/09/2030" />
                       <input type="text" name="endtime" value="00:00" class="form-control" />
                             <!--div class="input-group bootstrap-timepicker"><div class="bootstrap-timepicker-widget dropdown-menu open"><table><tbody><tr><td><a href="#" data-action="incrementHour"><i class="icon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementMinute"><i class="icon-chevron-up"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="incrementSecond"><i class="icon-chevron-up"></i></a></td></tr><tr><td><input type="text" class="bootstrap-timepicker-hour" maxlength="2"></td> <td class="separator">:</td><td><input type="text" class="bootstrap-timepicker-minute" maxlength="2"></td> <td class="separator">:</td><td><input type="text" class="bootstrap-timepicker-second" maxlength="2"></td></tr><tr><td><a href="#" data-action="decrementHour"><i class="icon-chevron-down"></i></a></td><td class="separator"></td><td><a href="#" data-action="decrementMinute"><i class="icon-chevron-down"></i></a></td><td class="separator">&nbsp;</td><td><a href="#" data-action="decrementSecond"><i class="icon-chevron-down"></i></a></td></tr></tbody></table></div>
                                 <input class="timepicker-24 form-control" type="text">
@@ -118,7 +118,15 @@
      
                <div class="form-group" >
                     <label>Group</label>
-                    <input type="text" name="groupid" id="groupid" placeholder="Group id" class="form-control" />
+                    <!-- <input type="text" name="groupid" id="groupid" placeholder="Group id" class="form-control" /> -->
+
+                   <select name="groupid" id="groupid" class="form-control">
+                   {{range $index, $element := .Data}}
+                       <option value="{{$element.Id}}">{{$element.GroupName}}</option>
+                    {{end}}
+
+                   </select>
+
                 </div>
                 
                <div class="form-group" >
@@ -193,6 +201,12 @@
 
      <script>
         $(function () { formInit(); });
+
+        var selectedProblems = [];
+        if (localStorage.selectedProblems) {
+            selectedProblems = JSON.parse(localStorage.selectedProblems);
+        }
+        $("#problem1").val(selectedProblems.join());
 
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
