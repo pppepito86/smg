@@ -95,7 +95,7 @@
                                         {{range $index, $element := .Data}}
                                         <tr>
                                             <td>{{$element.Id}}</td>
-                                            <td>{{$element.GroupName}}</td>
+                                            <td><a href="group.html?groupid={{$element.Id}}">{{$element.GroupName}}</a></td>
                                             <td>{{$element.Description}}</td>
                                             <td class="center">{{$element.Creator}}</td>
                                             <td><a href="/groupstandings.html?groupid={{$element.Id}}">show</a></td>

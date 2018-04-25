@@ -18,13 +18,20 @@ func (h *ProblemsHandler) Execute() error {
 	}
 
 	aps, _ := db.ListAssignmentProblems(h.Cid)
+	assignment, _ := db.ListAssignment(h.Cid)
+	totalPoints, _ := GetUserPointsInAssignment(h.User.Id, h.Cid)
+
 	type data struct {
 		Problems []db.AssignmentProblem
 		Status   map[int64]string
+		Name 	 string
+		Points	 int
 	}
 	d := data{
 		Problems: aps,
 		Status:   make(map[int64]string),
+		Name:	  assignment.AssignmentName,
+		Points:	  totalPoints,
 	}
 	for _, ap := range aps {
 		submissions, _ := db.ListMySubmissionsForProblem(h.User.Id, ap.AssignmentId, ap.ProblemId)

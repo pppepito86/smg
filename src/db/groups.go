@@ -60,6 +60,25 @@ func FindGroupByName(name string) (Group, error) {
 	return Group{}, nil
 }
 
+func ListGroup(groupId int64) (Group, error) {
+	db := getConnection()
+	rows, err := db.Query("select id, groupname, description, creatorid from groups where id=?", groupId)
+	if err != nil {
+		return Group{}, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var group Group
+		err := rows.Scan(&group.Id, &group.GroupName, &group.Description, &group.CreatorId)
+		if err != nil {
+			return Group{}, err
+		}
+		return group, nil
+	}
+	return Group{}, nil
+}
+
 func ListGroups() []Group {
 	db := getConnection()
 	rows, err := db.Query("select groups.id, groups.groupname, groups.description, groups.creatorid, users.username from groups" +
@@ -137,6 +156,18 @@ func RemoveUserGroup(userId, groupId int64) (error) {
 	return nil
 }
 
+func IsUserInGroup(userId, groupId int64) (bool, error) {
+	db := getConnection()
+	rows, err := db.Query("select * from usergroups WHERE userid=? AND groupid=?", userId, groupId)
+	if err != nil {
+		log.Print(err)
+		return false, err
+	}
+
+	defer rows.Close()
+	return rows.Next(), nil
+}
+
 func ListUserGroups() ([]UserGroup, error) {
 	db := getConnection()
 	rows, err := db.Query("select id, userid, groupid from usergroups")
@@ -163,6 +194,7 @@ func ListUserGroups() ([]UserGroup, error) {
 	}
 	return userGroups, nil
 }
+
 
 func ListGroupsForUser(userId int64) ([]Group, error) {
 	db := getConnection()

@@ -20,12 +20,10 @@
     <link rel="stylesheet" href="assets/css/theme.css" />
     <link rel="stylesheet" href="assets/css/MoneAdmin.css" />
     <link rel="stylesheet" href="assets/plugins/Font-Awesome/css/font-awesome.css" />
-    <script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js" integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+" crossorigin="anonymous"></script>
     <!--END GLOBAL STYLES -->
 
     <!-- PAGE LEVEL STYLES -->
     <link href="assets/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
-    <link rel="stylesheet" href="assets/plugins/social-buttons/social-buttons.css">
     <!-- END PAGE LEVEL  STYLES -->
        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -41,8 +39,8 @@
     <div id="wrap">
 
 
-    {{ template "header"}}
-    {{ template "menu" .}}
+     {{template "header"}}
+     {{template "menu" .}}
 
         <!--PAGE CONTENT -->
         <div id="content">
@@ -50,54 +48,40 @@
             <div class="inner">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2> Problems </h2>
+                        <h2> Group {{.Data.GroupName}}</h2>
                     </div>
                 </div>
 
                 <hr />
 
-                <p>
-                    Selected problems: <input id="selectedProblemsBox" type="text" value ="" disabled/>
-                    <button onclick="removeSelectedProblems()"
-                            class="btn btn-default btn-sm btn-grad">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                    </button>
-                    <a href="/addassignment.html" class="btn btn-default btn-sm btn-grad">New Assignment</a>
-                <p/>
 
                 <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                           Problems&nbsp; 
-                            <a href="/addproblem.html" class="btn btn-default btn-sm btn-grad">+Add</a>
+                            <div style="float: right"> My Points: {{.Data.Points}} </div>
+                           Assignments
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">
                                 <table class="table table-striped table-bordered table-hover" id="dataTables-example">
                                     <thead>
                                         <tr>
-                                            <th></th>
                                             <th>Id</th>
-                                            <th>Problem name</th>
-                                            <th>Version</th>
-                                            <th>Tags</th>
+                                            <th>Assignment name</th>
+                                            <th>Start time</th>
+                                            <th>End time</th>
                                             <th>Author</th>
-                                            <th style="width: 70px;">Rejudge</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{range $index, $element := .Data}}
+                                        {{range $index, $element := .Data.Assignments}}
                                         <tr>
-                                            <td><input id="checkbox{{$element.Id}}" type="checkbox" onclick="selectProblem({{$element.Id}})"/></td>
                                             <td>{{$element.Id}}</td>
-                                            <td><a href="/problem.html?id={{$element.Id}}">{{$element.ProblemName}}</a></td>
-                                            <td>{{$element.Version}}</td>
-                                            <td>{{range $tag :=  $element.Tags}} <span>#{{$tag}}</span> {{end}}</td>
-                                            <td class="center">{{$element.Author}}</td>
-                                            <td class="center" style="text-align: center">
-                                            <a href="/rejudge?id={{$element.Id}}" class="text-muted text-center btn btn-default btn-sm btn-grad">X</a>
-                                            </td>
+                                            <td><a href="contest/{{$element.Id}}/problems">{{$element.AssignmentName}}</a></td>
+                                            <td>{{$element.StartTime.Format "2006-01-02 15:04"}}</td>
+                                            <td>{{$element.EndTime.Format "2006-01-02 15:04"}}</td>
+                                            <td>{{$element.Author}}</td>
                                         </tr>
                                         {{end}}
                                     </tbody>
@@ -135,56 +119,19 @@
          $(document).ready(function () {
              $('#dataTables-example').dataTable();
          });
+        function getval(sel) {
+          var res = sel.value.split("-");
 
-         var selectedProblems = [];
-
-         function updateSelectedProblemsBox() {
-             $("#selectedProblemsBox").val(selectedProblems.join());
-         }
-
-         function selectProblem(problemId) {
-             var currently = selectedProblems.includes(problemId);
-             var desired = $("#checkbox" + problemId).is(':checked');
-             if (currently != desired) {
-                if(desired) {
-                    selectedProblems.push(problemId);
-                } else {
-                    selectedProblems.splice(selectedProblems.indexOf(problemId), 1);
-                }
-
-                localStorage.selectedProblems = JSON.stringify(selectedProblems);
-                updateSelectedProblemsBox();
-             }
-         }
-
-         function removeSelectedProblems() {
-             selectedProblems = [];
-             localStorage.selectedProblems = JSON.stringify(selectedProblems);
-             updateSelectedProblemsBox();
-             updateCheckboxes();
-         }
-
-         function updateCheckboxes() {
-             $(document).find('input:checkbox').prop('checked', false);
-
-             for (var i = 0; i < selectedProblems.length; i++) {
-                 $("#checkbox" + selectedProblems[i]).prop('checked',true);
-             }
-         }
-
-
-         if (localStorage.selectedProblems) {
-             selectedProblems = JSON.parse(localStorage.selectedProblems);
-             updateCheckboxes();
-         } else {
-             selectedProblems = [];
-             localStorage.selectedProblems = JSON.stringify([]);
-         }
-         updateSelectedProblemsBox();
-
-
-
-     </script>
+    $.post("/changeuserrole",
+    {
+        userid: res[0],
+        roleid: res[1]
+    },
+    function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+    });
+        }
+    </script>
      <!-- END PAGE LEVEL SCRIPTS -->
 </body>
      <!-- END BODY -->

@@ -38,6 +38,38 @@ func (slice UsersInfo) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
+func GetUserPointsInAssignment(userId int64, contestId int64) (int, error) {
+	aps, err := db.ListAssignmentProblems(contestId)
+	if err != nil {
+		return -1, err
+	}
+
+	submissions, err := db.ListMySubmissions(userId, contestId)
+	if err != nil {
+		return -1, err
+	}
+
+	problemIdToPoints := make(map[int64]int)
+
+	for _, problem := range aps {
+		problemIdToPoints[problem.ProblemId] = 0
+	}
+	for _, submission := range submissions {
+
+		recordedPoints := problemIdToPoints[submission.ProblemId];
+		if recordedPoints < submission.Points {
+			problemIdToPoints[submission.ProblemId] = submission.Points
+		}
+	}
+
+	totalPoints := 0
+	for _, problem := range aps {
+		totalPoints += problemIdToPoints[problem.ProblemId]
+	}
+
+	return totalPoints, nil
+}
+
 func GetStandings(contestId int64) (Result, error) {
 	problems, _ := db.ListAssignmentProblems(contestId)
 	users, _ := db.ListUsersForAssignment(contestId)
