@@ -101,6 +101,8 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		handler = &handlers.KickUserHandler{RequestInfo: info}
 	} else if path == "/user.html" {
 		handler = &handlers.UserPageHandler{RequestInfo: info}
+	} else if path =="/bansubmission" {
+		handler = &handlers.BanSubmissionHandler{RequestInfo: info}
 	}
 
 	if path == "/dashboard.html" {

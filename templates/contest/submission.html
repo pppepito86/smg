@@ -65,7 +65,11 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                           Submission
+                            {{if or (eq $.Role "admin") (eq $.Role "teacher")}}
+                           <div style="float:right"><a class="btn btn-default btn-sm btn-grad"
+                                                       href="/bansubmission?id={{.Data.Id}}">Ban submission</a></div>
+                            {{end}}
+                            Submission
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">

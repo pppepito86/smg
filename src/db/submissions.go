@@ -83,7 +83,8 @@ func ListSubmissions() ([]Submission, error) {
 
 func ListSubmission(submissionId int64) (Submission, error) {
 	db := getConnection()
-	rows, err := db.Query("select submissions.id, submissions.userid, language, sourcefile, time, verdict, reason, problems.name, assignments.testinfo from submissions"+
+	rows, err := db.Query("select submissions.id, submissions.userid, language, sourcefile, time, verdict, " +
+		" reason, problems.name, assignments.testinfo, assignments.id from submissions"+
 		"	inner join problems on problems.id=submissions.problemid and submissions.id=?"+
 		"	inner join assignments on assignments.id=submissions.assignmentid", submissionId)
 	s := Submission{}
@@ -93,7 +94,8 @@ func ListSubmission(submissionId int64) (Submission, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&s.Id, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason, &s.ProblemName, &s.TestInfo)
+		err := rows.Scan(&s.Id, &s.UserId, &s.Language, &s.SourceFile, &s.Time, &s.Verdict, &s.Reason,
+			&s.ProblemName, &s.TestInfo, &s.AssignmentId)
 		if err != nil {
 			log.Print(err)
 			return s, err
@@ -105,6 +107,25 @@ func ListSubmission(submissionId int64) (Submission, error) {
 		return s, err
 	}
 	return s, nil
+}
+
+func BanSubmission(submissionId int64) (error) {
+	db := getConnection()
+
+	stmt, err := db.Prepare("update submissions set points=0, verdict='Banned' where id=?")
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(submissionId)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
 }
 
 func ListMySubmissions(userId, assignmentId int64) ([]Submission, error) {
