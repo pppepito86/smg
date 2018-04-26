@@ -45,7 +45,8 @@ func ServeHtml(w http.ResponseWriter, user db.User, html string, data interface{
 
 func ServeHtmlWithAuthor(w http.ResponseWriter, user db.User, html string, data interface{}, isAuthor bool) {
 	w.Header().Set("Content-Type", "text/html")
-	t, _ := template.ParseFiles("../templates/"+html, "../templates/header.html", "../templates/menu.html", "../templates/footer.html")
+	t, _ := template.ParseFiles("../templates/"+html, "../templates/header.html", "../templates/menu.html",
+		"../templates/footer.html", "../templates/submissions-list.html")
 	response := Response{0, data, user.RoleName, isAuthor, db.Assignment{}}
 	t.Execute(w, response)
 }

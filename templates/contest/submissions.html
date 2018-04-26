@@ -87,7 +87,7 @@
                                           <td><a href="/contest/{{$.Id}}/submission/{{$element.Id}}" >{{$element.Id}}</a></td>
                                             <td>{{$element.User}}</td>
                                             <td>{{$element.FirstName}} {{$element.LastName}}</td>
-                                            <td>{{$element.Time}}</td>
+                                            <td>{{$element.Time.Format "02 Jan 2006 15:04"}}</td>
                                             <td>{{$element.ProblemName}}</td>
                                             <td class="center">{{$element.Language}}</td>
                                             {{if eq $element.Verdict "Accepted"}}

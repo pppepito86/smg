@@ -115,7 +115,10 @@ func Route(w http.ResponseWriter, r *http.Request) {
 
 	if path == "/studentprogress.html" {
 		handler = &handlers.StudentProgressHandler{RequestInfo: info}
+	} else if path == "/allsubmissions.html" {
+		handler = &handlers.AllSubmissionsHandler{RequestInfo: info}
 	}
+
 	if path == "/groupprogress.html" {
 		handler = &handlers.GroupProgressHandler{RequestInfo: info}
 	}
