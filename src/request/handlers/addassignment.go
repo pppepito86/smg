@@ -30,7 +30,44 @@ func (h *AddAssignmentHandler) Execute() error {
 
 func (h *AddAssignmentHandler) executeGet() {
 	groups := db.ListGroups()
-	util.ServeHtml(h.W, h.User, "addassignment.html", groups)
+
+	h.R.ParseForm()
+	var defaultValues db.Assignment
+	defaultValues = db.Assignment{
+		AssignmentName: "",
+		StartTime: time.Now(),
+		EndTime: time.Now().Add(time.Hour*24*365*10),
+		Problems: "",
+		Standings: "",
+		TestInfo: "hide",
+
+	}
+
+	if len(h.R.Form["copyAssignment"]) > 0 {
+		assignmentId, _ := strconv.ParseInt(h.R.Form["copyAssignment"][0], 10, 64)
+		defaultValues, _ = db.ListAssignment(assignmentId)
+
+		aps, _ := db.ListAssignmentProblems(assignmentId)
+		problems := ""
+		for _, ap := range aps {
+			problems += "," + strconv.FormatInt(ap.ProblemId, 10)
+		}
+		if len(problems) > 1 {
+			problems = problems[1:len(problems)]
+		}
+		defaultValues.Problems = problems
+	}
+
+	type data struct {
+		Groups []db.Group
+		DefaultValues db.Assignment
+	}
+	d := data{
+		Groups: groups,
+		DefaultValues: defaultValues,
+	}
+
+	util.ServeHtml(h.W, h.User, "addassignment.html", d)
 }
 
 func (h *AddAssignmentHandler) executePost() {

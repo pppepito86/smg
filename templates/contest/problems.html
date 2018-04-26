@@ -61,7 +61,12 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <div style="float: right"> My Points: {{.Data.Points}} </div>
+
                           Problems
+
+                        {{if or (eq $.Role "admin") (eq $.Role "teacher")}}
+                            <a href="/addassignment.html?copyAssignment={{.Id}}" class="btn btn-default btn-sm btn-grad">+Duplicate</a>
+                        {{end}}
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">
